@@ -148,6 +148,7 @@ const createTables = async () => {
         booking_number VARCHAR(20) UNIQUE NOT NULL,
         guest_id INTEGER,
         room_id INTEGER,
+        cabin_id INTEGER,
         check_in_date DATE NOT NULL,
         check_out_date DATE NOT NULL,
         adults INTEGER DEFAULT 1,
@@ -160,6 +161,7 @@ const createTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (guest_id) REFERENCES guests(id),
         FOREIGN KEY (room_id) REFERENCES rooms(id),
+        FOREIGN KEY (cabin_id) REFERENCES cabins(id),
         FOREIGN KEY (created_by) REFERENCES users(id)
       )
     `);
@@ -491,4 +493,4 @@ if (require.main === module) {
   createTables();
 }
 
-module.exports = { createTables };
+module.exports = { createTables }; 

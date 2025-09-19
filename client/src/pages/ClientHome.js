@@ -211,13 +211,13 @@ const ClientHome = () => {
                     <span className="text-2xl font-bold text-blue-600">
                       ${room.room_type?.base_price || 100}/night
                     </span>
-                    <Link
-                      to="/client/book"
+        <Link
+          to="/client/book"
                       className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
+        >
                       Book Now
-                    </Link>
-                  </div>
+        </Link>
+      </div>
                 </div>
               </div>
             ))}

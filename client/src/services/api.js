@@ -94,6 +94,11 @@ export const authService = {
     const response = await api.put('/auth/profile', profileData);
     return normalizeUser(response.data);
   },
+  
+  changePassword: async ({ current_password, new_password }) => {
+    const response = await api.put('/auth/change-password', { current_password, new_password });
+    return response.data;
+  },
 };
 
 // Users service

@@ -335,4 +335,31 @@ router.get('/analytics', authenticateToken, requireRole('admin'), async (req, re
   }
 });
 
+// Delete price tracking entry
+router.delete('/tracking/:id', authenticateToken, requirePrivilege('manage_rooms'), async (req, res) => {
+  try {
+    const priceId = req.params.id;
+
+    const result = await query('DELETE FROM price_tracking WHERE id = ?', [priceId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Price tracking entry not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Price tracking entry deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete price tracking error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting price tracking entry'
+    });
+  }
+});
+
 module.exports = router;
