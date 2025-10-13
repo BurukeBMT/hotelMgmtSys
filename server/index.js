@@ -6,7 +6,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config({ path: '../config.env' });
+require('dotenv').config({ path: '../.env' });
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -23,6 +23,8 @@ const pricingRoutes = require('./routes/pricing');
 const cabinRoutes = require('./routes/cabins');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
 const { router: notificationRoutes } = require('./routes/notifications');
+const attendanceRoutes = require('./routes/attendance');
+const payrollRoutes = require('./routes/payroll');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -120,6 +122,8 @@ app.use('/api/pricing', authenticateToken, pricingRoutes);
 app.use('/api/cabins', authenticateToken, cabinRoutes);
 app.use('/api/payment-gateway', authenticateToken, paymentGatewayRoutes);
 app.use('/api/notifications', authenticateToken, notificationRoutes);
+app.use('/api/attendance', authenticateToken, attendanceRoutes);
+app.use('/api/payroll', authenticateToken, payrollRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

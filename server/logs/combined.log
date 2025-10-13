@@ -4824,3 +4824,162 @@
   service: 'hotel-management-api',
   timestamp: '2025-09-14 00:52:22'
 }
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:35:58'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:35:58'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:35:58'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:35:58'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:35:58'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:36:14'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:36:14'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:36:14'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:36:14'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 21:36:14'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-12 21:58:47'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO employees (employee_id, first_name, last_name, email, phone, department_id, position, salary, hire_date) VALUES\n' +
+    '      (?, ?, ?, ?, ?, ?, ?, ?, ?),\n' +
+    '      (?, ?, ?, ?, ?, ?, ?, ?, ?),\n' +
+    '      (?, ?, ?, ?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'EMP001',
+    'John',
+    'Doe',
+    'john.doe@hotel.com',
+    '+1234567890',
+    1,
+    'Housekeeping Supervisor',
+    2500,
+    '2023-01-15',
+    'EMP002',
+    'Jane',
+    'Smith',
+    'jane.smith@hotel.com',
+    '+1234567891',
+    2,
+    'Receptionist',
+    2000,
+    '2023-02-01',
+    'EMP003',
+    'Mike',
+    'Johnson',
+    'mike.johnson@hotel.com',
+    '+1234567892',
+    3,
+    'Chef',
+    3000,
+    '2023-01-01'
+  ],
+  error: "Unknown column 'first_name' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-12 21:58:47'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 22:04:44'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 22:04:44'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 22:04:44'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 22:04:44'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 22:04:44'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-12 22:04:44'
+}
+{
+  message: 'Closing database connections...',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-12 22:05:18'
+}

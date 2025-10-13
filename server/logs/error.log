@@ -580,3 +580,68 @@
   message: '❌ Error connecting to PostgreSQL database:',
   timestamp: '2025-09-14 00:52:22'
 }
+{
+  service: 'hotel-management-api',
+  error: '',
+  code: 'ECONNREFUSED',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-12 21:35:58'
+}
+{
+  service: 'hotel-management-api',
+  error: '',
+  code: 'ECONNREFUSED',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-12 21:36:14'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO employees (employee_id, first_name, last_name, email, phone, department_id, position, salary, hire_date) VALUES\n' +
+    '      (?, ?, ?, ?, ?, ?, ?, ?, ?),\n' +
+    '      (?, ?, ?, ?, ?, ?, ?, ?, ?),\n' +
+    '      (?, ?, ?, ?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'EMP001',
+    'John',
+    'Doe',
+    'john.doe@hotel.com',
+    '+1234567890',
+    1,
+    'Housekeeping Supervisor',
+    2500,
+    '2023-01-15',
+    'EMP002',
+    'Jane',
+    'Smith',
+    'jane.smith@hotel.com',
+    '+1234567891',
+    2,
+    'Receptionist',
+    2000,
+    '2023-02-01',
+    'EMP003',
+    'Mike',
+    'Johnson',
+    'mike.johnson@hotel.com',
+    '+1234567892',
+    3,
+    'Chef',
+    3000,
+    '2023-01-01'
+  ],
+  error: "Unknown column 'first_name' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-12 21:58:47'
+}

@@ -1,6 +1,6 @@
-# Hotel Management System
+# Hotel & HR Management System MVP
 
-A comprehensive hotel management system built with Node.js, PostgreSQL, and React.js. This system provides complete hotel management capabilities including booking management, HR management, room management, guest management, payment processing, and detailed reporting.
+A complete Hotel Management System integrated with HR Management capabilities built with Node.js, MySQL, and React.js. This MVP provides essential hotel operations including booking management, room management, guest management, payment tracking, employee management, attendance tracking, and payroll generation.
 
 ## Features
 
@@ -35,7 +35,7 @@ A comprehensive hotel management system built with Node.js, PostgreSQL, and Reac
 ### Backend
 - **Node.js**: Runtime environment
 - **Express.js**: Web framework
-- **MySQL**: Database
+- **MySQL**: Database (via XAMPP)
 - **JWT**: Authentication
 - **bcryptjs**: Password hashing
 - **express-validator**: Input validation
@@ -44,19 +44,17 @@ A comprehensive hotel management system built with Node.js, PostgreSQL, and Reac
 
 ### Frontend
 - **React.js**: UI framework
-- **TypeScript**: Type safety
 - **React Router**: Navigation
-- **React Query**: Data fetching
-- **React Hook Form**: Form handling
+- **Axios**: API communication
+- **React Hot Toast**: Notifications
 - **Tailwind CSS**: Styling
 - **Lucide React**: Icons
-- **Recharts**: Charts and graphs
 
 ## Installation
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MySQL (v8.0 or higher)
+- XAMPP (for MySQL database)
 - npm or yarn
 
 ### Setup Instructions
@@ -78,22 +76,19 @@ A comprehensive hotel management system built with Node.js, PostgreSQL, and Reac
    cd ..
    ```
 
-3. **Configure environment variables**
+3. **Environment Configuration**
    ```bash
-   # Copy the example environment file
-   cp .env.example .env
-   
-   # Edit the .env file with your configuration
-   # Update database credentials, JWT secret, etc.
+   # The .env file is already created with default values
+   # Update database credentials, JWT secret, etc. if needed
+   # Default configuration works with XAMPP MySQL
    ```
 
 4. **Set up the database**
    ```bash
-   # Create MySQL database
-   mysql -u root -p -e "CREATE DATABASE hotel_management;"
-   
-   # Run database setup
-   npm run setup-db
+   # Start XAMPP MySQL service
+   # Then run database setup
+   setup-mysql.bat  # Windows
+   ./setup-mysql.sh # Linux/Mac
    ```
 
 5. **Start the development servers**
@@ -153,7 +148,7 @@ A comprehensive hotel management system built with Node.js, PostgreSQL, and Reac
 
 ## Database Schema
 
-The system uses PostgreSQL with the following main tables:
+The system uses MySQL with the following main tables:
 
 - **users**: System users and authentication
 - **departments**: Hotel departments
@@ -163,6 +158,8 @@ The system uses PostgreSQL with the following main tables:
 - **guests**: Guest profiles
 - **bookings**: Reservation records
 - **payments**: Payment transactions
+- **attendance**: Daily attendance records
+- **payroll**: Monthly payroll records
 
 ## Default Credentials
 

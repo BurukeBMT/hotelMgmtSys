@@ -30,7 +30,7 @@ router.post('/register', [
 
     // Check if user already exists
     const existingUser = await query(
-      'SELECT id FROM users WHERE username = $1 OR email = $2',
+      'SELECT id FROM users WHERE username = ? OR email = ?',
       [username, email]
     );
 
@@ -48,13 +48,13 @@ router.post('/register', [
     // Create user
     const result = await query(
       `INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, address)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [username, email, passwordHash, first_name, last_name, role, phone, address]
     );
 
     // Get the inserted user
     const userResult = await query(
-      'SELECT id, username, email, first_name, last_name, role FROM users WHERE username = $1',
+      'SELECT id, username, email, first_name, last_name, role FROM users WHERE username = ?',
       [username]
     );
 
@@ -119,7 +119,7 @@ router.post('/login', [
 
     // Find user
     const result = await query(
-      'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = $1 OR email = $2',
+      'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = ? OR email = ?',
       [username || email, username || email]
     );
 
@@ -183,7 +183,7 @@ router.post('/login', [
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const result = await query(
-      'SELECT id, username, email, first_name, last_name, role, phone, address, created_at FROM users WHERE id = $1',
+      'SELECT id, username, email, first_name, last_name, role, phone, address, created_at FROM users WHERE id = ?',
       [req.user.id]
     );
 
@@ -228,16 +228,22 @@ router.put('/profile', authenticateToken, [
 
     const result = await query(
       `UPDATE users SET 
-       first_name = COALESCE($1, first_name),
-       last_name = COALESCE($2, last_name),
-       phone = COALESCE($3, phone),
-       address = COALESCE($4, address),
+       first_name = COALESCE(?, first_name),
+       last_name = COALESCE(?, last_name),
+       phone = COALESCE(?, phone),
+       address = COALESCE(?, address),
        updated_at = CURRENT_TIMESTAMP
-       WHERE id = $5 RETURNING id, username, email, first_name, last_name, role, phone, address`,
+       WHERE id = ?`,
       [first_name, last_name, phone, address, req.user.id]
     );
 
-    if (result.rows.length === 0) {
+    // Get updated user data
+    const updatedUser = await query(
+      'SELECT id, username, email, first_name, last_name, role, phone, address FROM users WHERE id = ?',
+      [req.user.id]
+    );
+
+    if (updatedUser.rows.length === 0) {
       return res.status(404).json({ 
         success: false, 
         message: 'User not found' 
@@ -247,7 +253,7 @@ router.put('/profile', authenticateToken, [
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      data: result.rows[0]
+      data: updatedUser.rows[0]
     });
   } catch (error) {
     console.error('Profile update error:', error);
@@ -277,7 +283,7 @@ router.put('/change-password', authenticateToken, [
 
     // Get current password hash
     const result = await query(
-      'SELECT password_hash FROM users WHERE id = $1',
+      'SELECT password_hash FROM users WHERE id = ?',
       [req.user.id]
     );
 
@@ -303,7 +309,7 @@ router.put('/change-password', authenticateToken, [
 
     // Update password
     await query(
-      'UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      'UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
       [newPasswordHash, req.user.id]
     );
 
