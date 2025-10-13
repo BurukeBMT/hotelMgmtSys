@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const { query } = require('../database/config');
+const db = require('../database/config');
 const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
@@ -22,27 +22,21 @@ router.get('/', async (req, res) => {
 
     let whereClause = 'WHERE 1=1';
     const params = [];
-    let paramCount = 0;
 
     if (status) {
-      paramCount++;
-      whereClause += ` AND b.status = $${paramCount}`;
+      whereClause += ' AND b.status = ?';
       params.push(status);
     }
-
     if (check_in_date) {
-      paramCount++;
-      whereClause += ` AND b.check_in_date >= $${paramCount}`;
+      whereClause += ' AND b.check_in_date >= ?';
       params.push(check_in_date);
     }
-
     if (check_out_date) {
-      paramCount++;
-      whereClause += ` AND b.check_out_date <= $${paramCount}`;
+      whereClause += ' AND b.check_out_date <= ?';
       params.push(check_out_date);
     }
 
-    const result = await query(`
+    const [result] = await db.query(`
       SELECT b.*, g.first_name, g.last_name, g.email, g.phone,
              r.room_number, rt.name as room_type, rt.base_price,
              u.first_name as created_by_name, u.last_name as created_by_last_name
@@ -53,21 +47,21 @@ router.get('/', async (req, res) => {
       LEFT JOIN users u ON b.created_by = u.id
       ${whereClause}
       ORDER BY b.created_at DESC
-      LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
-    `, [...params, limit, offset]);
+      LIMIT ? OFFSET ?
+    `, [...params, parseInt(limit), parseInt(offset)]);
 
     // Get total count
-    const countResult = await query(`
+    const [countResult] = await db.query(`
       SELECT COUNT(*) as total
       FROM bookings b
       ${whereClause}
     `, params);
 
-    const total = parseInt(countResult.rows[0].total);
+    const total = parseInt(countResult[0].total);
 
     res.json({
       success: true,
-      data: result.rows,
+      data: result,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -77,9 +71,9 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Bookings error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching bookings' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching bookings'
     });
   }
 });
@@ -97,61 +91,61 @@ router.post('/', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
+      return res.status(400).json({
+        success: false,
         message: 'Validation error',
-        errors: errors.array() 
+        errors: errors.array()
       });
     }
 
-    const { 
-      guest_id, room_id, check_in_date, check_out_date, 
-      adults, children = 0, special_requests 
+    const {
+      guest_id, room_id, check_in_date, check_out_date,
+      adults, children = 0, special_requests
     } = req.body;
 
     // Check if room is available for the dates
-    const roomAvailability = await query(`
+    const [roomAvailability] = await db.query(`
       SELECT COUNT(*) as count
       FROM bookings
-      WHERE room_id = $1 
+      WHERE room_id = ?
       AND status IN ('confirmed', 'checked_in')
       AND (
-        (check_in_date <= $2 AND check_out_date > $2) OR
-        (check_in_date < $3 AND check_out_date >= $3) OR
-        (check_in_date >= $2 AND check_out_date <= $3)
+        (check_in_date <= ? AND check_out_date > ?) OR
+        (check_in_date < ? AND check_out_date >= ?) OR
+        (check_in_date >= ? AND check_out_date <= ?)
       )
-    `, [room_id, check_in_date, check_out_date]);
+    `, [room_id, check_in_date, check_in_date, check_out_date, check_out_date, check_in_date, check_out_date]);
 
-    if (parseInt(roomAvailability.rows[0].count) > 0) {
-      return res.status(409).json({ 
-        success: false, 
-        message: 'Room is not available for the selected dates' 
+    if (parseInt(roomAvailability[0].count) > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'Room is not available for the selected dates'
       });
     }
 
     // Get room details for pricing
-    const roomDetails = await query(`
+    const [roomDetails] = await db.query(`
       SELECT rt.base_price, rt.capacity
       FROM rooms r
       LEFT JOIN room_types rt ON r.room_type_id = rt.id
-      WHERE r.id = $1
+      WHERE r.id = ?
     `, [room_id]);
 
-    if (roomDetails.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Room not found' 
+    if (roomDetails.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Room not found'
       });
     }
 
-    const basePrice = roomDetails.rows[0].base_price;
-    const capacity = roomDetails.rows[0].capacity;
+    const basePrice = roomDetails[0].base_price;
+    const capacity = roomDetails[0].capacity;
     const totalGuests = adults + children;
 
     if (totalGuests > capacity) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Room capacity is ${capacity} guests, but ${totalGuests} guests were specified` 
+      return res.status(400).json({
+        success: false,
+        message: `Room capacity is ${capacity} guests, but ${totalGuests} guests were specified`
       });
     }
 
@@ -163,24 +157,24 @@ router.post('/', [
 
     const bookingNumber = generateBookingNumber();
 
-    const result = await query(
+    const [result] = await db.query(
       `INSERT INTO bookings (booking_number, guest_id, room_id, check_in_date, check_out_date,
        adults, children, total_amount, special_requests, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-      [bookingNumber, guest_id, room_id, check_in_date, check_out_date, 
-       adults, children, totalAmount, special_requests, req.user.id]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [bookingNumber, guest_id, room_id, check_in_date, check_out_date,
+        adults, children, totalAmount, special_requests, req.user.id]
     );
 
     res.status(201).json({
       success: true,
       message: 'Booking created successfully',
-      data: result.rows[0]
+      data: { id: result.insertId, booking_number: bookingNumber }
     });
   } catch (error) {
     console.error('Booking creation error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error creating booking' 
+    res.status(500).json({
+      success: false,
+      message: 'Error creating booking'
     });
   }
 });
@@ -197,10 +191,10 @@ router.put('/:id', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
+      return res.status(400).json({
+        success: false,
         message: 'Validation error',
-        errors: errors.array() 
+        errors: errors.array()
       });
     }
 
@@ -208,122 +202,101 @@ router.put('/:id', [
     const { check_in_date, check_out_date, adults, children, status, special_requests } = req.body;
 
     // Get current booking details
-    const currentBooking = await query(
-      'SELECT * FROM bookings WHERE id = $1',
+    const [currentBooking] = await db.query(
+      'SELECT * FROM bookings WHERE id = ?',
       [id]
     );
 
-    if (currentBooking.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Booking not found' 
+    if (currentBooking.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
       });
     }
 
-    const booking = currentBooking.rows[0];
+    const booking = currentBooking[0];
 
     // If dates are being changed, check availability
     if (check_in_date || check_out_date) {
       const newCheckIn = check_in_date || booking.check_in_date;
       const newCheckOut = check_out_date || booking.check_out_date;
 
-      const roomAvailability = await query(`
+      const [roomAvailability] = await db.query(`
         SELECT COUNT(*) as count
         FROM bookings
-        WHERE room_id = $1 
-        AND id != $2
+        WHERE room_id = ?
+        AND id != ?
         AND status IN ('confirmed', 'checked_in')
         AND (
-          (check_in_date <= $3 AND check_out_date > $3) OR
-          (check_in_date < $4 AND check_out_date >= $4) OR
-          (check_in_date >= $3 AND check_out_date <= $4)
+          (check_in_date <= ? AND check_out_date > ?) OR
+          (check_in_date < ? AND check_out_date >= ?) OR
+          (check_in_date >= ? AND check_out_date <= ?)
         )
-      `, [booking.room_id, id, newCheckIn, newCheckOut]);
+      `, [booking.room_id, id, newCheckIn, newCheckIn, newCheckOut, newCheckOut, newCheckIn, newCheckOut]);
 
-      if (parseInt(roomAvailability.rows[0].count) > 0) {
-        return res.status(409).json({ 
-          success: false, 
-          message: 'Room is not available for the selected dates' 
+      if (parseInt(roomAvailability[0].count) > 0) {
+        return res.status(409).json({
+          success: false,
+          message: 'Room is not available for the selected dates'
         });
       }
 
       // Recalculate total amount if dates changed
-      if (check_in_date || check_out_date) {
-        const checkIn = new Date(newCheckIn);
-        const checkOut = new Date(newCheckOut);
-        const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-        
-        // Get room base price
-        const roomDetails = await query(`
-          SELECT rt.base_price
-          FROM rooms r
-          LEFT JOIN room_types rt ON r.room_type_id = rt.id
-          WHERE r.id = $1
-        `, [booking.room_id]);
+      const checkIn = new Date(newCheckIn);
+      const checkOut = new Date(newCheckOut);
+      const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
 
-        const basePrice = roomDetails.rows[0].base_price;
-        const totalAmount = nights * basePrice;
+      // Get room base price
+      const [roomDetails] = await db.query(`
+        SELECT rt.base_price
+        FROM rooms r
+        LEFT JOIN room_types rt ON r.room_type_id = rt.id
+        WHERE r.id = ?
+      `, [booking.room_id]);
 
-        const result = await query(
-          `UPDATE bookings SET 
-           check_in_date = COALESCE($1, check_in_date),
-           check_out_date = COALESCE($2, check_out_date),
-           adults = COALESCE($3, adults),
-           children = COALESCE($4, children),
-           status = COALESCE($5, status),
-           special_requests = COALESCE($6, special_requests),
-           total_amount = $7,
-           updated_at = CURRENT_TIMESTAMP
-           WHERE id = $8 RETURNING *`,
-          [check_in_date, check_out_date, adults, children, status, special_requests, totalAmount, id]
-        );
+      const basePrice = roomDetails[0].base_price;
+      const totalAmount = nights * basePrice;
 
-        res.json({
-          success: true,
-          message: 'Booking updated successfully',
-          data: result.rows[0]
-        });
-      } else {
-        const result = await query(
-          `UPDATE bookings SET 
-           adults = COALESCE($1, adults),
-           children = COALESCE($2, children),
-           status = COALESCE($3, status),
-           special_requests = COALESCE($4, special_requests),
-           updated_at = CURRENT_TIMESTAMP
-           WHERE id = $5 RETURNING *`,
-          [adults, children, status, special_requests, id]
-        );
-
-        res.json({
-          success: true,
-          message: 'Booking updated successfully',
-          data: result.rows[0]
-        });
-      }
-    } else {
-      const result = await query(
+      await db.query(
         `UPDATE bookings SET 
-         adults = COALESCE($1, adults),
-         children = COALESCE($2, children),
-         status = COALESCE($3, status),
-         special_requests = COALESCE($4, special_requests),
+         check_in_date = COALESCE(?, check_in_date),
+         check_out_date = COALESCE(?, check_out_date),
+         adults = COALESCE(?, adults),
+         children = COALESCE(?, children),
+         status = COALESCE(?, status),
+         special_requests = COALESCE(?, special_requests),
+         total_amount = ?,
          updated_at = CURRENT_TIMESTAMP
-         WHERE id = $5 RETURNING *`,
+         WHERE id = ?`,
+        [check_in_date, check_out_date, adults, children, status, special_requests, totalAmount, id]
+      );
+
+      res.json({
+        success: true,
+        message: 'Booking updated successfully'
+      });
+    } else {
+      await db.query(
+        `UPDATE bookings SET 
+         adults = COALESCE(?, adults),
+         children = COALESCE(?, children),
+         status = COALESCE(?, status),
+         special_requests = COALESCE(?, special_requests),
+         updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?`,
         [adults, children, status, special_requests, id]
       );
 
       res.json({
         success: true,
-        message: 'Booking updated successfully',
-        data: result.rows[0]
+        message: 'Booking updated successfully'
       });
     }
   } catch (error) {
     console.error('Booking update error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error updating booking' 
+    res.status(500).json({
+      success: false,
+      message: 'Error updating booking'
     });
   }
 });
@@ -333,7 +306,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await query(`
+    const [result] = await db.query(`
       SELECT b.*, g.first_name, g.last_name, g.email, g.phone, g.address,
              r.room_number, r.floor, rt.name as room_type, rt.base_price, rt.amenities,
              u.first_name as created_by_name, u.last_name as created_by_last_name
@@ -342,25 +315,25 @@ router.get('/:id', async (req, res) => {
       LEFT JOIN rooms r ON b.room_id = r.id
       LEFT JOIN room_types rt ON r.room_type_id = rt.id
       LEFT JOIN users u ON b.created_by = u.id
-      WHERE b.id = $1
+      WHERE b.id = ?
     `, [id]);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Booking not found' 
+    if (result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
       });
     }
 
     res.json({
       success: true,
-      data: result.rows[0]
+      data: result[0]
     });
   } catch (error) {
     console.error('Booking details error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching booking details' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching booking details'
     });
   }
 });
@@ -369,29 +342,29 @@ router.get('/:id', async (req, res) => {
 router.get('/dashboard/stats', async (req, res) => {
   try {
     // Total bookings today
-    const todayBookings = await query(`
+    const [todayBookings] = await db.query(`
       SELECT COUNT(*) as count
       FROM bookings
-      WHERE DATE(created_at) = CURRENT_DATE
+      WHERE DATE(created_at) = CURDATE()
     `);
 
     // Total bookings this month
-    const monthBookings = await query(`
+    const [monthBookings] = await db.query(`
       SELECT COUNT(*) as count
       FROM bookings
-      WHERE DATE_TRUNC('month', created_at) = DATE_TRUNC('month', CURRENT_DATE)
+      WHERE MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())
     `);
 
     // Revenue this month
-    const monthRevenue = await query(`
+    const [monthRevenue] = await db.query(`
       SELECT COALESCE(SUM(total_amount), 0) as total
       FROM bookings
-      WHERE DATE_TRUNC('month', created_at) = DATE_TRUNC('month', CURRENT_DATE)
+      WHERE MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())
       AND status IN ('confirmed', 'checked_in', 'checked_out')
     `);
 
     // Occupancy rate
-    const occupancyRate = await query(`
+    const [occupancyRate] = await db.query(`
       SELECT 
         ROUND(
           (COUNT(CASE WHEN status IN ('confirmed', 'checked_in') THEN 1 END) * 100.0 / 
@@ -399,23 +372,23 @@ router.get('/dashboard/stats', async (req, res) => {
           ), 2
         ) as rate
       FROM bookings
-      WHERE check_in_date <= CURRENT_DATE AND check_out_date > CURRENT_DATE
+      WHERE check_in_date <= CURDATE() AND check_out_date > CURDATE()
     `);
 
     // Upcoming check-ins (next 7 days)
-    const upcomingCheckins = await query(`
+    const [upcomingCheckins] = await db.query(`
       SELECT b.*, g.first_name, g.last_name, r.room_number
       FROM bookings b
       LEFT JOIN guests g ON b.guest_id = g.id
       LEFT JOIN rooms r ON b.room_id = r.id
-      WHERE b.check_in_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
+      WHERE b.check_in_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)
       AND b.status = 'confirmed'
       ORDER BY b.check_in_date
       LIMIT 10
     `);
 
     // Recent bookings
-    const recentBookings = await query(`
+    const [recentBookings] = await db.query(`
       SELECT b.*, g.first_name, g.last_name, r.room_number
       FROM bookings b
       LEFT JOIN guests g ON b.guest_id = g.id
@@ -427,21 +400,21 @@ router.get('/dashboard/stats', async (req, res) => {
     res.json({
       success: true,
       data: {
-        todayBookings: parseInt(todayBookings.rows[0].count),
-        monthBookings: parseInt(monthBookings.rows[0].count),
-        monthRevenue: parseFloat(monthRevenue.rows[0].total),
-        occupancyRate: parseFloat(occupancyRate.rows[0].rate || 0),
-        upcomingCheckins: upcomingCheckins.rows,
-        recentBookings: recentBookings.rows
+        todayBookings: parseInt(todayBookings[0].count),
+        monthBookings: parseInt(monthBookings[0].count),
+        monthRevenue: parseFloat(monthRevenue[0].total),
+        occupancyRate: parseFloat(occupancyRate[0].rate || 0),
+        upcomingCheckins,
+        recentBookings
       }
     });
   } catch (error) {
     console.error('Booking dashboard error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching booking dashboard data' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching booking dashboard data'
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;
