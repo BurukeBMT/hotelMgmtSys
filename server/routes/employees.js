@@ -13,20 +13,14 @@ router.get('/', async (req, res) => {
 
     let whereClause = 'WHERE 1=1';
     const params = [];
-    let paramCount = 0;
-
     if (department_id) {
-      paramCount++;
-      whereClause += ` AND e.department_id = $${paramCount}`;
+      whereClause += ' AND e.department_id = ?';
       params.push(department_id);
     }
-
     if (status) {
-      paramCount++;
-      whereClause += ` AND e.status = $${paramCount}`;
+      whereClause += ' AND e.status = ?';
       params.push(status);
     }
-
     const result = await query(`
       SELECT e.*, u.first_name, u.last_name, u.email, u.phone,
              d.name as department_name
@@ -35,7 +29,7 @@ router.get('/', async (req, res) => {
       LEFT JOIN departments d ON e.department_id = d.id
       ${whereClause}
       ORDER BY e.created_at DESC
-      LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
+      LIMIT ? OFFSET ?
     `, [...params, limit, offset]);
 
     // Get total count
@@ -45,11 +39,11 @@ router.get('/', async (req, res) => {
       ${whereClause}
     `, params);
 
-    const total = parseInt(countResult.rows[0].total);
+  const total = parseInt(countResult[0][0].total);
 
     res.json({
       success: true,
-      data: result.rows,
+      data: result[0],
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -94,29 +88,26 @@ router.post('/', isManager, [
 
     // Check if employee already exists
     const existingEmployee = await query(
-      'SELECT id FROM employees WHERE employee_id = $1 OR user_id = $2',
+      'SELECT id FROM employees WHERE employee_id = ? OR user_id = ?',
       [employee_id, user_id]
     );
-
-    if (existingEmployee.rows.length > 0) {
+    if (existingEmployee[0].length > 0) {
       return res.status(409).json({
         success: false,
         message: 'Employee already exists'
       });
     }
-
     const result = await query(
       `INSERT INTO employees (user_id, employee_id, department_id, position, hire_date,
        salary, emergency_contact, emergency_phone)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [user_id, employee_id, department_id, position, hire_date,
        salary, emergency_contact, emergency_phone]
     );
-
     res.status(201).json({
       success: true,
       message: 'Employee created successfully',
-      data: result.rows[0]
+      data: req.body
     });
   } catch (error) {
     console.error('Employee creation error:', error);
@@ -151,28 +142,26 @@ router.put('/:id', isManager, [
 
     const result = await query(
       `UPDATE employees SET
-       department_id = COALESCE($1, department_id),
-       position = COALESCE($2, position),
-       salary = COALESCE($3, salary),
-       status = COALESCE($4, status),
-       emergency_contact = COALESCE($5, emergency_contact),
-       emergency_phone = COALESCE($6, emergency_phone),
+       department_id = COALESCE(?, department_id),
+       position = COALESCE(?, position),
+       salary = COALESCE(?, salary),
+       status = COALESCE(?, status),
+       emergency_contact = COALESCE(?, emergency_contact),
+       emergency_phone = COALESCE(?, emergency_phone),
        updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7 RETURNING *`,
+       WHERE id = ?`,
       [department_id, position, salary, status, emergency_contact, emergency_phone, id]
     );
-
-    if (result.rows.length === 0) {
+    if (result[0].affectedRows === 0) {
       return res.status(404).json({
         success: false,
         message: 'Employee not found'
       });
     }
-
     res.json({
       success: true,
       message: 'Employee updated successfully',
-      data: result.rows[0]
+      data: req.body
     });
   } catch (error) {
     console.error('Employee update error:', error);
@@ -194,19 +183,17 @@ router.get('/:id', async (req, res) => {
       FROM employees e
       LEFT JOIN users u ON e.user_id = u.id
       LEFT JOIN departments d ON e.department_id = d.id
-      WHERE e.id = $1
+      WHERE e.id = ?
     `, [id]);
-
-    if (result.rows.length === 0) {
+    if (result[0].length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Employee not found'
       });
     }
-
     res.json({
       success: true,
-      data: result.rows[0]
+      data: result[0][0]
     });
   } catch (error) {
     console.error('Employee details error:', error);
@@ -223,17 +210,15 @@ router.delete('/:id', isManager, async (req, res) => {
     const { id } = req.params;
 
     const result = await query(
-      'DELETE FROM employees WHERE id = $1',
+      'DELETE FROM employees WHERE id = ?',
       [id]
     );
-
-    if (result.rows.length === 0) {
+    if (result[0].affectedRows === 0) {
       return res.status(404).json({
         success: false,
         message: 'Employee not found'
       });
     }
-
     res.json({
       success: true,
       message: 'Employee deleted successfully'
