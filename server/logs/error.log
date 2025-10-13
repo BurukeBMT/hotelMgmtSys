@@ -645,3 +645,157 @@
   message: 'Database query error:',
   timestamp: '2025-10-12 21:58:47'
 }
+{
+  service: 'hotel-management-api',
+  error: '',
+  code: 'ECONNREFUSED',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 16:06:42'
+}
+{
+  service: 'hotel-management-api',
+  error: 'connect ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 16:07:25'
+}
+{
+  service: 'hotel-management-api',
+  error: 'connect ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 16:07:51'
+}
+{
+  service: 'hotel-management-api',
+  error: 'connect ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 16:08:47'
+}
+{
+  service: 'hotel-management-api',
+  error: '',
+  code: 'ECONNREFUSED',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 16:13:14'
+}
+{
+  service: 'hotel-management-api',
+  error: 'connect ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 16:13:59'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:27:16'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:27:19'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:31:22'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:31:46'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:35:31'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:37:52'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:39:39'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-13 23:46:18'
+}

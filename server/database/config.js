@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 const { logger } = require('../middleware/logger');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: __dirname + '/../.env' });
 
 // Database configuration
 const dbConfig = {
