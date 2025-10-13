@@ -25,6 +25,7 @@ const paymentGatewayRoutes = require('./routes/paymentGateway');
 const { router: notificationRoutes } = require('./routes/notifications');
 const attendanceRoutes = require('./routes/attendance');
 const payrollRoutes = require('./routes/payroll');
+const employeeRoutes = require('./routes/employees');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -124,6 +125,7 @@ app.use('/api/payment-gateway', authenticateToken, paymentGatewayRoutes);
 app.use('/api/notifications', authenticateToken, notificationRoutes);
 app.use('/api/attendance', authenticateToken, attendanceRoutes);
 app.use('/api/payroll', authenticateToken, payrollRoutes);
+app.use('/api/employees', authenticateToken, employeeRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
