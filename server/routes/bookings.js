@@ -1,29 +1,46 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
-const db = require('../database/config');
-const { v4: uuidv4 } = require('uuid');
-
 const router = express.Router();
+const db = require('../database/config');
 
-// Generate booking number
-const generateBookingNumber = () => {
-  const date = new Date();
-  const year = date.getFullYear().toString().slice(-2);
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  return `BK${year}${month}${random}`;
-};
+// Create a new booking
+router.post('/', async (req, res) => {
+  try {
+    const { room_id, guest_id, check_in, check_out } = req.body;
+    // Insert booking
+    const [result] = await db.query(
+      'INSERT INTO bookings (room_id, guest_id, check_in, check_out, status) VALUES (?, ?, ?, ?, ?)',
+      [room_id, guest_id, check_in, check_out, 'booked']
+    );
+    // Update room status
+    await db.query('UPDATE rooms SET status = ? WHERE id = ?', ['booked', room_id]);
+    res.status(201).json({ booking_id: result.insertId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Get all bookings
 router.get('/', async (req, res) => {
   try {
-    const { page = 1, limit = 10, status, check_in_date, check_out_date } = req.query;
-    const offset = (page - 1) * limit;
+    const [bookings] = await db.query(
+      `SELECT b.*, r.type AS room_type, g.name AS guest_name
+       FROM bookings b
+       JOIN rooms r ON b.room_id = r.id
+       JOIN guests g ON b.guest_id = g.id`
+    );
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    let whereClause = 'WHERE 1=1';
-    const params = [];
-
-    if (status) {
+// Check out booking (update status)
+router.put('/:id/checkout', async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    // Get room_id for this booking
+    const [[booking]] = await db.query('SELECT room_id FROM bookings WHERE id = ?', [bookingId]);
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
       whereClause += ' AND b.status = ?';
       params.push(status);
     }
@@ -74,107 +91,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching bookings'
-    });
-  }
-});
-
-// Create new booking
-router.post('/', [
-  body('guest_id').isInt().withMessage('Guest ID is required'),
-  body('room_id').isInt().withMessage('Room ID is required'),
-  body('check_in_date').isDate().withMessage('Valid check-in date is required'),
-  body('check_out_date').isDate().withMessage('Valid check-out date is required'),
-  body('adults').isInt({ min: 1 }).withMessage('At least 1 adult is required'),
-  body('children').optional().isInt({ min: 0 }).withMessage('Children must be a non-negative number'),
-  body('special_requests').optional()
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: errors.array()
-      });
-    }
-
-    const {
-      guest_id, room_id, check_in_date, check_out_date,
-      adults, children = 0, special_requests
-    } = req.body;
-
-    // Check if room is available for the dates
-    const [roomAvailability] = await db.query(`
-      SELECT COUNT(*) as count
-      FROM bookings
-      WHERE room_id = ?
-      AND status IN ('confirmed', 'checked_in')
-      AND (
-        (check_in_date <= ? AND check_out_date > ?) OR
-        (check_in_date < ? AND check_out_date >= ?) OR
-        (check_in_date >= ? AND check_out_date <= ?)
-      )
-    `, [room_id, check_in_date, check_in_date, check_out_date, check_out_date, check_in_date, check_out_date]);
-
-    if (parseInt(roomAvailability[0].count) > 0) {
-      return res.status(409).json({
-        success: false,
-        message: 'Room is not available for the selected dates'
-      });
-    }
-
-    // Get room details for pricing
-    const [roomDetails] = await db.query(`
-      SELECT rt.base_price, rt.capacity
-      FROM rooms r
-      LEFT JOIN room_types rt ON r.room_type_id = rt.id
-      WHERE r.id = ?
-    `, [room_id]);
-
-    if (roomDetails.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Room not found'
-      });
-    }
-
-    const basePrice = roomDetails[0].base_price;
-    const capacity = roomDetails[0].capacity;
-    const totalGuests = adults + children;
-
-    if (totalGuests > capacity) {
-      return res.status(400).json({
-        success: false,
-        message: `Room capacity is ${capacity} guests, but ${totalGuests} guests were specified`
-      });
-    }
-
-    // Calculate total amount (nights * base price)
-    const checkIn = new Date(check_in_date);
-    const checkOut = new Date(check_out_date);
-    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-    const totalAmount = nights * basePrice;
-
-    const bookingNumber = generateBookingNumber();
-
-    const [result] = await db.query(
-      `INSERT INTO bookings (booking_number, guest_id, room_id, check_in_date, check_out_date,
-       adults, children, total_amount, special_requests, created_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [bookingNumber, guest_id, room_id, check_in_date, check_out_date,
-        adults, children, totalAmount, special_requests, req.user.id]
-    );
-
-    res.status(201).json({
-      success: true,
-      message: 'Booking created successfully',
-      data: { id: result.insertId, booking_number: bookingNumber }
-    });
-  } catch (error) {
-    console.error('Booking creation error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error creating booking'
     });
   }
 });
@@ -414,6 +330,23 @@ router.get('/dashboard/stats', async (req, res) => {
       success: false,
       message: 'Error fetching booking dashboard data'
     });
+  }
+});
+
+// Check out booking (update status)
+router.put('/:id/checkout', async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    // Get room_id for this booking
+    const [[booking]] = await db.query('SELECT room_id FROM bookings WHERE id = ?', [bookingId]);
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    // Update booking status
+    await db.query('UPDATE bookings SET status = ? WHERE id = ?', ['checked_out', bookingId]);
+    // Update room status
+    await db.query('UPDATE rooms SET status = ? WHERE id = ?', ['available', booking.room_id]);
+    res.json({ message: 'Checked out successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

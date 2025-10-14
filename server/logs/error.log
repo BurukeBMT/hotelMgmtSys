@@ -799,3 +799,53 @@
   message: '❌ Error connecting to MySQL database:',
   timestamp: '2025-10-13 23:46:18'
 }
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin@hotel.com', 'admin@hotel.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-14 00:17:03'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin@hotel.com', 'abenezeryohannes2000@gmail.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-14 00:17:21'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin@hotel.com', 'abenezeryohannes2000@gmail.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-14 00:17:22'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin@hotel.com', 'abenezeryohannes2000@gmail.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-14 00:18:00'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin', 'admin@hotel.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-14 00:26:14'
+}
