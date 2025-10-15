@@ -5737,3 +5737,620 @@
   message: '✅ Connected to MySQL database successfully',
   timestamp: '2025-10-14 01:02:51'
 }
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:24'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:24'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:24'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:24'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:24'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 09:54:24'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:31'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:31'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:31'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:31'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:54:31'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 09:54:31'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:57:49'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:57:49'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:57:49'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:57:49'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 09:57:49'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 09:57:49'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 09:57:57',
+  level: 'info',
+  message: 'GET /favicon.ico'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 09:58:06',
+  level: 'info',
+  message: 'POST /api/auth/register'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin@hotel.com', 'burukmaedot16@gmail.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 09:58:06'
+}
+{
+  message: 'Closing database connections...',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:01:28'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:11:21'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:12:38'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:12:38'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:12:38'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:12:38'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:12:38'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:12:38'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:13:52',
+  level: 'info',
+  message: 'POST /api/auth/register'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, address)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'admin@hotel.com',
+    'tabenezer2000@gmail.com',
+    '$2a$10$Jgkg9ZJn.a8.ZO/9OYWjJ.2FPoBPg7Q4BG7DO12kyPjJDIn/rh/OS',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505',
+    'Ethiopia'
+  ],
+  error: "Unknown column 'address' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:13:52'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:16:00',
+  level: 'info',
+  message: 'POST /api/auth/register'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, address)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'admin1',
+    'tabenezer2000@gmail.com',
+    '$2a$10$iThr0caTRleGzxvYRmD08ekF5bK0gG3V510OkESCUX4imqyjmB2Ju',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505',
+    'Ethiopia'
+  ],
+  error: "Unknown column 'address' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:16:00'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:16:37'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:16:37'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:16:37'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:16:37'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:16:37'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:16:37'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:17:59',
+  level: 'info',
+  message: 'POST /api/auth/register'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'Abenu',
+    'tabenezer2000@gmail.com',
+    '$2a$10$m674WWuGxZE9itUUGiS/d.iPpp2t2vRhyICnvCP1.LQm3gyEbrVny',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505'
+  ],
+  error: "Data truncated for column 'role' at row 1",
+  code: 'WARN_DATA_TRUNCATED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:17:59'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:20:23',
+  level: 'info',
+  message: 'POST /api/auth/register'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'Abenu',
+    'tabenezer2000@gmail.com',
+    '$2a$10$ZjCGOqSCxmO0FJME.apjl.RZ5zoX5hb7PoF3p.83US5uzIgTaj.rq',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505'
+  ],
+  error: "Data truncated for column 'role' at row 1",
+  code: 'WARN_DATA_TRUNCATED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:20:23'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:20:33',
+  level: 'info',
+  message: 'POST /api/auth/register'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'admin@hotel.com',
+    'tabenezer2000@gmail.com',
+    '$2a$10$GHeiRaKZQxrQL5IDr3gYK.m1UVjzvpSx.YQDL4yWNnaNmUeXG/gpO',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505'
+  ],
+  error: "Data truncated for column 'role' at row 1",
+  code: 'WARN_DATA_TRUNCATED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:20:33'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:20:46',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:20:48',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:21:20',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:25:16',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:28:33',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:43:48',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:45:26'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:50:40'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:50:40'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:50:40'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:50:40'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 10:50:40'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:50:40'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 10:52:14',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'curl/8.14.1',
+  timestamp: '2025-10-15 10:53:17',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:54:02'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'curl/8.14.1',
+  timestamp: '2025-10-15 10:54:39',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:54:58'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:56:16'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'curl/8.14.1',
+  timestamp: '2025-10-15 10:56:40',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 10:56:58'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:08:26'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:08:41'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:35:27'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'curl/8.14.1',
+  timestamp: '2025-10-15 11:35:52',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'abenu'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:37:48'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'curl/8.14.1',
+  timestamp: '2025-10-15 11:38:16',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-15 11:39:15',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}

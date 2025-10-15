@@ -3,18 +3,18 @@ echo Setting up MySQL Database for Hotel Management System
 echo ==================================================
 
 echo.
-echo Step 1: Starting XAMPP MySQL Service...
-"C:\xampp\mysql\bin\mysql.exe" --version
+echo Step 1: Checking MAMP MySQL Service...
+"C:\MAMP\bin\mysql\bin\mysql.exe" --version
 if %errorlevel% neq 0 (
-    echo Error: XAMPP MySQL not found. Please ensure XAMPP is installed and MySQL service is running.
-    echo You can start MySQL from XAMPP Control Panel.
+    echo Error: MAMP MySQL not found. Please ensure MAMP is installed and MySQL service is running.
+    echo You can start MySQL from MAMP Control Panel.
     pause
     exit /b 1
 )
 
 echo.
 echo Step 2: Creating database and running schema...
-"C:\xampp\mysql\bin\mysql.exe" -u root -p -e "source server/database/schema.sql"
+"C:\MAMP\bin\mysql\bin\mysql.exe" -u abenu -p < server/database/schema.sql
 
 echo.
 echo Step 3: Running database setup script...
@@ -39,7 +39,7 @@ echo Username: admin
 echo Password: admin123
 echo.
 echo To start the application:
-echo 1. Start XAMPP MySQL service
+echo 1. Start MAMP MySQL service
 echo 2. Run: npm run dev
 echo.
 pause

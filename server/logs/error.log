@@ -849,3 +849,154 @@
   message: 'Database query error:',
   timestamp: '2025-10-14 00:26:14'
 }
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id FROM users WHERE username = ? OR email = ?',
+  params: [ 'admin@hotel.com', 'burukmaedot16@gmail.com' ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 09:58:06'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, address)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'admin@hotel.com',
+    'tabenezer2000@gmail.com',
+    '$2a$10$Jgkg9ZJn.a8.ZO/9OYWjJ.2FPoBPg7Q4BG7DO12kyPjJDIn/rh/OS',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505',
+    'Ethiopia'
+  ],
+  error: "Unknown column 'address' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:13:52'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, address)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'admin1',
+    'tabenezer2000@gmail.com',
+    '$2a$10$iThr0caTRleGzxvYRmD08ekF5bK0gG3V510OkESCUX4imqyjmB2Ju',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505',
+    'Ethiopia'
+  ],
+  error: "Unknown column 'address' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:16:00'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'Abenu',
+    'tabenezer2000@gmail.com',
+    '$2a$10$m674WWuGxZE9itUUGiS/d.iPpp2t2vRhyICnvCP1.LQm3gyEbrVny',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505'
+  ],
+  error: "Data truncated for column 'role' at row 1",
+  code: 'WARN_DATA_TRUNCATED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:17:59'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'Abenu',
+    'tabenezer2000@gmail.com',
+    '$2a$10$ZjCGOqSCxmO0FJME.apjl.RZ5zoX5hb7PoF3p.83US5uzIgTaj.rq',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505'
+  ],
+  error: "Data truncated for column 'role' at row 1",
+  code: 'WARN_DATA_TRUNCATED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:20:23'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'admin@hotel.com',
+    'tabenezer2000@gmail.com',
+    '$2a$10$GHeiRaKZQxrQL5IDr3gYK.m1UVjzvpSx.YQDL4yWNnaNmUeXG/gpO',
+    'Abenezer',
+    'Yohannes',
+    'user',
+    '+251985082505'
+  ],
+  error: "Data truncated for column 'role' at row 1",
+  code: 'WARN_DATA_TRUNCATED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 10:20:33'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:08:26'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:08:41'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'root'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:35:27'
+}
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'abenu'@'localhost' (using password: NO)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-15 11:37:48'
+}

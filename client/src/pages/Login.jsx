@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Hotel } from 'lucide-react';
-import toast from 'react-hot-toast';
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -20,7 +20,7 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      await login(data.email, data.password);
+      await login(data.username, data.password);
       await refreshUser();
       const stored = localStorage.getItem('user');
       const role = stored ? JSON.parse(stored).role : null;
@@ -68,28 +68,24 @@ const Login = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
+              <label htmlFor="username" className="sr-only">
+                Username
               </label>
               <input
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
-                  },
+                {...register('username', {
+                  required: 'Username is required',
                 })}
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
+                  errors.username ? 'border-red-300' : 'border-gray-300'
                 } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                placeholder="Email address"
+                placeholder="Username"
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
               )}
             </div>
             <div className="relative">
@@ -149,8 +145,7 @@ const Login = () => {
               Demo Credentials:
             </p>
             <div className="text-xs text-gray-500 space-y-1">
-              <p><strong>Super Admin:</strong> superadmin@hotel.com | superadmin123</p>
-              <p><strong>Admin:</strong> admin@hotel.com | admin123</p>
+              <p><strong>Admin:</strong> admin | admin123</p>
               <p><strong>Client:</strong> Register new account</p>
             </div>
           </div>

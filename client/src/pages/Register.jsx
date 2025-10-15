@@ -25,7 +25,7 @@ const Register = () => {
           password: data.password,
           first_name: data.firstName,
           last_name: data.lastName,
-          role: 'user',
+          role: 'client',
           phone: data.phone || null,
           address: data.address || null,
         }),

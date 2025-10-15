@@ -14,7 +14,7 @@ router.post('/register', [
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('first_name').notEmpty().withMessage('First name is required'),
   body('last_name').notEmpty().withMessage('Last name is required'),
-  body('role').isIn(['super_admin', 'admin', 'manager', 'staff', 'user']).withMessage('Invalid role')
+  body('role').isIn(['super_admin', 'admin', 'manager', 'staff', 'client']).withMessage('Invalid role')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -47,9 +47,9 @@ router.post('/register', [
 
     // Create user
     const result = await query(
-      `INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, address)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [username, email, passwordHash, first_name, last_name, role, phone, address]
+      `INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [username, email, passwordHash, first_name, last_name, role, phone]
     );
 
     // Get the inserted user

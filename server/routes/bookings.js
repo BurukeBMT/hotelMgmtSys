@@ -41,97 +41,10 @@ router.put('/:id/checkout', async (req, res) => {
     // Get room_id for this booking
     const [[booking]] = await db.query('SELECT room_id FROM bookings WHERE id = ?', [bookingId]);
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
-      whereClause += ' AND b.status = ?';
-      params.push(status);
-    }
-    if (check_in_date) {
-      whereClause += ' AND b.check_in_date >= ?';
-      params.push(check_in_date);
-    }
-    if (check_out_date) {
-      whereClause += ' AND b.check_out_date <= ?';
-      params.push(check_out_date);
-    }
-
-    const [result] = await db.query(`
-      SELECT b.*, g.first_name, g.last_name, g.email, g.phone,
-             r.room_number, rt.name as room_type, rt.base_price,
-             u.first_name as created_by_name, u.last_name as created_by_last_name
-      FROM bookings b
-      LEFT JOIN guests g ON b.guest_id = g.id
-      LEFT JOIN rooms r ON b.room_id = r.id
-      LEFT JOIN room_types rt ON r.room_type_id = rt.id
-      LEFT JOIN users u ON b.created_by = u.id
-      ${whereClause}
-      ORDER BY b.created_at DESC
-      LIMIT ? OFFSET ?
-    `, [...params, parseInt(limit), parseInt(offset)]);
-
-    // Get total count
-    const [countResult] = await db.query(`
-      SELECT COUNT(*) as total
-      FROM bookings b
-      ${whereClause}
-    `, params);
-
-    const total = parseInt(countResult[0].total);
-
-    res.json({
-      success: true,
-      data: result,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
-  } catch (error) {
-    console.error('Bookings error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching bookings'
-    });
-  }
-});
-
-// Update booking
-router.put('/:id', [
-  body('check_in_date').optional().isDate().withMessage('Valid check-in date is required'),
-  body('check_out_date').optional().isDate().withMessage('Valid check-out date is required'),
-  body('adults').optional().isInt({ min: 1 }).withMessage('At least 1 adult is required'),
-  body('children').optional().isInt({ min: 0 }).withMessage('Children must be a non-negative number'),
-  body('status').optional().isIn(['confirmed', 'cancelled', 'checked_in', 'checked_out']).withMessage('Invalid status'),
-  body('special_requests').optional()
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: errors.array()
-      });
-    }
-
-    const { id } = req.params;
-    const { check_in_date, check_out_date, adults, children, status, special_requests } = req.body;
-
-    // Get current booking details
-    const [currentBooking] = await db.query(
-      'SELECT * FROM bookings WHERE id = ?',
-      [id]
-    );
-
-    if (currentBooking.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Booking not found'
-      });
-    }
-
-    const booking = currentBooking[0];
-
+    // Update booking status to checked out
+    await db.query('UPDATE bookings SET status = ? WHERE id = ?', ['checked_out', bookingId]);
+    // Update room status to available
+    await db.query('UPDATE rooms SET status = ? WHERE id = ?', ['available', booking.room_id]);
     // If dates are being changed, check availability
     if (check_in_date || check_out_date) {
       const newCheckIn = check_in_date || booking.check_in_date;
