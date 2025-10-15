@@ -173,3 +173,5 @@ console.log('4. Login with: admin / admin123');
 console.log('\n📖 For detailed setup instructions, see MVP_SETUP_GUIDE.md');
 console.log('\n🏨 Happy Hotel Managing! ✨');
 
+
+

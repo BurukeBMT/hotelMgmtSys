@@ -1,6 +1,9 @@
-# TODO: Change JS to JSX for Project
+# TODO: Fix Console Errors
 
-## Steps to Complete
-- [x] Rename client/src/index.js to client/src/index.jsx for React consistency
-- [x] Verify the rename was successful by listing client/src directory
-- [x] Optionally, run `npm start` in client/ to confirm the app builds and runs without issues
+## Tasks
+- [x] Update client/src/index.jsx to add future flags to BrowserRouter
+- [x] Update server/index.js to add 'http://192.168.1.10:3000' to CORS origins
+- [x] Restart client and server
+- [x] Test registration/login from client
+- [x] Fix navigation issue in Login.jsx by replacing window.location.replace with navigate
+- [x] Fix API base URL to point to port 5001

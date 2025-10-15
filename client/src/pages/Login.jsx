@@ -25,11 +25,11 @@ const Login = () => {
       const stored = localStorage.getItem('user');
       const role = stored ? JSON.parse(stored).role : null;
       if (role === 'super_admin') {
-        window.location.replace('/super-admin');
+        navigate('/super-admin');
       } else if (['admin', 'manager', 'staff'].includes(role)) {
-        window.location.replace('/admin');
+        navigate('/admin');
       } else {
-        window.location.replace('/client');
+        navigate('/client');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -42,11 +42,11 @@ const Login = () => {
     if (isAuthenticated) {
       const role = user?.role || JSON.parse(localStorage.getItem('user') || '{}')?.role;
       if (role === 'super_admin') {
-        window.location.replace('/super-admin');
+        navigate('/super-admin');
       } else if (['admin', 'manager', 'staff'].includes(role)) {
-        window.location.replace('/admin');
+        navigate('/admin');
       } else {
-        window.location.replace('/client');
+        navigate('/client');
       }
     }
   }, [isAuthenticated, user, navigate]);
