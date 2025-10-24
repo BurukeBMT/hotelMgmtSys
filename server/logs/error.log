@@ -1181,3 +1181,33 @@
   message: 'Database query error:',
   timestamp: '2025-10-15 18:35:36'
 }
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = ? OR email = ?',
+  params: [ 'test', 'test' ],
+  error: "Table 'heaven_hotel.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 19:12:47'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$wBzrM/ZHl7vr.vhe7GKgBOhy/QlIMjFjJ3g4QVKHX3ED3/i4ZGuei',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'heaven_hotel.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 19:13:12'
+}

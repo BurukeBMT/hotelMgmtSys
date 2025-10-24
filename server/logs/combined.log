@@ -6995,3 +6995,57 @@
   message: '✅ Connected to MySQL database successfully',
   timestamp: '2025-10-15 18:37:38'
 }
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'curl/8.14.1',
+  timestamp: '2025-10-15 19:12:47',
+  level: 'info',
+  message: 'POST /api/auth/login'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = ? OR email = ?',
+  params: [ 'test', 'test' ],
+  error: "Table 'heaven_hotel.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 19:12:47'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'Heaven_Hotel',
+  user: 'abenu',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-15 19:13:12'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$wBzrM/ZHl7vr.vhe7GKgBOhy/QlIMjFjJ3g4QVKHX3ED3/i4ZGuei',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'heaven_hotel.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-15 19:13:12'
+}
+{
+  message: 'Closing database connections...',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-15 19:13:24'
+}
