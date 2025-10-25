@@ -1375,3 +1375,91 @@
   message: 'Database query error:',
   timestamp: '2025-10-25 12:22:52'
 }
+{
+  service: 'hotel-management-api',
+  query: 'SELECT b.*, r.type AS room_type, g.name AS guest_name\n' +
+    '       FROM bookings b\n' +
+    '       JOIN rooms r ON b.room_id = r.id\n' +
+    '       JOIN guests g ON b.guest_id = g.id',
+  params: [],
+  error: "Unknown column 'r.type' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:41:41'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT b.*, r.type AS room_type, g.name AS guest_name\n' +
+    '       FROM bookings b\n' +
+    '       JOIN rooms r ON b.room_id = r.id\n' +
+    '       JOIN guests g ON b.guest_id = g.id',
+  params: [],
+  error: "Unknown column 'r.type' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:41:42'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT r.*, rt.name as room_type, rt.base_price, rt.capacity, rt.amenities\n' +
+    '       FROM rooms r\n' +
+    '       LEFT JOIN room_types rt ON r.room_type_id = rt.id\n' +
+    '       WHERE 1=1\n' +
+    '       ORDER BY r.room_number\n' +
+    '       LIMIT ? OFFSET ?',
+  params: [ 10, 0 ],
+  error: "Unknown column 'rt.capacity' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:41:43'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT r.*, rt.name as room_type, rt.base_price, rt.capacity, rt.amenities\n' +
+    '       FROM rooms r\n' +
+    '       LEFT JOIN room_types rt ON r.room_type_id = rt.id\n' +
+    '       WHERE 1=1\n' +
+    '       ORDER BY r.room_number\n' +
+    '       LIMIT ? OFFSET ?',
+  params: [ 10, 0 ],
+  error: "Unknown column 'rt.capacity' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:41:44'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT pt.*, rt.name as room_type_name, rt.description\n' +
+    '      FROM price_tracking pt\n' +
+    '      JOIN room_types rt ON pt.room_type_id = rt.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY pt.effective_date DESC, pt.room_type_id\n' +
+    '    ',
+  params: [],
+  error: "Table 'hotel_management.price_tracking' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:41:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT pt.*, rt.name as room_type_name, rt.description\n' +
+    '      FROM price_tracking pt\n' +
+    '      JOIN room_types rt ON pt.room_type_id = rt.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY pt.effective_date DESC, pt.room_type_id\n' +
+    '    ',
+  params: [],
+  error: "Table 'hotel_management.price_tracking' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:41:46'
+}

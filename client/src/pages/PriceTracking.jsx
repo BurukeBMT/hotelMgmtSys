@@ -47,7 +47,11 @@ const PriceTracking = () => {
     try {
       setLoading(true);
       const response = await pricingService.getPriceTracking(filters);
-      setPriceData(response.data);
+      // pricingService already returns response.data in the service layer
+      // but some endpoints may return a wrapped payload ({ data: [...] })
+      // so be defensive and support both shapes to avoid `undefined.map` errors
+      const payload = response?.data ?? response ?? [];
+      setPriceData(Array.isArray(payload) ? payload : (payload.rows ?? payload.items ?? []));
     } catch (error) {
       toast.error('Failed to load price data');
       console.error('Load price data error:', error);
@@ -59,7 +63,8 @@ const PriceTracking = () => {
   const loadRoomTypes = async () => {
     try {
       const response = await pricingService.getRoomTypes();
-      setRoomTypes(response.data);
+      const payload = response?.data ?? response ?? [];
+      setRoomTypes(Array.isArray(payload) ? payload : (payload.rows ?? payload.items ?? []));
     } catch (error) {
       console.error('Load room types error:', error);
     }
