@@ -16,7 +16,8 @@ router.get('/', async (req, res) => {
 
     if (search) {
       paramCount++;
-      whereClause += ` AND (first_name ILIKE $${paramCount} OR last_name ILIKE $${paramCount} OR email ILIKE $${paramCount} OR phone ILIKE $${paramCount})`;
+      // MySQL doesn't support ILIKE. Use case-insensitive search via LOWER(... ) LIKE LOWER(...)
+      whereClause += ` AND (LOWER(first_name) LIKE LOWER($${paramCount}) OR LOWER(last_name) LIKE LOWER($${paramCount}) OR LOWER(email) LIKE LOWER($${paramCount}) OR LOWER(phone) LIKE LOWER($${paramCount}))`;
       params.push(`%${search}%`);
     }
 

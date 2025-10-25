@@ -363,7 +363,7 @@ router.get('/dashboard', async (req, res) => {
       FROM employees e
       LEFT JOIN users u ON e.user_id = u.id
       LEFT JOIN departments d ON e.department_id = d.id
-      WHERE e.hire_date >= CURRENT_DATE - INTERVAL '30 days'
+  WHERE e.hire_date >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
       ORDER BY e.hire_date DESC
       LIMIT 5
     `);

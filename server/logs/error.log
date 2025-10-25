@@ -1989,3 +1989,23 @@
   message: 'Database query error:',
   timestamp: '2025-10-25 13:14:48'
 }
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:00:26'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (, , ) RETURNING *',
+  params: [ 'DeptFromTest', 'Inserted by test', null ],
+  error: "You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ' , )' at line 1",
+  code: 'ER_PARSE_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:00:32'
+}

@@ -44,8 +44,69 @@ testConnection();
 // Enhanced query function with better error handling
 const query = async (text, params = []) => {
   try {
-    const [rows] = await pool.execute(text, params);
-    return { rows: rows, rowCount: rows.length };
+    // Translate Postgres-style placeholders ($1, $2, ...) to MySQL-style (?)
+    let sql = text;
+    const hasDollarPlaceholders = /\$[0-9]+/.test(sql);
+    if (hasDollarPlaceholders) {
+      sql = sql.replace(/\$[0-9]+/g, '?');
+    }
+
+    // Detect RETURNING clause (Postgres). We'll emulate common cases for INSERT/UPDATE.
+    const returningMatch = sql.match(/\sRETURNING\s+(.+)$/i);
+    let returningCols = null;
+    if (returningMatch) {
+      returningCols = returningMatch[1].trim();
+      // strip RETURNING from SQL
+      sql = sql.replace(/\sRETURNING\s+(.+)$/i, '');
+    }
+
+    const [result] = await pool.execute(sql, params);
+
+    // If there was a RETURNING clause, try to fetch the created/updated row(s)
+    if (returningCols) {
+      const cleaned = text.trim().toUpperCase();
+      // Handle INSERT ... RETURNING *
+      if (cleaned.startsWith('INSERT')) {
+        const insertId = result && result.insertId;
+        if (insertId) {
+          // try to extract table name
+          const tblMatch = text.match(/INSERT\s+INTO\s+`?(\w+)`?/i);
+          const table = tblMatch ? tblMatch[1] : null;
+          if (table) {
+            const selectSql = `SELECT ${returningCols} FROM ${table} WHERE id = ?`;
+            const [rows] = await pool.execute(selectSql, [insertId]);
+            return { rows, rowCount: rows.length };
+          }
+        }
+      }
+
+      // Handle UPDATE ... RETURNING * (heuristic: use last param as id)
+      if (cleaned.startsWith('UPDATE')) {
+        const tblMatch = text.match(/UPDATE\s+`?(\w+)`?/i);
+        const table = tblMatch ? tblMatch[1] : null;
+        if (table && params && params.length > 0) {
+          const idCandidate = params[params.length - 1];
+          const selectSql = `SELECT ${returningCols} FROM ${table} WHERE id = ?`;
+          try {
+            const [rows] = await pool.execute(selectSql, [idCandidate]);
+            return { rows, rowCount: rows.length };
+          } catch (e) {
+            // fall through to return generic result
+          }
+        }
+      }
+
+      // Fallback: return empty rows if we couldn't emulate
+      return { rows: [], rowCount: 0 };
+    }
+
+    // Normal path: if result is an array of rows (SELECT), return them
+    if (Array.isArray(result)) {
+      return { rows: result, rowCount: result.length };
+    }
+
+    // For non-select queries (INSERT/UPDATE/DELETE), return the OkPacket as rows for callers that expect insertId
+    return { rows: result, rowCount: 0 };
   } catch (error) {
     logger.error('Database query error:', {
       query: text,
