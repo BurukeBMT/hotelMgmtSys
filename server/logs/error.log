@@ -1211,3 +1211,146 @@
   message: 'Database query error:',
   timestamp: '2025-10-15 19:13:12'
 }
+{
+  service: 'hotel-management-api',
+  error: "Access denied for user 'abenu'@'localhost' (using password: YES)",
+  code: 'ER_ACCESS_DENIED_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'Heaven_Hotel',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-25 02:34:16'
+}
+{
+  service: 'hotel-management-api',
+  error: "Unknown database 'heaven_hotel'",
+  code: 'ER_BAD_DB_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'Heaven_Hotel',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-25 02:40:28'
+}
+{
+  service: 'hotel-management-api',
+  error: "Unknown database 'hotel_management'",
+  code: 'ER_BAD_DB_ERROR',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-25 02:41:26'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$gwkCT8Is3I4BSV3JGGcVsuThtukwLM45drJpwMCV6y9Nr3xHQoZ0e',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 02:45:15'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$CiMv5b339FJlIpNDRBKg6uG0j9w0qzM7bxP3meATU3GKsYguzufYK',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 02:45:28'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$dXnWI/iJ/Z/kaw0LaLE2pO6tLje2I/7BeLax.ftR6r1vE3YReo9KC',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 02:47:49'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$y4MwjtpOtJIliGz1IRQS5.HQrqdWWIiwwIZ.p/mChEsj5PA0cgg/q',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 02:53:13'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      INSERT IGNORE INTO users (username, email, password_hash, role, first_name, last_name) \n' +
+    '      VALUES (?, ?, ?, ?, ?, ?)\n' +
+    '    ',
+  params: [
+    'admin',
+    'admin@hotel.com',
+    '$2a$10$HvWee3RVg32bxUR/3hOR6ebGaVKgntlQrZV/vi.YlsPliG1cQIsMy',
+    'admin',
+    'Admin',
+    'User'
+  ],
+  error: "Table 'hotel_management.users' doesn't exist",
+  code: 'ER_NO_SUCH_TABLE',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 02:53:35'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id, username, email, first_name, last_name, role, is_active FROM users WHERE id = $1',
+  params: [ 1 ],
+  error: "Unknown column '$1' in 'where clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 03:03:59'
+}

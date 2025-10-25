@@ -14,7 +14,7 @@ const authenticateToken = async (req, res, next) => {
     
     // Get user details from database
     const result = await query(
-      'SELECT id, username, email, first_name, last_name, role, is_active FROM users WHERE id = $1',
+      'SELECT id, username, email, first_name, last_name, role, is_active FROM users WHERE id = ?',
       [decoded.userId]
     );
 

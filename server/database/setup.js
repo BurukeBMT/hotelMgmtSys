@@ -11,8 +11,8 @@ const createDatabase = async () => {
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT) || 3306,
-      user: process.env.DB_USER || 'abenu',
-      password: process.env.DB_PASSWORD || '1234567890'
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || ''
     });
 
     // Create database if it doesn't exist
@@ -26,8 +26,8 @@ const createDatabase = async () => {
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT) || 3306,
       database: process.env.DB_NAME || 'hotel_management',
-      user: process.env.DB_USER || 'abenu',
-      password: process.env.DB_PASSWORD || '1234567890'
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || ''
     });
 
     // Read and execute schema file
@@ -38,21 +38,24 @@ const createDatabase = async () => {
     const statements = schema
       .split(';')
       .map(stmt => stmt.trim())
-      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--') && !stmt.toUpperCase().startsWith('CREATE DATABASE') && !stmt.toUpperCase().startsWith('USE'));
 
     console.log('📋 Executing database schema...');
-    
+
     for (const statement of statements) {
       if (statement.trim()) {
         try {
           await dbConnection.execute(statement);
+          console.log(`✅ Executed: ${statement.substring(0, 50)}...`);
         } catch (error) {
           // Skip errors for duplicate entries or existing objects
-          if (!error.message.includes('already exists') && 
+          if (!error.message.includes('already exists') &&
               !error.message.includes('Duplicate entry') &&
-              !error.message.includes('Table') && 
+              !error.message.includes('Table') &&
               !error.message.includes('already exists')) {
             console.warn(`⚠️ Warning executing statement: ${error.message}`);
+          } else {
+            console.log(`ℹ️ Skipped (already exists): ${statement.substring(0, 50)}...`);
           }
         }
       }
