@@ -1,3 +1,19 @@
+/**
+ * API Service Module
+ *
+ * This module uses Axios, a popular JavaScript library for making HTTP requests,
+ * to handle all client-server communications in the hotel management system.
+ * Axios provides a simple API for performing HTTP requests (GET, POST, PUT, DELETE, etc.)
+ * and supports features like request/response interceptors, automatic JSON transformation,
+ * and error handling.
+ *
+ * Key features implemented here:
+ * - Base URL configuration for API endpoints
+ * - Automatic inclusion of authentication tokens in requests
+ * - Centralized error handling, including token expiration
+ * - Service modules for different API resources (auth, users, bookings, etc.)
+ */
+
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5500/api';
