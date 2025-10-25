@@ -4,7 +4,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const HR = () => {
-  const { user } = useAuth();
+  useAuth();
   const [activeTab, setActiveTab] = useState('employees');
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -12,6 +12,7 @@ const HR = () => {
   const [payroll, setPayroll] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
+  const [showDeptForm, setShowDeptForm] = useState(false);
   const [showAttendanceForm, setShowAttendanceForm] = useState(false);
   const [showPayrollForm, setShowPayrollForm] = useState(false);
 
@@ -25,6 +26,12 @@ const HR = () => {
     position: '',
     salary: '',
     hire_date: ''
+  });
+
+  const [deptForm, setDeptForm] = useState({
+    name: '',
+    description: '',
+    manager_id: ''
   });
 
   const [attendanceForm, setAttendanceForm] = useState({
@@ -65,6 +72,28 @@ const HR = () => {
     } catch (error) {
       toast.error('Failed to fetch departments');
     }
+  };
+
+  const handleDeptSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const payload = { name: deptForm.name, description: deptForm.description };
+      // manager_id is optional and may require elevated privileges; include only if set
+      if (deptForm.manager_id) payload.manager_id = deptForm.manager_id;
+      const res = await api.post('/hr/departments', payload);
+      toast.success('Department created');
+      setShowDeptForm(false);
+      setDeptForm({ name: '', description: '', manager_id: '' });
+      // Refresh departments and pre-select the newly created one if returned
+      await fetchDepartments();
+      const newDeptId = res.data?.data?.id ?? res.data?.data?.id;
+      if (newDeptId) setEmployeeForm(prev => ({ ...prev, department_id: newDeptId }));
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to create department';
+      toast.error(msg);
+    }
+    setLoading(false);
   };
 
   const fetchAttendance = async () => {
@@ -399,17 +428,27 @@ const HR = () => {
                   onChange={(e) => setEmployeeForm({...employeeForm, phone: e.target.value})}
                   className="border rounded-md px-3 py-2 w-full"
                 />
-                <select
-                  value={employeeForm.department_id}
-                  onChange={(e) => setEmployeeForm({...employeeForm, department_id: e.target.value})}
-                  className="border rounded-md px-3 py-2 w-full"
-                  required
-                >
-                  <option value="">Select Department</option>
-                  {departments.map((dept) => (
-                    <option key={dept.id} value={dept.id}>{dept.name}</option>
-                  ))}
-                </select>
+                <div className="flex space-x-2">
+                  <select
+                    value={employeeForm.department_id}
+                    onChange={(e) => setEmployeeForm({...employeeForm, department_id: e.target.value})}
+                    className="border rounded-md px-3 py-2 flex-1"
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeptForm(true)}
+                    className="px-3 py-2 bg-gray-100 rounded-md border hover:bg-gray-200"
+                    title="Add Department"
+                  >
+                    + Dept
+                  </button>
+                </div>
                 <input
                   type="text"
                   placeholder="Position"
@@ -474,6 +513,8 @@ const HR = () => {
                     <option key={emp.id} value={emp.id}>{emp.first_name} {emp.last_name}</option>
                   ))}
                 </select>
+                {/* Add Department Modal */}
+                  
                 <input
                   type="date"
                   value={attendanceForm.date}
@@ -595,6 +636,50 @@ const HR = () => {
               </form>
             </div>
       </div>
+        </div>
+      )}
+
+      {/* Add Department Modal (top-level) */}
+      {showDeptForm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Add Department</h3>
+              <form onSubmit={handleDeptSubmit} className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Department Name"
+                  value={deptForm.name}
+                  onChange={(e) => setDeptForm({...deptForm, name: e.target.value})}
+                  className="border rounded-md px-3 py-2 w-full"
+                  required
+                />
+                <textarea
+                  placeholder="Description (optional)"
+                  value={deptForm.description}
+                  onChange={(e) => setDeptForm({...deptForm, description: e.target.value})}
+                  className="border rounded-md px-3 py-2 w-full"
+                  rows={3}
+                />
+                <div className="flex space-x-3">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Adding...' : 'Add Department'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeptForm(false)}
+                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </div>

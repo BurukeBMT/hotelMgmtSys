@@ -1463,3 +1463,529 @@
   message: 'Database query error:',
   timestamp: '2025-10-25 12:41:46'
 }
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT * FROM guests\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:32'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT * FROM guests\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:33'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:12:04'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:12:04'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:13:13'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:13:13'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES ($1, $2, $3) RETURNING *',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:13:23'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES ($1, $2, $3) RETURNING *',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:14:48'
+}

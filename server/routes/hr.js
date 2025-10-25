@@ -46,15 +46,31 @@ router.post('/departments', isManager, [
 
     const { name, description, manager_id } = req.body;
 
-    const result = await query(
-      'INSERT INTO departments (name, description, manager_id) VALUES ($1, $2, $3) RETURNING *',
+    // MySQL doesn't support RETURNING; perform INSERT then SELECT the created row
+    const insertResult = await query(
+      'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
       [name, description, manager_id]
     );
+
+    // insertResult.rows for INSERT is the OkPacket object from mysql2
+    const insertedId = insertResult.rows && insertResult.rows.insertId;
+
+    if (!insertedId) {
+      // fallback: try to fetch by unique name if insertId not available
+      const fallback = await query('SELECT * FROM departments WHERE name = ? ORDER BY id DESC LIMIT 1', [name]);
+      return res.status(201).json({
+        success: true,
+        message: 'Department created successfully',
+        data: fallback.rows[0]
+      });
+    }
+
+    const created = await query('SELECT d.*, u.first_name, u.last_name as manager_name FROM departments d LEFT JOIN users u ON d.manager_id = u.id WHERE d.id = ?', [insertedId]);
 
     res.status(201).json({
       success: true,
       message: 'Department created successfully',
-      data: result.rows[0]
+      data: created.rows[0]
     });
   } catch (error) {
     console.error('Department creation error:', error);

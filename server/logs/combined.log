@@ -8027,3 +8027,1361 @@
   service: 'hotel-management-api',
   timestamp: '2025-10-25 12:41:55'
 }
+{
+  message: '🚀 Server running on port 5500',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:49:03'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:49:03'
+}
+{
+  message: '🔗 Health check: http://localhost:5500/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:49:03'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:49:03'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:49:03'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-25 12:49:03'
+}
+{
+  message: '🚀 Server running on port 5500',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:02'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:02'
+}
+{
+  message: '🔗 Health check: http://localhost:5500/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:02'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:02'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:02'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-25 12:50:02'
+}
+{
+  message: '🚀 Server running on port 5500',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:55'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:55'
+}
+{
+  message: '🔗 Health check: http://localhost:5500/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:55'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:55'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:50:55'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-25 12:50:55'
+}
+{
+  message: '🚀 Server running on port 5500',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:51:01'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:51:01'
+}
+{
+  message: '🔗 Health check: http://localhost:5500/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:51:01'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:51:01'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 12:51:01'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-25 12:51:01'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:22',
+  level: 'info',
+  message: 'GET /api/rooms'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:23',
+  level: 'info',
+  message: 'GET /api/rooms'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:25',
+  level: 'info',
+  message: 'GET /api/bookings'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:26',
+  level: 'info',
+  message: 'GET /api/bookings'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:27',
+  level: 'info',
+  message: 'GET /api/rooms'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:28',
+  level: 'info',
+  message: 'GET /api/rooms'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:30',
+  level: 'info',
+  message: 'GET /api/pricing/tracking'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:30',
+  level: 'info',
+  message: 'GET /api/rooms/types'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:30',
+  level: 'info',
+  message: 'GET /api/pricing/tracking'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:30',
+  level: 'info',
+  message: 'GET /api/rooms/types'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:32',
+  level: 'info',
+  message: 'GET /api/guests'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT * FROM guests\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:32'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:33',
+  level: 'info',
+  message: 'GET /api/guests'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT * FROM guests\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:33'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:34'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:34',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:54:37'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 12:54:37',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:00:46'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:00:46',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/auth/profile'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/auth/profile'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:07:21'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:07:21',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:08:08'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:08:08',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:22',
+  level: 'info',
+  message: 'GET /api/auth/profile'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:22',
+  level: 'info',
+  message: 'GET /api/auth/profile'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:09:23'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:09:23',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:12:04',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:12:04'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:12:04',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:12:04',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:12:04',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:12:04'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:13:13',
+  level: 'info',
+  message: 'GET /api/hr/employees'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:13:13',
+  level: 'info',
+  message: 'GET /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:13:13',
+  level: 'info',
+  message: 'GET /api/attendance'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:13:13',
+  level: 'info',
+  message: 'GET /api/payroll'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT e.*, u.first_name, u.last_name, u.email, u.phone,\n' +
+    '             d.name as department_name\n' +
+    '      FROM employees e\n' +
+    '      LEFT JOIN users u ON e.user_id = u.id\n' +
+    '      LEFT JOIN departments d ON e.department_id = d.id\n' +
+    '      WHERE 1=1\n' +
+    '      ORDER BY e.created_at DESC\n' +
+    '      LIMIT $1 OFFSET $2\n' +
+    '    ',
+  params: [ 10, 0 ],
+  error: 'Undeclared variable: $1',
+  code: 'ER_SP_UNDECLARED_VAR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:13:13'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:13:13'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:13:23',
+  level: 'info',
+  message: 'POST /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES ($1, $2, $3) RETURNING *',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:13:23'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-25 13:14:48',
+  level: 'info',
+  message: 'POST /api/hr/departments'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES ($1, $2, $3) RETURNING *',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 13:14:48'
+}
+{
+  message: '🚀 Server running on port 5500',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:20:36'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:20:36'
+}
+{
+  message: '🔗 Health check: http://localhost:5500/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:20:36'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:20:36'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:20:36'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-25 13:20:36'
+}
+{
+  message: '🚀 Server running on port 5500',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:32:43'
+}
+{
+  message: '📊 Environment: development',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:32:43'
+}
+{
+  message: '🔗 Health check: http://localhost:5500/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:32:43'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:32:43'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-25 13:32:43'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-25 13:32:43'
+}
