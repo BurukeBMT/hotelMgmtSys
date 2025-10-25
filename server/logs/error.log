@@ -1354,3 +1354,24 @@
   message: 'Database query error:',
   timestamp: '2025-10-25 03:03:59'
 }
+{
+  service: 'hotel-management-api',
+  error: '',
+  code: 'ECONNREFUSED',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-25 12:20:11'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id, username, email, first_name, last_name, role, phone, address, created_at FROM users WHERE id = ?',
+  params: [ 1 ],
+  error: "Unknown column 'address' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 12:22:52'
+}
