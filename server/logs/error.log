@@ -2009,3 +2009,132 @@
   message: 'Database query error:',
   timestamp: '2025-10-25 15:00:32'
 }
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:36:21'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
+  params: [ 'waiter', '', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:36:24'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:36:28'
+}
+{
+  service: 'hotel-management-api',
+  query: '\n' +
+    '      SELECT d.*, u.first_name, u.last_name as manager_name\n' +
+    '      FROM departments d\n' +
+    '      LEFT JOIN users u ON d.manager_id = u.id\n' +
+    '      ORDER BY d.name\n' +
+    '    ',
+  params: [],
+  error: "Unknown column 'd.manager_id' in 'on clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:36:28'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
+  params: [ 'chef', 'kitchen', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:37:04'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
+  params: [ 'chef', 'kitchen', undefined ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:37:06'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)\n' +
+    '       VALUES (?, ?, ?, ?, ?, ?, ?)',
+  params: [
+    'devadmin',
+    'devadmin@hotel.com',
+    '$2a$10$TCMzMvcmwaLp8P.HHtF9z.oXAkdqRc6dyAc1VjsIJormSm6Nc/u/.',
+    'Dev',
+    'Admin',
+    'admin',
+    undefined
+  ],
+  error: 'Bind parameters must not contain undefined. To pass SQL NULL specify JS null',
+  code: undefined,
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-25 15:42:30'
+}
+{
+  service: 'hotel-management-api',
+  query: 'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
+  params: [ 'DeptFromTestAuto', 'Inserted by test', null ],
+  error: "Unknown column 'manager_id' in 'field list'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-27 21:37:35'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT COUNT(*) as count FROM employees WHERE status = $1',
+  params: [ 'active' ],
+  error: "Unknown column 'status' in 'where clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-27 22:49:54'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT COUNT(*) as count FROM employees WHERE status = $1',
+  params: [ 'active' ],
+  error: "Unknown column 'status' in 'where clause'",
+  code: 'ER_BAD_FIELD_ERROR',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-27 22:49:54'
+}
+{
+  service: 'hotel-management-api',
+  query: 'SELECT id, username, email, first_name, last_name, role, is_active FROM users WHERE id = ?',
+  params: [ 1 ],
+  error: '',
+  code: 'ECONNREFUSED',
+  level: 'error',
+  message: 'Database query error:',
+  timestamp: '2025-10-28 00:05:08'
+}

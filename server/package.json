@@ -2,14 +2,14 @@
   "name": "hotel-management-server",
   "version": "1.0.0",
   "description": "Backend server for hotel management system",
-  "main": "index.js",
+  "main": "index.jsx",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "setup-db": "node database/setup.js",
+    "start": "node index.jsx",
+    "dev": "nodemon index.jsx",
+    "setup-db": "node database/setup.jsx",
     "test": "jest",
-    "lint": "eslint . --ext .js",
-    "lint:fix": "eslint . --ext .js --fix"
+    "lint": "eslint . --ext .jsx",
+    "lint:fix": "eslint . --ext .jsx --fix"
   },
   "dependencies": {
     "axios": "^1.6.2",
@@ -33,6 +33,7 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "@babel/preset-react": "^7.28.5",
     "eslint": "^8.55.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.0",
