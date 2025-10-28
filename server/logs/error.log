@@ -2138,3 +2138,66 @@
   message: 'Database query error:',
   timestamp: '2025-10-28 00:05:08'
 }
+{
+  service: 'hotel-management-api',
+  error: '',
+  code: 'ECONNREFUSED',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  level: 'error',
+  message: '❌ Error connecting to MySQL database:',
+  timestamp: '2025-10-28 19:28:02'
+}
+{
+  service: 'hotel-management-api',
+  error: "Cannot find module '../package.json'\n" +
+    'Require stack:\n' +
+    '- C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\index.js',
+  stack: "Error: Cannot find module '../package.json'\n" +
+    'Require stack:\n' +
+    '- C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\index.js\n' +
+    '    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)\n' +
+    '    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)\n' +
+    '    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)\n' +
+    '    at Function._load (node:internal/modules/cjs/loader:1211:37)\n' +
+    '    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n' +
+    '    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\n' +
+    '    at Module.require (node:internal/modules/cjs/loader:1487:12)\n' +
+    '    at require (node:internal/modules/helpers:135:16)\n' +
+    '    at C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\index.js:107:14\n' +
+    '    at newFn (C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\node_modules\\express-async-errors\\index.js:16:20)',
+  url: '/api/health',
+  method: 'GET',
+  ip: '::1',
+  userAgent: 'curl/8.16.0',
+  timestamp: '2025-10-28 19:30:25',
+  level: 'error',
+  message: 'Error occurred:'
+}
+{
+  service: 'hotel-management-api',
+  error: "Cannot find module '../package.json'\n" +
+    'Require stack:\n' +
+    '- C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\index.js',
+  stack: "Error: Cannot find module '../package.json'\n" +
+    'Require stack:\n' +
+    '- C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\index.js\n' +
+    '    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)\n' +
+    '    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)\n' +
+    '    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)\n' +
+    '    at Function._load (node:internal/modules/cjs/loader:1211:37)\n' +
+    '    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\n' +
+    '    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\n' +
+    '    at Module.require (node:internal/modules/cjs/loader:1487:12)\n' +
+    '    at require (node:internal/modules/helpers:135:16)\n' +
+    '    at C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\index.js:107:14\n' +
+    '    at newFn (C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\node_modules\\express-async-errors\\index.js:16:20)',
+  url: '/api/health',
+  method: 'GET',
+  ip: '::1',
+  userAgent: 'curl/8.16.0',
+  timestamp: '2025-10-28 19:31:25',
+  level: 'error',
+  message: 'Error occurred:'
+}

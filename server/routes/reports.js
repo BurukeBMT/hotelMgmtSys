@@ -85,7 +85,7 @@ router.get('/occupancy', async (req, res) => {
           (COUNT(b.id) * 100.0 / (SELECT COUNT(*) FROM rooms WHERE status != 'maintenance'))
         , 2) as occupancy_rate
       FROM generate_series(
-        COALESCE($1, CURRENT_DATE - INTERVAL '30 days'),
+        COALESCE($1, CURRENT_DATE - INTERVAL 30 DAY),
         COALESCE($2, CURRENT_DATE),
         '1 day'::interval
       ) as generate_series
@@ -368,7 +368,7 @@ router.get('/dashboard-summary', async (req, res) => {
       FROM rooms r
       LEFT JOIN room_types rt ON r.room_type_id = rt.id
       LEFT JOIN bookings b ON r.id = b.room_id
-      WHERE b.created_at >= CURRENT_DATE - INTERVAL '30 days'
+      WHERE b.created_at >= CURRENT_DATE - INTERVAL 30 DAY
       GROUP BY r.id, r.room_number, rt.name
       ORDER BY bookings DESC
       LIMIT 5
@@ -379,13 +379,13 @@ router.get('/dashboard-summary', async (req, res) => {
       SELECT 'booking' as type, b.booking_number, g.first_name, g.last_name, b.created_at
       FROM bookings b
       LEFT JOIN guests g ON b.guest_id = g.id
-      WHERE b.created_at >= CURRENT_DATE - INTERVAL '7 days'
+      WHERE b.created_at >= CURRENT_DATE - INTERVAL 7 DAY
       UNION ALL
       SELECT 'payment' as type, p.transaction_id, g.first_name, g.last_name, p.payment_date
       FROM payments p
       LEFT JOIN bookings b ON p.booking_id = b.id
       LEFT JOIN guests g ON b.guest_id = g.id
-      WHERE p.payment_date >= CURRENT_DATE - INTERVAL '7 days'
+      WHERE p.payment_date >= CURRENT_DATE - INTERVAL 7 DAY
       ORDER BY created_at DESC
       LIMIT 10
     `);
@@ -409,4 +409,4 @@ router.get('/dashboard-summary', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

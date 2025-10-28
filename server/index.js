@@ -104,7 +104,7 @@ app.get('/api/health', (req, res) => {
     environment: process.env.NODE_ENV,
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    version: require('../package.json').version
+    version: require('./package.json').version
   });
 });
 
