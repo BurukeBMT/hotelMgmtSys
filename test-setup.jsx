@@ -11,10 +11,10 @@ console.log('📁 Checking required files...');
 const requiredFiles = [
   'server/package.json',
   'client/package.json',
-  'server/index.jsx',
-  'server/database/config.jsx',
+  'server/index.js',
+  'server/database/config.js',
   'server/database/schema.sql',
-  'server/database/setup.jsx',
+  'server/database/setup.js',
   'config.env',
   'client/src/App.jsx',
   'client/src/pages/HR.jsx',
