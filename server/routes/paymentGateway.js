@@ -153,23 +153,30 @@ router.post('/process', authenticateToken, [
 // Process card payment (Stripe integration)
 async function processCardPayment(amount, currency, paymentData, paymentMethod) {
   try {
-    // This is a mock implementation - integrate with actual Stripe API
+    // If Stripe is configured, create a payment record and return an instruction for client to create payment intent
+    const stripeSecret = process.env.STRIPE_SECRET_KEY;
+    if (stripeSecret) {
+      // Create a placeholder payment record (pending) and return success with instruction to use Stripe on client
+      // Insert payment record with pending status so webhook can update on completion
+      const transactionId = `STRIPE_${Date.now()}`;
+      await query(`
+        INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_id, notes)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [paymentData.booking_id || null, amount, 'Credit Card', 'pending', transactionId, JSON.stringify(paymentData)]);
+
+      return { success: true, status: 'pending', payment_instruction: 'use_stripe', transaction_id: transactionId };
+    }
+
+    // Fallback: basic validation of raw card data (not PCI compliant) - keep mock behavior
     const { card_number, expiry_month, expiry_year, cvv, cardholder_name } = paymentData;
-    
-    // Validate card data
     if (!card_number || !expiry_month || !expiry_year || !cvv || !cardholder_name) {
       return { success: false, message: 'Invalid card data' };
     }
 
-    // Mock payment processing
-    const isSuccess = Math.random() > 0.1; // 90% success rate for demo
-    
-    return {
-      success: isSuccess,
-      status: isSuccess ? 'completed' : 'failed',
-      message: isSuccess ? 'Payment successful' : 'Payment failed - invalid card'
-    };
+    const isSuccess = Math.random() > 0.1; // demo fallback
+    return { success: isSuccess, status: isSuccess ? 'completed' : 'failed', message: isSuccess ? 'Payment successful' : 'Payment failed' };
   } catch (error) {
+    console.error('processCardPayment error', error);
     return { success: false, message: 'Card payment processing error' };
   }
 }

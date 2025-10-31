@@ -83,6 +83,14 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Stripe webhook endpoint requires raw body. We'll mount the webhook handler specifically
+const { handleWebhook } = require('./routes/stripe');
+app.post('/api/stripe/webhook', require('express').raw({ type: 'application/json' }), handleWebhook);
+
+// Mount stripe router for other stripe-related endpoints
+const { router: stripeRouter } = require('./routes/stripe');
+app.use('/api/stripe', stripeRouter);
+
 // Request logging
 app.use((req, res, next) => {
   logger.info(`${req.method} ${req.path}`, {
