@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Key, 
-  Shield, 
-  MoreVertical,
+import {
+  Plus,
+  Search,
+  Trash2,
+  Key,
+  Shield,
   Filter,
   Download
 } from 'lucide-react';

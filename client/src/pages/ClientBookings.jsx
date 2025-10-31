@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Users, DollarSign, Search, Filter, Eye, Download, X } from 'lucide-react';
+import { Calendar, Users, DollarSign, Search, Filter, Eye, Download, X } from 'lucide-react';
 import { bookingsService } from '../services/api';
 import toast from 'react-hot-toast';
 

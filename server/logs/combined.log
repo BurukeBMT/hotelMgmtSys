@@ -11058,3 +11058,91 @@
   level: 'error',
   message: 'Error occurred:'
 }
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:45:58'
+}
+{
+  message: '📊 Environment: undefined',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:45:58'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:45:58'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:45:58'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:45:58'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-31 14:45:58'
+}
+{
+  message: '🚀 Server running on port 5000',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:49:16'
+}
+{
+  message: '📊 Environment: undefined',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:49:16'
+}
+{
+  message: '🔗 Health check: http://localhost:5000/api/health',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:49:16'
+}
+{
+  message: '📁 Uploads directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\uploads',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:49:16'
+}
+{
+  message: '📝 Logs directory: C:\\Users\\geber\\OneDrive\\Documents\\aHotelManagementSystem\\server\\logs',
+  level: 'info',
+  service: 'hotel-management-api',
+  timestamp: '2025-10-31 14:49:16'
+}
+{
+  service: 'hotel-management-api',
+  host: 'localhost',
+  port: 3306,
+  database: 'hotel_management',
+  user: 'root',
+  level: 'info',
+  message: '✅ Connected to MySQL database successfully',
+  timestamp: '2025-10-31 14:49:16'
+}
+{
+  service: 'hotel-management-api',
+  ip: '::1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0',
+  timestamp: '2025-10-31 14:54:09',
+  level: 'info',
+  message: 'POST /auth/login'
+}

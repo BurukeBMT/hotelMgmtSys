@@ -3,7 +3,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu,
-  X,
   Home,
   Calendar,
   Building2,
@@ -17,7 +16,6 @@ import {
   Search,
   User,
   Shield,
-  Key,
   TrendingUp,
   Building,
   DollarSign,

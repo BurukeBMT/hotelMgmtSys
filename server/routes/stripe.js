@@ -32,6 +32,17 @@ router.post('/create-payment-intent', authenticateToken, async (req, res) => {
       }
     });
 
+    // Persist a pending payment row linked to this PaymentIntent so the webhook can update status
+    try {
+      await query(`
+        INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_id, notes)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [booking_id || null, Number(amount), 'Stripe', 'pending', paymentIntent.id, JSON.stringify({ via: 'stripe', currency })]);
+    } catch (e) {
+      console.warn('Failed to persist payment row for PaymentIntent', paymentIntent.id, e.message);
+      // we do not fail the request because paymentIntent was created successfully on Stripe
+    }
+
     res.json({ success: true, clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
   } catch (error) {
     console.error('Create payment intent error:', error);
@@ -59,8 +70,13 @@ async function handleWebhook(req, res) {
         return res.status(400).send(`Webhook Error: ${err.message}`);
       }
     } else {
-      // If no webhook secret configured, try to parse body (only for dev)
-      event = req.body;
+      // If no webhook secret configured, try to parse body (only for dev). req.body may be Buffer from raw parser.
+      try {
+        event = typeof req.body === 'string' ? JSON.parse(req.body) : JSON.parse(req.body.toString());
+      } catch (e) {
+        console.error('Failed to parse webhook body without signature:', e.message);
+        return res.status(400).send('Invalid webhook payload');
+      }
     }
 
     // Handle the event types you care about

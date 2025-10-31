@@ -1,9 +1,7 @@
-# TODO: Fix Console Errors
+# TODO: Convert Thunder Client Collection to Postman Format
 
 ## Tasks
-- [x] Update client/src/index.jsx to add future flags to BrowserRouter
-- [x] Update server/index.js to add 'http://192.168.1.10:3000' to CORS origins
-- [x] Restart client and server
-- [x] Test registration/login from client
-- [x] Fix navigation issue in Login.jsx by replacing window.location.replace with navigate
-- [x] Fix API base URL to point to port 5001
+
+- [x] Convert the Thunder Client collection JSON to Postman v2.1 format, including all requests (GET, POST, etc.) and environment variables.
+- [x] Create a new file `.thunder/hotel-management-collection-postman.json` with the converted content.
+- [x] Ensure the file is importable by Postman.

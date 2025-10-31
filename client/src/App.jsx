@@ -22,20 +22,6 @@ import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Users from './pages/Users';
 
-const PrivateRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-  
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
-};
-
 const SuperAdminRoute = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
   if (isLoading) {
