@@ -6,7 +6,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
-require('dotenv').config({ path: '../config.env' });
+require('dotenv').config({ path: __dirname + '/.env' });
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -23,6 +23,9 @@ const pricingRoutes = require('./routes/pricing');
 const cabinRoutes = require('./routes/cabins');
 const paymentGatewayRoutes = require('./routes/paymentGateway');
 const { router: notificationRoutes } = require('./routes/notifications');
+const attendanceRoutes = require('./routes/attendance');
+const payrollRoutes = require('./routes/payroll');
+const employeeRoutes = require('./routes/employees');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -69,9 +72,9 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000'],
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://yourdomain.com']
+    : ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.10:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -79,6 +82,14 @@ app.use(cors({
 app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Stripe webhook endpoint requires raw body. We'll mount the webhook handler specifically
+const { handleWebhook } = require('./routes/stripe');
+app.post('/api/stripe/webhook', require('express').raw({ type: 'application/json' }), handleWebhook);
+
+// Mount stripe router for other stripe-related endpoints
+const { router: stripeRouter } = require('./routes/stripe');
+app.use('/api/stripe', stripeRouter);
 
 // Request logging
 app.use((req, res, next) => {
@@ -101,7 +112,7 @@ app.get('/api/health', (req, res) => {
     environment: process.env.NODE_ENV,
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    version: require('../package.json').version
+    version: require('./package.json').version
   });
 });
 
@@ -120,6 +131,9 @@ app.use('/api/pricing', authenticateToken, pricingRoutes);
 app.use('/api/cabins', authenticateToken, cabinRoutes);
 app.use('/api/payment-gateway', authenticateToken, paymentGatewayRoutes);
 app.use('/api/notifications', authenticateToken, notificationRoutes);
+app.use('/api/attendance', authenticateToken, attendanceRoutes);
+app.use('/api/payroll', authenticateToken, payrollRoutes);
+app.use('/api/employees', authenticateToken, employeeRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

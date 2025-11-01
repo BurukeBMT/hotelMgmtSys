@@ -46,15 +46,31 @@ router.post('/departments', isManager, [
 
     const { name, description, manager_id } = req.body;
 
-    const result = await query(
-      'INSERT INTO departments (name, description, manager_id) VALUES ($1, $2, $3) RETURNING *',
+    // MySQL doesn't support RETURNING; perform INSERT then SELECT the created row
+    const insertResult = await query(
+      'INSERT INTO departments (name, description, manager_id) VALUES (?, ?, ?)',
       [name, description, manager_id]
     );
+
+    // insertResult.rows for INSERT is the OkPacket object from mysql2
+    const insertedId = insertResult.rows && insertResult.rows.insertId;
+
+    if (!insertedId) {
+      // fallback: try to fetch by unique name if insertId not available
+      const fallback = await query('SELECT * FROM departments WHERE name = ? ORDER BY id DESC LIMIT 1', [name]);
+      return res.status(201).json({
+        success: true,
+        message: 'Department created successfully',
+        data: fallback.rows[0]
+      });
+    }
+
+    const created = await query('SELECT d.*, u.first_name, u.last_name as manager_name FROM departments d LEFT JOIN users u ON d.manager_id = u.id WHERE d.id = ?', [insertedId]);
 
     res.status(201).json({
       success: true,
       message: 'Department created successfully',
-      data: result.rows[0]
+      data: created.rows[0]
     });
   } catch (error) {
     console.error('Department creation error:', error);
@@ -84,27 +100,22 @@ router.put('/departments/:id', isManager, [
     const { id } = req.params;
     const { name, description, manager_id } = req.body;
 
-    const result = await query(
+    const updateResult = await query(
       `UPDATE departments SET 
-       name = COALESCE($1, name),
-       description = COALESCE($2, description),
-       manager_id = COALESCE($3, manager_id)
-       WHERE id = $4 RETURNING *`,
+       name = COALESCE(?, name),
+       description = COALESCE(?, description),
+       manager_id = COALESCE(?, manager_id)
+       WHERE id = ?`,
       [name, description, manager_id, id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Department not found' 
-      });
+    const updated = await query('SELECT d.*, u.first_name, u.last_name as manager_name FROM departments d LEFT JOIN users u ON d.manager_id = u.id WHERE d.id = ?', [id]);
+
+    if (!updated.rows || updated.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Department not found' });
     }
 
-    res.json({
-      success: true,
-      message: 'Department updated successfully',
-      data: result.rows[0]
-    });
+    res.json({ success: true, message: 'Department updated successfully', data: updated.rows[0] });
   } catch (error) {
     console.error('Department update error:', error);
     res.status(500).json({ 
@@ -125,14 +136,12 @@ router.get('/employees', async (req, res) => {
     let paramCount = 0;
 
     if (department_id) {
-      paramCount++;
-      whereClause += ` AND e.department_id = $${paramCount}`;
+      whereClause += ` AND e.department_id = ?`;
       params.push(department_id);
     }
 
     if (status) {
-      paramCount++;
-      whereClause += ` AND e.status = $${paramCount}`;
+      whereClause += ` AND e.status = ?`;
       params.push(status);
     }
 
@@ -144,8 +153,8 @@ router.get('/employees', async (req, res) => {
       LEFT JOIN departments d ON e.department_id = d.id
       ${whereClause}
       ORDER BY e.created_at DESC
-      LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
-    `, [...params, limit, offset]);
+      LIMIT ? OFFSET ?
+    `, [...params, parseInt(limit), parseInt(offset)]);
 
     // Get total count
     const countResult = await query(`
@@ -203,7 +212,7 @@ router.post('/employees', isManager, [
 
     // Check if employee already exists
     const existingEmployee = await query(
-      'SELECT id FROM employees WHERE employee_id = $1 OR user_id = $2',
+      'SELECT id FROM employees WHERE employee_id = ? OR user_id = ?',
       [employee_id, user_id]
     );
 
@@ -214,19 +223,21 @@ router.post('/employees', isManager, [
       });
     }
 
-    const result = await query(
+    const insertRes = await query(
       `INSERT INTO employees (user_id, employee_id, department_id, position, hire_date, 
        salary, emergency_contact, emergency_phone)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [user_id, employee_id, department_id, position, hire_date, 
-       salary, emergency_contact, emergency_phone]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [user_id, employee_id, department_id, position, hire_date, salary, emergency_contact, emergency_phone]
     );
 
-    res.status(201).json({
-      success: true,
-      message: 'Employee created successfully',
-      data: result.rows[0]
-    });
+    const insertedId = insertRes.rows && insertRes.rows.insertId;
+    if (!insertedId) {
+      // fallback: return minimal info
+      return res.status(201).json({ success: true, message: 'Employee created successfully' });
+    }
+
+    const created = await query('SELECT * FROM employees WHERE id = ?', [insertedId]);
+    res.status(201).json({ success: true, message: 'Employee created successfully', data: created.rows[0] });
   } catch (error) {
     console.error('Employee creation error:', error);
     res.status(500).json({ 
@@ -258,31 +269,25 @@ router.put('/employees/:id', isManager, [
     const { id } = req.params;
     const { department_id, position, salary, status, emergency_contact, emergency_phone } = req.body;
 
-    const result = await query(
+    await query(
       `UPDATE employees SET 
-       department_id = COALESCE($1, department_id),
-       position = COALESCE($2, position),
-       salary = COALESCE($3, salary),
-       status = COALESCE($4, status),
-       emergency_contact = COALESCE($5, emergency_contact),
-       emergency_phone = COALESCE($6, emergency_phone),
+       department_id = COALESCE(?, department_id),
+       position = COALESCE(?, position),
+       salary = COALESCE(?, salary),
+       status = COALESCE(?, status),
+       emergency_contact = COALESCE(?, emergency_contact),
+       emergency_phone = COALESCE(?, emergency_phone),
        updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7 RETURNING *`,
+       WHERE id = ?`,
       [department_id, position, salary, status, emergency_contact, emergency_phone, id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Employee not found' 
-      });
+    const updatedEmp = await query('SELECT * FROM employees WHERE id = ?', [id]);
+    if (!updatedEmp.rows || updatedEmp.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
     }
 
-    res.json({
-      success: true,
-      message: 'Employee updated successfully',
-      data: result.rows[0]
-    });
+    res.json({ success: true, message: 'Employee updated successfully', data: updatedEmp.rows[0] });
   } catch (error) {
     console.error('Employee update error:', error);
     res.status(500).json({ 
@@ -303,20 +308,14 @@ router.get('/employees/:id', async (req, res) => {
       FROM employees e
       LEFT JOIN users u ON e.user_id = u.id
       LEFT JOIN departments d ON e.department_id = d.id
-      WHERE e.id = $1
+      WHERE e.id = ?
     `, [id]);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Employee not found' 
-      });
+    if (!result.rows || result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
     }
 
-    res.json({
-      success: true,
-      data: result.rows[0]
-    });
+    res.json({ success: true, data: result.rows[0] });
   } catch (error) {
     console.error('Employee details error:', error);
     res.status(500).json({ 
@@ -330,7 +329,7 @@ router.get('/employees/:id', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     // Total employees
-    const totalEmployees = await query('SELECT COUNT(*) as count FROM employees WHERE status = $1', ['active']);
+  const totalEmployees = await query('SELECT COUNT(*) as count FROM employees WHERE status = ?', ['active']);
     
     // Employees by department
     const employeesByDept = await query(`
@@ -347,7 +346,7 @@ router.get('/dashboard', async (req, res) => {
       FROM employees e
       LEFT JOIN users u ON e.user_id = u.id
       LEFT JOIN departments d ON e.department_id = d.id
-      WHERE e.hire_date >= CURRENT_DATE - INTERVAL '30 days'
+  WHERE e.hire_date >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
       ORDER BY e.hire_date DESC
       LIMIT 5
     `);
