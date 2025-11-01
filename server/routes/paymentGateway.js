@@ -5,6 +5,9 @@ const { authenticateToken } = require('../middleware/auth');
 const { requireRole, requirePrivilege } = require('../middleware/rbac');
 
 const router = express.Router();
+const Stripe = require('stripe');
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeSecret ? Stripe(stripeSecret) : null;
 
 // Get all payment methods
 router.get('/methods', authenticateToken, async (req, res) => {
@@ -83,6 +86,28 @@ router.post('/process', authenticateToken, [
 
     switch (paymentMethod.type) {
       case 'card':
+        // If Stripe is configured, create a PaymentIntent server-side and return client secret to client
+        if (stripe) {
+          const amountInCents = Math.round(Number(amount) * 100);
+          const pi = await stripe.paymentIntents.create({
+            amount: amountInCents,
+            currency: (currency || 'usd').toLowerCase(),
+            metadata: { booking_id: booking_id || '', user_id: req.user && req.user.id ? String(req.user.id) : '' }
+          });
+
+          // persist pending payment row
+          try {
+            await query(`
+              INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_id, notes)
+              VALUES (?, ?, ?, ?, ?, ?)
+            `, [booking_id || null, Number(amount), paymentMethod.name || 'Credit Card', 'pending', pi.id, JSON.stringify({ via: 'stripe' })]);
+          } catch (e) {
+            console.warn('Failed to persist payment row for PaymentIntent', pi.id, e.message);
+          }
+
+          return res.json({ success: true, clientSecret: pi.client_secret, paymentIntentId: pi.id });
+        }
+
         paymentResult = await processCardPayment(amount, currency, payment_data, paymentMethod);
         break;
       case 'digital_wallet':

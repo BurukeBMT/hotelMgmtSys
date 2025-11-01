@@ -16,7 +16,9 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5500/api';
+// Default to a relative `/api` path so CRA dev proxy (set in package.json) can forward requests to the backend.
+// You can override by setting REACT_APP_API_URL in client/.env.local when needed.
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 
 // Create axios instance
 const api = axios.create({
@@ -44,11 +46,25 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Log network / server errors to make debugging easier
+    if (!error.response) {
+      // Network or CORS error
+      console.error('[api] Network error or no response received:', error.message);
+      return Promise.reject(error);
+    }
+
+    if (error.response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       // Do not hard-redirect here to avoid navigation race conditions; allow caller to handle.
     }
+
+    console.error('[api] Response error:', {
+      url: error.config?.url,
+      status: error.response.status,
+      data: error.response.data,
+    });
+
     return Promise.reject(error);
   }
 );
@@ -288,6 +304,10 @@ export const paymentsService = {
     const response = await api.delete(`/payments/${id}`);
     return response.data;
   },
+  createCheckoutSession: async (data) => {
+    const response = await api.post('/stripe/create-checkout-session', data);
+    return response.data;
+  }
 };
 
 // Admin service

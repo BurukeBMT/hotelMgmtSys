@@ -8,68 +8,68 @@
         {
           "id": "health-check",
           "name": "Health Check",
-          "method": "GET",
-          "url": "{{serverUrl}}/api/health",
-          "headers": [],
-          "params": [],
-          "body": {},
-          "auth": {},
-          "description": "Simple health endpoint to verify server is running"
+            "name": "Bookings - Create",
+            "method": "POST",
+            "url": "{{serverUrl}}/api/bookings",
+            "headers": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "params": [],
+            "body": {
+              "type": "json",
+              "raw": {
+                "guest_id": 1,
+                "room_id": 101,
+                "check_in": "2025-11-01",
+                "check_out": "2025-11-05",
+                "status": "pending"
+              }
+            },
+            "auth": {},
+            "description": "Create a booking (adjust fields to match your API schema)."
         },
-        {
-          "id": "auth-login",
-          "name": "Auth - Login",
-          "method": "POST",
-          "url": "{{serverUrl}}/api/auth/login",
-          "headers": [
-            { "key": "Content-Type", "value": "application/json" }
-          ],
-          "params": [],
-          "body": {
-            "type": "json",
-            "raw": {
-              "username": "admin@example.com",
-              "password": "changeme"
-            }
+          {
+            "id": "create-payment-intent",
+            "name": "Stripe - Create PaymentIntent",
+            "method": "POST",
+            "url": "{{serverUrl}}/api/stripe/create-payment-intent",
+            "headers": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "params": [],
+            "body": {
+              "type": "json",
+              "raw": {
+                "amount": 10.00,
+                "currency": "USD",
+                "booking_id": 1
+              }
+            },
+            "tests": "// Save clientSecret and paymentIntentId to environment\nconst res = pm.response.json();\nif (res && res.clientSecret) {\n  pm.environment.set('clientSecret', res.clientSecret);\n}\nif (res && res.paymentIntentId) {\n  pm.environment.set('paymentIntentId', res.paymentIntentId);\n}\n",
+            "auth": {},
+            "description": "Create a PaymentIntent and store clientSecret/paymentIntentId for follow-up calls"
           },
-          "auth": {},
-          "description": "Use this to obtain a JWT (response usually contains `token`). Replace credentials as needed."
-        },
-        {
-          "id": "auth-register",
-          "name": "Auth - Register (example)",
-          "method": "POST",
-          "url": "{{serverUrl}}/api/auth/register",
-          "headers": [
-            { "key": "Content-Type", "value": "application/json" }
-          ],
-          "params": [],
-          "body": {
-            "type": "json",
-            "raw": {
-              "username": "newuser@example.com",
-              "password": "password123",
-              "first_name": "New",
-              "last_name": "User",
-              "email": "newuser@example.com"
-            }
+          {
+            "id": "confirm-payment-intent",
+            "name": "Stripe - Confirm PaymentIntent (dev)",
+            "method": "POST",
+            "url": "{{serverUrl}}/api/stripe/confirm-payment-intent",
+            "headers": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "params": [],
+            "body": {
+              "type": "json",
+              "raw": {
+                "paymentIntentId": "{{paymentIntentId}}"
+              }
+            },
+            "auth": {},
+            "description": "Dev-only endpoint to confirm a PaymentIntent using Stripe test payment method (requires server STRIPE_ALLOW_TEST_CONFIRM=true)"
           },
-          "auth": {},
-          "description": "Optional: create a new user if the endpoint exists and is enabled."
-        },
-        {
-          "id": "get-departments",
-          "name": "HR - Get Departments",
-          "method": "GET",
-          "url": "{{serverUrl}}/api/hr/departments",
-          "headers": [
-            { "key": "Authorization", "value": "Bearer {{token}}" }
-          ],
-          "params": [],
-          "body": {},
-          "auth": {},
-          "description": "List departments (requires auth)."
-        },
         {
           "id": "create-department",
           "name": "HR - Create Department",
@@ -148,6 +148,47 @@
               "check_out": "2025-11-05",
               "status": "pending"
             }
+          },
+          {
+            "id": "create-payment-intent",
+            "name": "Stripe - Create PaymentIntent",
+            "method": "POST",
+            "url": "{{serverUrl}}/api/stripe/create-payment-intent",
+            "headers": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "params": [],
+            "body": {
+              "type": "json",
+              "raw": {
+                "amount": 10.00,
+                "currency": "USD",
+                "booking_id": 1
+              }
+            },
+            "tests": "// Save clientSecret and paymentIntentId to environment\nconst res = pm.response.json();\nif (res && res.clientSecret) {\n  pm.environment.set('clientSecret', res.clientSecret);\n}\nif (res && res.paymentIntentId) {\n  pm.environment.set('paymentIntentId', res.paymentIntentId);\n}\n",
+            "auth": {},
+            "description": "Create a PaymentIntent and store clientSecret/paymentIntentId for follow-up calls"
+          },
+          {
+            "id": "confirm-payment-intent",
+            "name": "Stripe - Confirm PaymentIntent (dev)",
+            "method": "POST",
+            "url": "{{serverUrl}}/api/stripe/confirm-payment-intent",
+            "headers": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "params": [],
+            "body": {
+              "type": "json",
+              "raw": {
+                "paymentIntentId": "{{paymentIntentId}}"
+              }
+            },
+            "auth": {},
+            "description": "Dev-only endpoint to confirm a PaymentIntent using Stripe test payment method (requires server STRIPE_ALLOW_TEST_CONFIRM=true)"
           },
           "auth": {},
           "description": "Create a booking (adjust fields to match your API schema)."

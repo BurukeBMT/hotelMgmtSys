@@ -30,18 +30,50 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
       const clientSecret = data.clientSecret;
 
       const cardElement = elements.getElement(CardElement);
-      const confirm = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card: cardElement }
-      });
+      const confirm = await stripe.confirmCardPayment(clientSecret, { payment_method: { card: cardElement } });
 
       if (confirm.error) {
-        setError(confirm.error.message);
+        // Card was declined or authentication failed
+        setError(confirm.error.message || 'Payment confirmation failed');
         setLoading(false);
         return;
       }
 
-      if (confirm.paymentIntent && confirm.paymentIntent.status === 'succeeded') {
-        onSuccess && onSuccess(confirm.paymentIntent);
+      const pi = confirm.paymentIntent;
+      if (!pi) {
+        setError('No payment intent returned');
+        setLoading(false);
+        return;
+      }
+
+      if (pi.status === 'requires_action' || pi.status === 'requires_source_action') {
+        // Additional action required (3DS). Stripe.js should have handled this, but handle defensively.
+        const handled = await stripe.confirmCardPayment(clientSecret);
+        if (handled.error) {
+          setError(handled.error.message || 'Authentication failed');
+          setLoading(false);
+          return;
+        }
+        if (handled.paymentIntent && handled.paymentIntent.status === 'succeeded') {
+          onSuccess && onSuccess(handled.paymentIntent);
+        }
+      } else if (pi.status === 'succeeded') {
+        onSuccess && onSuccess(pi);
+      } else {
+        // other statuses: processing, requires_payment_method, etc.
+        setError(`Payment status: ${pi.status}`);
+      }
+
+      // As a resilience measure, call server to record payment (webhook should normally do this)
+      try {
+        await fetch('/api/stripe/record-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentIntentId: pi.id, booking_id: bookingId, amount })
+        });
+      } catch (e) {
+        // non-fatal
+        console.warn('Failed to call record-payment', e.message);
       }
       setLoading(false);
     } catch (err) {

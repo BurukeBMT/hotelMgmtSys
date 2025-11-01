@@ -6,6 +6,16 @@ import { Toaster } from 'react-hot-toast';
 import './index.css';
 import App from './App';
 
+// Quick runtime check: helps verify that the React bundle is executing in the browser.
+// Look for this message in browser devtools console when the app loads.
+try {
+  // eslint-disable-next-line no-console
+  console.log('[app] mounting React application');
+  if (typeof window !== 'undefined') window.__HOT_APP_RUNTIME = true;
+} catch (e) {
+  // ignore
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

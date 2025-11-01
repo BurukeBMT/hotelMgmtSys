@@ -114,3 +114,107 @@ async function handleWebhook(req, res) {
 }
 
 module.exports = { router, handleWebhook };
+
+// Dev-only endpoint to force-confirm a PaymentIntent using a Stripe test payment method
+router.post('/confirm-payment-intent', authenticateToken, async (req, res) => {
+  try {
+    if (!stripe) return res.status(500).json({ success: false, message: 'Stripe not configured' });
+    if (process.env.STRIPE_ALLOW_TEST_CONFIRM !== 'true') {
+      return res.status(403).json({ success: false, message: 'Test confirm not allowed. Set STRIPE_ALLOW_TEST_CONFIRM=true in server env to enable.' });
+    }
+
+    const { paymentIntentId } = req.body;
+    if (!paymentIntentId) return res.status(400).json({ success: false, message: 'paymentIntentId is required' });
+
+    // Confirm with a special Stripe test payment method
+    const confirmed = await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: 'pm_card_visa' });
+
+    // Optionally update DB row; webhook will normally handle status updates
+    try {
+      const status = confirmed.status || 'unknown';
+      await query('UPDATE payments SET payment_status = ? WHERE transaction_id = ?', [status, paymentIntentId]);
+    } catch (e) {
+      console.warn('Failed to update payment row after test confirm', e.message);
+    }
+
+    res.json({ success: true, data: confirmed });
+  } catch (error) {
+    console.error('confirm-payment-intent error', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Endpoint to mark a PaymentIntent as completed (resiliency for clients if webhook is delayed)
+router.post('/record-payment', authenticateToken, async (req, res) => {
+  try {
+    const { paymentIntentId, booking_id, amount } = req.body;
+    if (!paymentIntentId) return res.status(400).json({ success: false, message: 'paymentIntentId required' });
+
+    // Update payment row if exists
+    try {
+      await query('UPDATE payments SET payment_status = ? WHERE transaction_id = ?', ['completed', paymentIntentId]);
+    } catch (e) {
+      console.warn('record-payment: failed to update payment row', e.message);
+    }
+
+    // Optionally update booking
+    if (booking_id) {
+      try {
+        await query('UPDATE bookings SET status = ? WHERE id = ?', ['confirmed', booking_id]);
+      } catch (e) {
+        console.warn('record-payment: failed to update booking status', e.message);
+      }
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('record-payment error', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Create a Stripe Checkout Session and return URL to redirect the customer
+router.post('/create-checkout-session', authenticateToken, async (req, res) => {
+  try {
+    if (!stripe) return res.status(500).json({ success: false, message: 'Stripe not configured' });
+
+    const { amount, currency = 'usd', booking_id, successPath = '/payments/success', cancelPath = '/payments/cancel' } = req.body;
+    if (!amount || Number(amount) <= 0) return res.status(400).json({ success: false, message: 'Amount is required and must be > 0' });
+
+    const clientUrl = process.env.CLIENT_URL || process.env.REACT_APP_CLIENT_URL || 'http://localhost:3000';
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: [
+        {
+          price_data: {
+            currency: (currency || 'usd').toLowerCase(),
+            product_data: { name: `Booking Payment ${booking_id || ''}` },
+            unit_amount: Math.round(Number(amount) * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: { booking_id: booking_id || '', user_id: req.user && req.user.id ? String(req.user.id) : '' },
+      success_url: `${clientUrl}${successPath}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${clientUrl}${cancelPath}`,
+    });
+
+    // persist session in payments table
+    try {
+      await query(`
+        INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_id, notes)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [booking_id || null, Number(amount), 'Stripe Checkout', 'pending', session.id, JSON.stringify({ via: 'checkout' })]);
+    } catch (e) {
+      console.warn('Failed to persist payment row for Checkout Session', session.id, e.message);
+    }
+
+    res.json({ success: true, url: session.url, sessionId: session.id });
+  } catch (error) {
+    console.error('create-checkout-session error', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
