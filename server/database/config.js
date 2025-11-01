@@ -1,35 +1,33 @@
-const { Pool } = require('pg');
+const mysql = require('mysql2/promise');
 const { logger } = require('../middleware/logger');
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/../.env' });
 
 // Database configuration
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT) || 5432,
+  port: parseInt(process.env.DB_PORT) || 3306,
   database: process.env.DB_NAME || 'hotel_management',
-  user: process.env.DB_USER || 'postgres',
+  user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
-  max: parseInt(process.env.DB_CONNECTION_LIMIT) || 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT) || 20
 };
 
 // Create connection pool
-const pool = new Pool(dbConfig);
+const pool = mysql.createPool(dbConfig);
 
 // Test the connection
 const testConnection = async () => {
   try {
-    const client = await pool.connect();
-    logger.info('✅ Connected to PostgreSQL database successfully', {
+    const connection = await pool.getConnection();
+    logger.info('✅ Connected to MySQL database successfully', {
       host: dbConfig.host,
       port: dbConfig.port,
       database: dbConfig.database,
       user: dbConfig.user
     });
-    client.release();
+    connection.release();
   } catch (err) {
-    logger.error('❌ Error connecting to PostgreSQL database:', {
+    logger.error('❌ Error connecting to MySQL database:', {
       error: err.message,
       code: err.code,
       host: dbConfig.host,
@@ -46,8 +44,69 @@ testConnection();
 // Enhanced query function with better error handling
 const query = async (text, params = []) => {
   try {
-    const result = await pool.query(text, params);
-    return { rows: result.rows, rowCount: result.rowCount };
+    // Translate Postgres-style placeholders ($1, $2, ...) to MySQL-style (?)
+    let sql = text;
+    const hasDollarPlaceholders = /\$[0-9]+/.test(sql);
+    if (hasDollarPlaceholders) {
+      sql = sql.replace(/\$[0-9]+/g, '?');
+    }
+
+    // Detect RETURNING clause (Postgres). We'll emulate common cases for INSERT/UPDATE.
+    const returningMatch = sql.match(/\sRETURNING\s+(.+)$/i);
+    let returningCols = null;
+    if (returningMatch) {
+      returningCols = returningMatch[1].trim();
+      // strip RETURNING from SQL
+      sql = sql.replace(/\sRETURNING\s+(.+)$/i, '');
+    }
+
+    const [result] = await pool.execute(sql, params);
+
+    // If there was a RETURNING clause, try to fetch the created/updated row(s)
+    if (returningCols) {
+      const cleaned = text.trim().toUpperCase();
+      // Handle INSERT ... RETURNING *
+      if (cleaned.startsWith('INSERT')) {
+        const insertId = result && result.insertId;
+        if (insertId) {
+          // try to extract table name
+          const tblMatch = text.match(/INSERT\s+INTO\s+`?(\w+)`?/i);
+          const table = tblMatch ? tblMatch[1] : null;
+          if (table) {
+            const selectSql = `SELECT ${returningCols} FROM ${table} WHERE id = ?`;
+            const [rows] = await pool.execute(selectSql, [insertId]);
+            return { rows, rowCount: rows.length };
+          }
+        }
+      }
+
+      // Handle UPDATE ... RETURNING * (heuristic: use last param as id)
+      if (cleaned.startsWith('UPDATE')) {
+        const tblMatch = text.match(/UPDATE\s+`?(\w+)`?/i);
+        const table = tblMatch ? tblMatch[1] : null;
+        if (table && params && params.length > 0) {
+          const idCandidate = params[params.length - 1];
+          const selectSql = `SELECT ${returningCols} FROM ${table} WHERE id = ?`;
+          try {
+            const [rows] = await pool.execute(selectSql, [idCandidate]);
+            return { rows, rowCount: rows.length };
+          } catch (e) {
+            // fall through to return generic result
+          }
+        }
+      }
+
+      // Fallback: return empty rows if we couldn't emulate
+      return { rows: [], rowCount: 0 };
+    }
+
+    // Normal path: if result is an array of rows (SELECT), return them
+    if (Array.isArray(result)) {
+      return { rows: result, rowCount: result.length };
+    }
+
+    // For non-select queries (INSERT/UPDATE/DELETE), return the OkPacket as rows for callers that expect insertId
+    return { rows: result, rowCount: 0 };
   } catch (error) {
     logger.error('Database query error:', {
       query: text,
@@ -61,26 +120,26 @@ const query = async (text, params = []) => {
 
 // Transaction helper
 const transaction = async (callback) => {
-  const client = await pool.connect();
+  const connection = await pool.getConnection();
   try {
-    await client.query('BEGIN');
-    const result = await callback(client);
-    await client.query('COMMIT');
+    await connection.beginTransaction();
+    const result = await callback(connection);
+    await connection.commit();
     return result;
   } catch (error) {
-    await client.query('ROLLBACK');
+    await connection.rollback();
     throw error;
   } finally {
-    client.release();
+    connection.release();
   }
 };
 
 // Health check function
 const healthCheck = async () => {
   try {
-    const client = await pool.connect();
-    await client.query('SELECT 1');
-    client.release();
+    const connection = await pool.getConnection();
+    await connection.execute('SELECT 1');
+    connection.release();
     return { status: 'healthy', timestamp: new Date().toISOString() };
   } catch (error) {
     logger.error('Database health check failed:', error);

@@ -3,32 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@stripe/react-stripe-js": "^2.1.0",
+    "@stripe/stripe-js": "^2.1.1",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^3.3.2",
+    "@mui/material": "^7.3.4",
+    "@tanstack/react-query": "^5.8.4",
+    "@tanstack/react-table": "^8.10.7",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
     "@types/node": "^20.9.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^3.5.0",
-    "react-router-dom": "^6.18.0",
+    "autoprefixer": "^10.4.16",
     "axios": "^1.6.2",
-    "@tanstack/react-query": "^5.8.4",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.4",
+    "lucide-react": "^0.294.0",
+    "postcss": "^8.4.32",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.47.0",
     "react-hot-toast": "^2.4.1",
-    "lucide-react": "^0.294.0",
-    "recharts": "^2.8.0",
-    "date-fns": "^2.30.0",
-    "clsx": "^2.0.0",
-    "tailwindcss": "^3.3.6",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "framer-motion": "^10.16.4",
-    "zod": "^3.22.4",
-    "@hookform/resolvers": "^3.3.2",
-    "react-dropzone": "^14.2.3",
+    "react-router-dom": "^6.18.0",
+    "react-scripts": "5.0.1",
     "react-table": "^7.8.0",
-    "@tanstack/react-table": "^8.10.7"
+    "recharts": "^2.8.0",
+    "tailwindcss": "^3.3.6",
+    "web-vitals": "^3.5.0",
+    "zod": "^3.22.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -56,5 +62,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5000"
-} 
+  "proxy": "http://localhost:5000",
+  "devDependencies": {
+    "@babel/preset-react": "^7.28.5"
+  }
+}

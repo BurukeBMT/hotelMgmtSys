@@ -16,7 +16,8 @@ router.get('/', async (req, res) => {
 
     if (search) {
       paramCount++;
-      whereClause += ` AND (first_name ILIKE $${paramCount} OR last_name ILIKE $${paramCount} OR email ILIKE $${paramCount} OR phone ILIKE $${paramCount})`;
+      // MySQL doesn't support ILIKE. Use case-insensitive search via LOWER(... ) LIKE LOWER(...)
+      whereClause += ` AND (LOWER(first_name) LIKE LOWER($${paramCount}) OR LOWER(last_name) LIKE LOWER($${paramCount}) OR LOWER(email) LIKE LOWER($${paramCount}) OR LOWER(phone) LIKE LOWER($${paramCount}))`;
       params.push(`%${search}%`);
     }
 
@@ -81,17 +82,22 @@ router.post('/', [
       id_type, id_number, nationality 
     } = req.body;
 
-    const result = await query(
+    // MySQL: INSERT then SELECT the created row
+    const insertResult = await query(
       `INSERT INTO guests (first_name, last_name, email, phone, address, id_type, id_number, nationality)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [first_name, last_name, email, phone, address, id_type, id_number, nationality]
     );
 
-    res.status(201).json({
-      success: true,
-      message: 'Guest created successfully',
-      data: result.rows[0]
-    });
+    const insertedId = insertResult.rows && insertResult.rows.insertId;
+    if (!insertedId) {
+      // fallback: try fetching by unique combination
+      const fallback = await query('SELECT * FROM guests WHERE first_name = ? AND last_name = ? ORDER BY id DESC LIMIT 1', [first_name, last_name]);
+      return res.status(201).json({ success: true, message: 'Guest created successfully', data: fallback.rows[0] });
+    }
+
+    const created = await query('SELECT * FROM guests WHERE id = ?', [insertedId]);
+    res.status(201).json({ success: true, message: 'Guest created successfully', data: created.rows[0] });
   } catch (error) {
     console.error('Guest creation error:', error);
     res.status(500).json({ 
@@ -128,33 +134,28 @@ router.put('/:id', [
       id_type, id_number, nationality 
     } = req.body;
 
-    const result = await query(
+    const updateResult = await query(
       `UPDATE guests SET 
-       first_name = COALESCE($1, first_name),
-       last_name = COALESCE($2, last_name),
-       email = COALESCE($3, email),
-       phone = COALESCE($4, phone),
-       address = COALESCE($5, address),
-       id_type = COALESCE($6, id_type),
-       id_number = COALESCE($7, id_number),
-       nationality = COALESCE($8, nationality),
+       first_name = COALESCE(?, first_name),
+       last_name = COALESCE(?, last_name),
+       email = COALESCE(?, email),
+       phone = COALESCE(?, phone),
+       address = COALESCE(?, address),
+       id_type = COALESCE(?, id_type),
+       id_number = COALESCE(?, id_number),
+       nationality = COALESCE(?, nationality),
        updated_at = CURRENT_TIMESTAMP
-       WHERE id = $9 RETURNING *`,
+       WHERE id = ?`,
       [first_name, last_name, email, phone, address, id_type, id_number, nationality, id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Guest not found' 
-      });
+    // Verify the row exists now
+    const updated = await query('SELECT * FROM guests WHERE id = ?', [id]);
+    if (!updated.rows || updated.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Guest not found' });
     }
 
-    res.json({
-      success: true,
-      message: 'Guest updated successfully',
-      data: result.rows[0]
-    });
+    res.json({ success: true, message: 'Guest updated successfully', data: updated.rows[0] });
   } catch (error) {
     console.error('Guest update error:', error);
     res.status(500).json({ 
@@ -170,7 +171,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
 
     const result = await query(
-      'SELECT * FROM guests WHERE id = $1',
+      'SELECT * FROM guests WHERE id = ?',
       [id]
     );
 
@@ -204,7 +205,7 @@ router.get('/:id/bookings', async (req, res) => {
       FROM bookings b
       LEFT JOIN rooms r ON b.room_id = r.id
       LEFT JOIN room_types rt ON r.room_type_id = rt.id
-      WHERE b.guest_id = $1
+      WHERE b.guest_id = ?
       ORDER BY b.created_at DESC
     `, [id]);
 

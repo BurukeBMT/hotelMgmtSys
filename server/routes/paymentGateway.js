@@ -5,6 +5,9 @@ const { authenticateToken } = require('../middleware/auth');
 const { requireRole, requirePrivilege } = require('../middleware/rbac');
 
 const router = express.Router();
+const Stripe = require('stripe');
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeSecret ? Stripe(stripeSecret) : null;
 
 // Get all payment methods
 router.get('/methods', authenticateToken, async (req, res) => {
@@ -83,6 +86,28 @@ router.post('/process', authenticateToken, [
 
     switch (paymentMethod.type) {
       case 'card':
+        // If Stripe is configured, create a PaymentIntent server-side and return client secret to client
+        if (stripe) {
+          const amountInCents = Math.round(Number(amount) * 100);
+          const pi = await stripe.paymentIntents.create({
+            amount: amountInCents,
+            currency: (currency || 'usd').toLowerCase(),
+            metadata: { booking_id: booking_id || '', user_id: req.user && req.user.id ? String(req.user.id) : '' }
+          });
+
+          // persist pending payment row
+          try {
+            await query(`
+              INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_id, notes)
+              VALUES (?, ?, ?, ?, ?, ?)
+            `, [booking_id || null, Number(amount), paymentMethod.name || 'Credit Card', 'pending', pi.id, JSON.stringify({ via: 'stripe' })]);
+          } catch (e) {
+            console.warn('Failed to persist payment row for PaymentIntent', pi.id, e.message);
+          }
+
+          return res.json({ success: true, clientSecret: pi.client_secret, paymentIntentId: pi.id });
+        }
+
         paymentResult = await processCardPayment(amount, currency, payment_data, paymentMethod);
         break;
       case 'digital_wallet':
@@ -153,23 +178,30 @@ router.post('/process', authenticateToken, [
 // Process card payment (Stripe integration)
 async function processCardPayment(amount, currency, paymentData, paymentMethod) {
   try {
-    // This is a mock implementation - integrate with actual Stripe API
+    // If Stripe is configured, create a payment record and return an instruction for client to create payment intent
+    const stripeSecret = process.env.STRIPE_SECRET_KEY;
+    if (stripeSecret) {
+      // Create a placeholder payment record (pending) and return success with instruction to use Stripe on client
+      // Insert payment record with pending status so webhook can update on completion
+      const transactionId = `STRIPE_${Date.now()}`;
+      await query(`
+        INSERT INTO payments (booking_id, amount, payment_method, payment_status, transaction_id, notes)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `, [paymentData.booking_id || null, amount, 'Credit Card', 'pending', transactionId, JSON.stringify(paymentData)]);
+
+      return { success: true, status: 'pending', payment_instruction: 'use_stripe', transaction_id: transactionId };
+    }
+
+    // Fallback: basic validation of raw card data (not PCI compliant) - keep mock behavior
     const { card_number, expiry_month, expiry_year, cvv, cardholder_name } = paymentData;
-    
-    // Validate card data
     if (!card_number || !expiry_month || !expiry_year || !cvv || !cardholder_name) {
       return { success: false, message: 'Invalid card data' };
     }
 
-    // Mock payment processing
-    const isSuccess = Math.random() > 0.1; // 90% success rate for demo
-    
-    return {
-      success: isSuccess,
-      status: isSuccess ? 'completed' : 'failed',
-      message: isSuccess ? 'Payment successful' : 'Payment failed - invalid card'
-    };
+    const isSuccess = Math.random() > 0.1; // demo fallback
+    return { success: isSuccess, status: isSuccess ? 'completed' : 'failed', message: isSuccess ? 'Payment successful' : 'Payment failed' };
   } catch (error) {
+    console.error('processCardPayment error', error);
     return { success: false, message: 'Card payment processing error' };
   }
 }

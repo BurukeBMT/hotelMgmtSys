@@ -1,0 +1,215 @@
+{
+  "info": {
+    "name": "Hotel Management Server",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{serverUrl}}/api/health",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "health"]
+        },
+        "description": "Simple health endpoint to verify server is running"
+      },
+      "response": []
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"admin@example.com\",\"password\":\"changeme\"}"
+        },
+        "url": {
+          "raw": "{{serverUrl}}/api/auth/login",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Use this to obtain a JWT (response usually contains `token`). Replace credentials as needed."
+      },
+      "response": []
+    },
+    {
+      "name": "Auth - Register (example)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\":\"newuser@example.com\",\"password\":\"password123\",\"first_name\":\"New\",\"last_name\":\"User\",\"email\":\"newuser@example.com\"}"
+        },
+        "url": {
+          "raw": "{{serverUrl}}/api/auth/register",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Optional: create a new user if the endpoint exists and is enabled."
+      },
+      "response": []
+    },
+    {
+      "name": "HR - Get Departments",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{serverUrl}}/api/hr/departments",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "hr", "departments"]
+        },
+        "description": "List departments (requires auth)."
+      },
+      "response": []
+    },
+    {
+      "name": "HR - Create Department",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Housekeeping\",\"description\":\"Maintains rooms and housekeeping tasks\"}"
+        },
+        "url": {
+          "raw": "{{serverUrl}}/api/hr/departments",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "hr", "departments"]
+        },
+        "description": "Create a department (requires manager role depending on API)."
+      },
+      "response": []
+    },
+    {
+      "name": "Users - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{serverUrl}}/api/users",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "users"]
+        },
+        "description": "Get a list of users (admin access may be required)."
+      },
+      "response": []
+    },
+    {
+      "name": "Users - Get by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{serverUrl}}/api/users/{{userId}}",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "users", "{{userId}}"]
+        },
+        "description": "Fetch a single user; replace `{{userId}}` variable before sending."
+      },
+      "response": []
+    },
+    {
+      "name": "Rooms - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{serverUrl}}/api/rooms",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "rooms"]
+        },
+        "description": "List available rooms."
+      },
+      "response": []
+    },
+    {
+      "name": "Bookings - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"guest_id\":1,\"room_id\":101,\"check_in\":\"2025-11-01\",\"check_out\":\"2025-11-05\",\"status\":\"pending\"}"
+        },
+        "url": {
+          "raw": "{{serverUrl}}/api/bookings",
+          "host": ["{{serverUrl}}"],
+          "path": ["api", "bookings"]
+        },
+        "description": "Create a booking (adjust fields to match your API schema)."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "serverUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+}

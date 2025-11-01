@@ -14,7 +14,7 @@ router.get('/types', async (req, res) => {
 
     res.json({
       success: true,
-      data: result.rows
+      data: result[0]
     });
   } catch (error) {
     console.error('Room types error:', error);
@@ -53,7 +53,7 @@ router.post('/types', isManager, [
     res.status(201).json({
       success: true,
       message: 'Room type created successfully',
-      data: result.rows[0]
+      data: result[0][0]
     });
   } catch (error) {
     console.error('Room type creation error:', error);
@@ -96,7 +96,7 @@ router.put('/types/:id', isManager, [
       [name, description, base_price, capacity, amenities ? JSON.stringify(amenities) : null, id]
     );
 
-    if (result.rows.length === 0) {
+    if (result[0].affectedRows === 0) {
       return res.status(404).json({ 
         success: false, 
         message: 'Room type not found' 
@@ -106,7 +106,7 @@ router.put('/types/:id', isManager, [
     res.json({
       success: true,
       message: 'Room type updated successfully',
-      data: result.rows[0]
+      data: req.body
     });
   } catch (error) {
     console.error('Room type update error:', error);
@@ -159,11 +159,11 @@ router.get('/', async (req, res) => {
       params
     );
 
-    const total = parseInt(countResult.rows[0].total);
+  const total = parseInt(countResult[0][0].total);
 
     res.json({
       success: true,
-      data: result.rows,
+      data: result[0],
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -205,7 +205,7 @@ router.post('/', isManager, [
       [room_number]
     );
 
-    if (existingRoom.rows.length > 0) {
+  if (existingRoom[0].length > 0) {
       return res.status(409).json({ 
         success: false, 
         message: 'Room number already exists' 
@@ -220,7 +220,7 @@ router.post('/', isManager, [
     res.status(201).json({
       success: true,
       message: 'Room created successfully',
-      data: result.rows[0]
+      data: result[0][0]
     });
   } catch (error) {
     console.error('Room creation error:', error);
@@ -260,7 +260,7 @@ router.put('/:id', isManager, [
         [room_number, id]
       );
 
-      if (existingRoom.rows.length > 0) {
+    if (existingRoom[0].length > 0) {
         return res.status(409).json({ 
           success: false, 
           message: 'Room number already exists' 
@@ -281,7 +281,7 @@ router.put('/:id', isManager, [
       [room_number, room_type_id, floor, status, is_clean, notes, id]
     );
 
-    if (result.rows.length === 0) {
+    if (result[0].affectedRows === 0) {
       return res.status(404).json({ 
         success: false, 
         message: 'Room not found' 
@@ -291,7 +291,7 @@ router.put('/:id', isManager, [
     res.json({
       success: true,
       message: 'Room updated successfully',
-      data: result.rows[0]
+      data: req.body
     });
   } catch (error) {
     console.error('Room update error:', error);
@@ -315,7 +315,7 @@ router.get('/:id', async (req, res) => {
       [id]
     );
 
-    if (result.rows.length === 0) {
+    if (result[0].length === 0) {
       return res.status(404).json({ 
         success: false, 
         message: 'Room not found' 
@@ -324,7 +324,7 @@ router.get('/:id', async (req, res) => {
 
     res.json({
       success: true,
-      data: result.rows[0]
+      data: result[0][0]
     });
   } catch (error) {
     console.error('Room details error:', error);
@@ -377,7 +377,7 @@ router.get('/availability', async (req, res) => {
 
     res.json({
       success: true,
-      data: result.rows
+      data: result[0]
     });
   } catch (error) {
     console.error('Room availability error:', error);
@@ -423,12 +423,12 @@ router.get('/dashboard/stats', async (req, res) => {
     res.json({
       success: true,
       data: {
-        totalRooms: parseInt(totalRooms.rows[0].count),
-        availableRooms: parseInt(availableRooms.rows[0].count),
-        occupiedRooms: parseInt(occupiedRooms.rows[0].count),
-        maintenanceRooms: parseInt(maintenanceRooms.rows[0].count),
-        roomsByType: roomsByType.rows,
-        occupancyRate: parseFloat(occupancyRate.rows[0].rate || 0)
+        totalRooms: parseInt(totalRooms[0][0].count),
+        availableRooms: parseInt(availableRooms[0][0].count),
+        occupiedRooms: parseInt(occupiedRooms[0][0].count),
+        maintenanceRooms: parseInt(maintenanceRooms[0][0].count),
+        roomsByType: roomsByType[0],
+        occupancyRate: parseFloat(occupancyRate[0][0].rate || 0)
       }
     });
   } catch (error) {
