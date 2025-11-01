@@ -116,6 +116,24 @@ service cloud.firestore {
       // Only admins can write
       allow write: if isAdmin();
     }
+    
+    // Attendance collection
+    match /attendance/{attendanceId} {
+      // Employees can read their own attendance, admins can read all
+      allow read: if isAuthenticated() && 
+                   (resource.data.employee_id == request.auth.uid || isAdmin());
+      // Only admins/HR can create/update attendance
+      allow write: if isAdmin();
+    }
+    
+    // Payroll collection
+    match /payroll/{payrollId} {
+      // Employees can read their own payroll, admins can read all
+      allow read: if isAuthenticated() && 
+                   (resource.data.employee_id == request.auth.uid || isAdmin());
+      // Only admins/HR can create/update payroll
+      allow write: if isAdmin();
+    }
   }
 }
 

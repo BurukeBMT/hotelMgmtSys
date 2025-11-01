@@ -17,8 +17,14 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
     setLoading(true);
 
     try {
-      // Create payment intent on server
-      const res = await fetch('/api/stripe/create-payment-intent', {
+      // NOTE: Stripe payment intents require a backend server for security
+      // The secret key cannot be exposed in client-side code.
+      // Implement this via Firebase Functions.
+      throw new Error('Payment processing requires Firebase Functions. Please set up a Cloud Function for Stripe integration.');
+      
+      // Uncomment and modify when Firebase Function is set up:
+      /*
+      const res = await fetch('https://your-region-your-project.cloudfunctions.net/createPaymentIntent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount, currency, booking_id: bookingId })
@@ -64,9 +70,11 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
         setError(`Payment status: ${pi.status}`);
       }
 
-      // As a resilience measure, call server to record payment (webhook should normally do this)
+      // As a resilience measure, call Firebase Function to record payment (webhook should normally do this)
+      // Uncomment when Firebase Function is set up:
+      /*
       try {
-        await fetch('/api/stripe/record-payment', {
+        await fetch('https://your-region-your-project.cloudfunctions.net/recordPayment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ paymentIntentId: pi.id, booking_id: bookingId, amount })
@@ -75,6 +83,7 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
         // non-fatal
         console.warn('Failed to call record-payment', e.message);
       }
+      */
       setLoading(false);
     } catch (err) {
       setError(err.message || 'Payment failed');

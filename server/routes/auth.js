@@ -1,329 +1,203 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { body, validationResult } = require('express-validator');
-const { query } = require('../database/config');
-const { authenticateToken } = require('../middleware/auth');
-
 const router = express.Router();
+const { auth, db } = require('../config/firebaseAdmin');
+const { verifyToken } = require('../middleware/auth');
 
-// Register new user
-router.post('/register', [
-  body('username').isLength({ min: 3 }).withMessage('Username must be at least 3 characters'),
-  body('email').isEmail().withMessage('Valid email is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-  body('first_name').notEmpty().withMessage('First name is required'),
-  body('last_name').notEmpty().withMessage('Last name is required'),
-  body('role').isIn(['super_admin', 'admin', 'manager', 'staff', 'client']).withMessage('Invalid role')
-], async (req, res) => {
+/**
+ * POST /api/auth/login
+ * Login with email and password (handled by Firebase Auth on client)
+ * This endpoint is for server-side verification if needed
+ */
+router.post('/login', async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Validation error',
-        errors: errors.array() 
+    // Note: Firebase Auth login is typically handled client-side
+    // This endpoint can be used for server-side token verification
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID token is required',
       });
     }
 
-    const { username, email, password, first_name, last_name, role, phone, address } = req.body;
+    const decodedToken = await auth.verifyIdToken(idToken);
+    const userDoc = await db.collection('users').doc(decodedToken.uid).get();
 
-    // Check if user already exists
-    const existingUser = await query(
-      'SELECT id FROM users WHERE username = ? OR email = ?',
-      [username, email]
-    );
-
-    if (existingUser.rows.length > 0) {
-      return res.status(409).json({ 
-        success: false, 
-        message: 'Username or email already exists' 
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User profile not found',
       });
     }
 
-    // Hash password
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const userData = userDoc.data();
 
-    // Create user
-    const result = await query(
-      `INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [username, email, passwordHash, first_name, last_name, role, phone]
-    );
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: decodedToken.uid,
+          email: decodedToken.email,
+          ...userData,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
-    // Get the inserted user
-    const userResult = await query(
-      'SELECT id, username, email, first_name, last_name, role FROM users WHERE username = ?',
-      [username]
-    );
+/**
+ * POST /api/auth/register
+ * Register a new user
+ */
+router.post('/register', async (req, res, next) => {
+  try {
+    const { email, password, username, firstName, lastName, phone, address, role = 'client' } = req.body;
 
-    const user = userResult.rows[0];
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required',
+      });
+    }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+    // Create user in Firebase Auth
+    const userRecord = await auth.createUser({
+      email,
+      password,
+      displayName: `${firstName || ''} ${lastName || ''}`.trim(),
+    });
+
+    // Create user document in Firestore
+    const userData = {
+      username: username || email.split('@')[0],
+      email,
+      firstName: firstName || '',
+      lastName: lastName || '',
+      phone: phone || '',
+      address: address || '',
+      role,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    await db.collection('users').doc(userRecord.uid).set(userData);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       data: {
         user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          role: user.role
+          id: userRecord.uid,
+          ...userData,
         },
-        token
-      }
+      },
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error creating user' 
-    });
+    next(error);
   }
 });
 
-// Login user
-router.post('/login', [
-  body('username').optional(),
-  body('email').optional(),
-  body('password').notEmpty().withMessage('Password is required')
-], async (req, res) => {
+/**
+ * GET /api/auth/profile
+ * Get current user profile
+ */
+router.get('/profile', verifyToken, async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Validation error',
-        errors: errors.array() 
+    const userDoc = await db.collection('users').doc(req.userId).get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
       });
     }
 
-    const { username, email, password } = req.body;
-
-    // Check if either username or email is provided
-    if (!username && !email) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Username or email is required' 
-      });
-    }
-
-    // Find user
-    const result = await query(
-      'SELECT id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = ? OR email = ?',
-      [username || email, username || email]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid credentials' 
-      });
-    }
-
-    const user = result.rows[0];
-
-    if (!user.is_active) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Account is deactivated' 
-      });
-    }
-
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password_hash);
-    if (!isValidPassword) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid credentials' 
-      });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-    );
+    const userData = userDoc.data();
 
     res.json({
       success: true,
-      message: 'Login successful',
       data: {
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          role: user.role
-        },
-        token
-      }
+        id: userDoc.id,
+        ...userData,
+      },
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error during login' 
-    });
+    next(error);
   }
 });
 
-// Get current user profile
-router.get('/profile', authenticateToken, async (req, res) => {
+/**
+ * PUT /api/auth/profile
+ * Update user profile
+ */
+router.put('/profile', verifyToken, async (req, res, next) => {
   try {
-    const result = await query(
-      'SELECT id, username, email, first_name, last_name, role, phone, address, created_at FROM users WHERE id = ?',
-      [req.user.id]
-    );
+    const { firstName, lastName, phone, address } = req.body;
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+    const updateData = {
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (phone !== undefined) updateData.phone = phone;
+    if (address !== undefined) updateData.address = address;
+
+    await db.collection('users').doc(req.userId).update(updateData);
+
+    // Update Firebase Auth display name
+    if (firstName || lastName) {
+      await auth.updateUser(req.userId, {
+        displayName: `${firstName || ''} ${lastName || ''}`.trim(),
       });
     }
 
-    res.json({
-      success: true,
-      data: result.rows[0]
-    });
-  } catch (error) {
-    console.error('Profile error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching profile' 
-    });
-  }
-});
-
-// Update user profile
-router.put('/profile', authenticateToken, [
-  body('first_name').optional().notEmpty().withMessage('First name cannot be empty'),
-  body('last_name').optional().notEmpty().withMessage('Last name cannot be empty'),
-  body('phone').optional().isMobilePhone().withMessage('Invalid phone number'),
-  body('address').optional()
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Validation error',
-        errors: errors.array() 
-      });
-    }
-
-    const { first_name, last_name, phone, address } = req.body;
-
-    const result = await query(
-      `UPDATE users SET 
-       first_name = COALESCE(?, first_name),
-       last_name = COALESCE(?, last_name),
-       phone = COALESCE(?, phone),
-       address = COALESCE(?, address),
-       updated_at = CURRENT_TIMESTAMP
-       WHERE id = ?`,
-      [first_name, last_name, phone, address, req.user.id]
-    );
-
-    // Get updated user data
-    const updatedUser = await query(
-      'SELECT id, username, email, first_name, last_name, role, phone, address FROM users WHERE id = ?',
-      [req.user.id]
-    );
-
-    if (updatedUser.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
+    const updatedDoc = await db.collection('users').doc(req.userId).get();
 
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      data: updatedUser.rows[0]
+      data: {
+        id: updatedDoc.id,
+        ...updatedDoc.data(),
+      },
     });
   } catch (error) {
-    console.error('Profile update error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error updating profile' 
-    });
+    next(error);
   }
 });
 
-// Change password
-router.put('/change-password', authenticateToken, [
-  body('current_password').notEmpty().withMessage('Current password is required'),
-  body('new_password').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
-], async (req, res) => {
+/**
+ * POST /api/auth/change-password
+ * Change user password (requires re-authentication on client side)
+ */
+router.post('/change-password', verifyToken, async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Validation error',
-        errors: errors.array() 
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters',
       });
     }
 
-    const { current_password, new_password } = req.body;
-
-    // Get current password hash
-    const result = await query(
-      'SELECT password_hash FROM users WHERE id = ?',
-      [req.user.id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-
-    // Verify current password
-    const isValidPassword = await bcrypt.compare(current_password, result.rows[0].password_hash);
-    if (!isValidPassword) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Current password is incorrect' 
-      });
-    }
-
-    // Hash new password
-    const saltRounds = 10;
-    const newPasswordHash = await bcrypt.hash(new_password, saltRounds);
-
-    // Update password
-    await query(
-      'UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [newPasswordHash, req.user.id]
-    );
+    await auth.updateUser(req.userId, {
+      password: newPassword,
+    });
 
     res.json({
       success: true,
-      message: 'Password changed successfully'
+      message: 'Password changed successfully',
     });
   } catch (error) {
-    console.error('Password change error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error changing password' 
-    });
+    next(error);
   }
 });
 
-module.exports = router; 
+module.exports = router;
+

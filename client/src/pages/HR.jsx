@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import { hrService, attendanceService, payrollService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const HR = () => {
@@ -58,8 +58,8 @@ const HR = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await api.get('/hr/employees');
-      setEmployees(response.data.data || []);
+      const response = await hrService.getEmployees();
+      setEmployees(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch employees');
     }
@@ -67,8 +67,8 @@ const HR = () => {
 
   const fetchDepartments = async () => {
     try {
-      const response = await api.get('/hr/departments');
-      setDepartments(response.data.data || []);
+      const response = await hrService.getDepartments();
+      setDepartments(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch departments');
     }
@@ -81,16 +81,16 @@ const HR = () => {
       const payload = { name: deptForm.name, description: deptForm.description };
       // manager_id is optional and may require elevated privileges; include only if set
       if (deptForm.manager_id) payload.manager_id = deptForm.manager_id;
-      const res = await api.post('/hr/departments', payload);
+      const res = await hrService.createDepartment(payload);
       toast.success('Department created');
       setShowDeptForm(false);
       setDeptForm({ name: '', description: '', manager_id: '' });
       // Refresh departments and pre-select the newly created one if returned
       await fetchDepartments();
-      const newDeptId = res.data?.data?.id ?? res.data?.data?.id;
+      const newDeptId = res.data?.id;
       if (newDeptId) setEmployeeForm(prev => ({ ...prev, department_id: newDeptId }));
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to create department';
+      const msg = err.message || 'Failed to create department';
       toast.error(msg);
     }
     setLoading(false);
@@ -98,8 +98,8 @@ const HR = () => {
 
   const fetchAttendance = async () => {
     try {
-      const response = await api.get('/attendance');
-      setAttendance(response.data.data || []);
+      const response = await attendanceService.getAll();
+      setAttendance(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch attendance');
     }
@@ -107,8 +107,8 @@ const HR = () => {
 
   const fetchPayroll = async () => {
     try {
-      const response = await api.get('/payroll');
-      setPayroll(response.data.data || []);
+      const response = await payrollService.getAll();
+      setPayroll(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch payroll');
     }
@@ -118,7 +118,7 @@ const HR = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/hr/employees', employeeForm);
+      await hrService.create(employeeForm);
       toast.success('Employee added successfully');
       setShowEmployeeForm(false);
       setEmployeeForm({
@@ -133,7 +133,7 @@ const HR = () => {
       });
       fetchEmployees();
     } catch (error) {
-      toast.error('Failed to add employee');
+      toast.error(error.message || 'Failed to add employee');
     }
     setLoading(false);
   };
@@ -142,7 +142,7 @@ const HR = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/attendance', attendanceForm);
+      await attendanceService.create(attendanceForm);
       toast.success('Attendance marked successfully');
       setShowAttendanceForm(false);
       setAttendanceForm({
@@ -155,7 +155,7 @@ const HR = () => {
       });
       fetchAttendance();
     } catch (error) {
-      toast.error('Failed to mark attendance');
+      toast.error(error.message || 'Failed to mark attendance');
     }
     setLoading(false);
   };
@@ -164,7 +164,7 @@ const HR = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/payroll/generate', payrollForm);
+      await payrollService.generate(payrollForm);
       toast.success('Payroll generated successfully');
       setShowPayrollForm(false);
       setPayrollForm({
@@ -174,7 +174,7 @@ const HR = () => {
       });
       fetchPayroll();
     } catch (error) {
-      toast.error('Failed to generate payroll');
+      toast.error(error.message || 'Failed to generate payroll');
     }
     setLoading(false);
   };

@@ -1,5 +1,6 @@
 import React from 'react';
 import StripeCheckout from '../components/Payments/StripeCheckout';
+import toast from 'react-hot-toast';
 
 const Payments = () => {
   const handleSuccess = (paymentIntent) => {
@@ -8,22 +9,33 @@ const Payments = () => {
   };
 
   const handleCheckout = async () => {
+    // NOTE: Stripe checkout sessions require a backend server for security
+    // The secret key cannot be exposed in client-side code.
+    // To implement Stripe payments in a Firebase-only app, you have two options:
+    // 1. Use Firebase Functions (Cloud Functions) to create checkout sessions
+    // 2. Use Stripe Checkout redirect mode with Firebase Functions as webhook handler
+    // 
+    // Example Firebase Function endpoint would be:
+    // https://your-region-your-project.cloudfunctions.net/createCheckoutSession
+    toast.error('Payment processing requires Firebase Functions. Please set up a Cloud Function for Stripe integration.');
+    console.warn('Stripe integration requires backend - implement via Firebase Functions');
+    
+    // Uncomment and modify when Firebase Function is set up:
+    /*
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/stripe/create-checkout-session', {
+      const res = await fetch('https://your-region-your-project.cloudfunctions.net/createCheckoutSession', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: 10.00, currency: 'USD', booking_id: 1 })
       });
       const data = await res.json();
       if (data && data.url) {
         window.location.href = data.url;
-      } else {
-        console.error('Failed to create checkout session', data);
       }
     } catch (e) {
       console.error('Error creating checkout session', e);
     }
+    */
   };
 
   return (

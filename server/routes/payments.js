@@ -1,57 +1,143 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
-const db = require('../database/config');
-
 const router = express.Router();
+const { db } = require('../config/firebaseAdmin');
+const { verifyToken, checkRole } = require('../middleware/auth');
 
-// Add a payment
-router.post('/', async (req, res) => {
+/**
+ * GET /api/payments
+ * Get all payments
+ */
+router.get('/', verifyToken, checkRole('admin', 'manager', 'super_admin'), async (req, res, next) => {
   try {
-    const { booking_id, amount, date, method } = req.body;
-    const [result] = await db.query(
-      'INSERT INTO payments (booking_id, amount, date, method) VALUES (?, ?, ?, ?)',
-      [booking_id, amount, date, method]
-    );
-    res.status(201).json({ payment_id: result.insertId });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    let query = db.collection('payments');
+
+    if (req.query.bookingId) {
+      query = query.where('bookingId', '==', req.query.bookingId);
+    }
+    if (req.query.status) {
+      query = query.where('status', '==', req.query.status);
+    }
+
+    const snapshot = await query.orderBy('createdAt', 'desc').get();
+    const payments = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.json({
+      success: true,
+      data: payments,
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
-// Get all payments
-router.get('/', async (req, res) => {
+/**
+ * GET /api/payments/:id
+ * Get payment by ID
+ */
+router.get('/:id', verifyToken, async (req, res, next) => {
   try {
-    const [payments] = await db.query(
-      `SELECT p.*, b.id AS booking_id, g.name AS guest_name
-       FROM payments p
-       JOIN bookings b ON p.booking_id = b.id
-       JOIN guests g ON b.guest_id = g.id`
-    );
-    res.json(payments);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const doc = await db.collection('payments').doc(req.params.id).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Payment not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id: doc.id,
+        ...doc.data(),
+      },
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
-// Get daily/weekly revenue summary
-router.get('/summary', async (req, res) => {
+/**
+ * POST /api/payments
+ * Create a new payment
+ */
+router.post('/', verifyToken, async (req, res, next) => {
   try {
-    const [daily] = await db.query(
-      `SELECT DATE(date) AS day, SUM(amount) AS total
-       FROM payments
-       WHERE DATE(date) = CURDATE()
-       GROUP BY day`
-    );
-    const [weekly] = await db.query(
-      `SELECT WEEK(date) AS week, SUM(amount) AS total
-       FROM payments
-       WHERE YEAR(date) = YEAR(CURDATE()) AND WEEK(date) = WEEK(CURDATE())
-       GROUP BY week`
-    );
-    res.json({ daily: daily[0] || {}, weekly: weekly[0] || {} });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const paymentData = {
+      ...req.body,
+      status: req.body.status || 'pending',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: req.userId,
+    };
+
+    const docRef = await db.collection('payments').add(paymentData);
+
+    res.status(201).json({
+      success: true,
+      message: 'Payment created successfully',
+      data: {
+        id: docRef.id,
+        ...paymentData,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/payments/stripe/create-checkout-session
+ * Create Stripe checkout session (requires Stripe integration)
+ */
+router.post('/stripe/create-checkout-session', verifyToken, async (req, res, next) => {
+  try {
+    const { amount, currency = 'USD', bookingId } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid amount is required',
+      });
+    }
+
+    // TODO: Integrate Stripe SDK
+    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    // const session = await stripe.checkout.sessions.create({...});
+
+    res.status(501).json({
+      success: false,
+      message: 'Stripe integration not yet implemented. Please configure STRIPE_SECRET_KEY in environment variables.',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * PUT /api/payments/:id
+ * Update payment status
+ */
+router.put('/:id', verifyToken, checkRole('admin', 'manager', 'super_admin'), async (req, res, next) => {
+  try {
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await db.collection('payments').doc(req.params.id).update(updateData);
+
+    res.json({
+      success: true,
+      message: 'Payment updated successfully',
+    });
+  } catch (error) {
+    next(error);
   }
 });
 
 module.exports = router;
+

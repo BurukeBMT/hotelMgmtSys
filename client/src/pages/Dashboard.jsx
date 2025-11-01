@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
+import { bookingsService, hrService, roomsService, guestsService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -24,37 +24,37 @@ const Dashboard = () => {
       setLoading(true);
       
       // Fetch booking stats
-      const bookingStats = await api.get('/bookings/dashboard/stats');
-      if (bookingStats.data.success) {
+      const bookingStats = await bookingsService.getDashboardStats();
+      if (bookingStats.success) {
         setStats(prev => ({
           ...prev,
           bookings: {
-            today: bookingStats.data.data.todayBookings,
-            month: bookingStats.data.data.monthBookings,
-            revenue: bookingStats.data.data.monthRevenue,
-            occupancy: bookingStats.data.data.occupancyRate
+            today: bookingStats.data.todayBookings,
+            month: bookingStats.data.monthBookings,
+            revenue: bookingStats.data.monthRevenue,
+            occupancy: bookingStats.data.occupancyRate
           }
         }));
-        setRecentBookings(bookingStats.data.data.recentBookings || []);
-        setUpcomingCheckins(bookingStats.data.data.upcomingCheckins || []);
+        setRecentBookings(bookingStats.data.recentBookings || []);
+        setUpcomingCheckins(bookingStats.data.upcomingCheckins || []);
       }
 
       // Fetch HR stats
-      const hrStats = await api.get('/hr/dashboard');
-      if (hrStats.data.success) {
+      const hrStats = await hrService.getDashboard();
+      if (hrStats.success) {
         setStats(prev => ({
           ...prev,
           hr: {
-            totalEmployees: hrStats.data.data.totalEmployees,
-            attendance: { present: 0, absent: 0 } // This would come from attendance API
+            totalEmployees: hrStats.data.totalEmployees,
+            attendance: { present: 0, absent: 0 } // Can be calculated from attendance collection if needed
           }
         }));
       }
 
       // Fetch room stats
-      const roomStats = await api.get('/rooms');
-      if (roomStats.data.success) {
-        const rooms = roomStats.data.data || [];
+      const roomStats = await roomsService.getRooms();
+      if (roomStats.success) {
+        const rooms = roomStats.data || [];
         const available = rooms.filter(room => room.status === 'available').length;
         const occupied = rooms.filter(room => room.status === 'occupied').length;
         
@@ -69,12 +69,12 @@ const Dashboard = () => {
       }
 
       // Fetch guest stats
-      const guestStats = await api.get('/guests');
-      if (guestStats.data.success) {
+      const guestStats = await guestsService.getGuests();
+      if (guestStats.success) {
         setStats(prev => ({
           ...prev,
           guests: {
-            total: guestStats.data.data?.length || 0
+            total: guestStats.data?.length || 0
           }
         }));
       }

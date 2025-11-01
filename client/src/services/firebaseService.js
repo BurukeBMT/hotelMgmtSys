@@ -31,12 +31,14 @@ import {
   startAfter,
   serverTimestamp,
   Timestamp,
+} from 'firebase/firestore';
+import {
   // Storage
   ref,
   uploadBytes,
   getDownloadURL,
   deleteObject,
-} from 'firebase/firestore';
+} from 'firebase/storage';
 import { auth, db, storage } from '../config/firebase';
 
 // Helper to convert Firestore timestamp to JS date
@@ -375,6 +377,23 @@ export const usersService = createService('users');
 export const bookingsService = {
   ...createService('bookings'),
   
+  getBookings: async (filters = {}) => {
+    return bookingsService.getAll(filters);
+  },
+  
+  createBooking: async (data) => {
+    return bookingsService.create({
+      guest_id: data.guest_id || data.guestId,
+      room_id: data.room_id || data.roomId,
+      check_in_date: data.check_in_date || data.checkInDate,
+      check_out_date: data.check_out_date || data.checkOutDate,
+      adults: data.adults || 1,
+      children: data.children || 0,
+      special_requests: data.special_requests || data.specialRequests || '',
+      status: 'pending',
+    });
+  },
+  
   getByGuestId: async (guestId) => {
     try {
       const q = query(
@@ -389,6 +408,83 @@ export const bookingsService = {
       };
     } catch (error) {
       console.error('Error fetching bookings by guest:', error);
+      throw error;
+    }
+  },
+  
+  getDashboardStats: async () => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      
+      const [allBookings, roomsSnapshot] = await Promise.all([
+        getDocs(collection(db, 'bookings')),
+        getDocs(collection(db, 'rooms')),
+      ]);
+      
+      const bookings = allBookings.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const rooms = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Calculate today's bookings
+      const todayBookings = bookings.filter(b => {
+        const bookingDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return bookingDate >= today;
+      });
+      
+      // Calculate this month's bookings
+      const monthBookings = bookings.filter(b => {
+        const bookingDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return bookingDate >= monthStart;
+      });
+      
+      // Calculate revenue for the month
+      const monthRevenue = monthBookings.reduce((sum, b) => sum + (parseFloat(b.total_amount || b.totalAmount || 0)), 0);
+      
+      // Calculate occupancy rate
+      const availableRooms = rooms.filter(r => r.status === 'available').length;
+      const totalRooms = rooms.length;
+      const occupancyRate = totalRooms > 0 ? ((totalRooms - availableRooms) / totalRooms) * 100 : 0;
+      
+      // Recent bookings (last 5)
+      const recentBookings = bookings
+        .sort((a, b) => {
+          const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+          return dateB - dateA;
+        })
+        .slice(0, 5);
+      
+      // Upcoming check-ins (next 7 days)
+      const nextWeek = new Date(today);
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      const upcomingCheckins = bookings
+        .filter(b => {
+          const checkIn = b.check_in_date || b.checkInDate;
+          if (!checkIn) return false;
+          const checkInDate = checkIn.toDate ? checkIn.toDate() : new Date(checkIn);
+          return checkInDate >= today && checkInDate <= nextWeek;
+        })
+        .sort((a, b) => {
+          const dateA = (a.check_in_date || a.checkInDate)?.toDate ? (a.check_in_date || a.checkInDate).toDate() : new Date(a.check_in_date || a.checkInDate);
+          const dateB = (b.check_in_date || b.checkInDate)?.toDate ? (b.check_in_date || b.checkInDate).toDate() : new Date(b.check_in_date || b.checkInDate);
+          return dateA - dateB;
+        })
+        .slice(0, 5);
+      
+      return {
+        success: true,
+        data: {
+          todayBookings: todayBookings.length,
+          monthBookings: monthBookings.length,
+          monthRevenue,
+          occupancyRate: Math.round(occupancyRate * 100) / 100,
+          recentBookings,
+          upcomingCheckins,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching booking dashboard stats:', error);
       throw error;
     }
   },
@@ -463,14 +559,40 @@ export const bookingsService = {
 };
 
 // Rooms service
-export const roomsService = createService('rooms');
+export const roomsService = {
+  ...createService('rooms'),
+  
+  getRooms: async (filters = {}) => {
+    return roomsService.getAll(filters);
+  },
+};
 
 // Guests service
-export const guestsService = createService('guests');
+export const guestsService = {
+  ...createService('guests'),
+  
+  getGuests: async (filters = {}) => {
+    return guestsService.getAll(filters);
+  },
+  
+  createGuest: async (data) => {
+    return guestsService.create({
+      first_name: data.first_name || data.firstName,
+      last_name: data.last_name || data.lastName,
+      email: data.email,
+      phone: data.phone,
+      address: data.address || '',
+    });
+  },
+};
 
 // HR service
 export const hrService = {
   ...createService('employees'),
+  
+  getEmployees: async () => {
+    return hrService.getAll();
+  },
   
   getDepartments: async () => {
     try {
@@ -481,6 +603,132 @@ export const hrService = {
       };
     } catch (error) {
       console.error('Error fetching departments:', error);
+      throw error;
+    }
+  },
+  
+  createDepartment: async (data) => {
+    return createService('departments').create(data);
+  },
+  
+  getDashboard: async () => {
+    try {
+      const [employeesSnapshot, departmentsSnapshot] = await Promise.all([
+        getDocs(query(collection(db, 'employees'), where('status', '==', 'active'))),
+        getDocs(collection(db, 'departments')),
+      ]);
+      
+      const employees = employeesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const departments = departmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Group employees by department
+      const employeesByDepartment = departments.map(dept => ({
+        name: dept.name,
+        count: employees.filter(emp => emp.department_id === dept.id || emp.departmentId === dept.id).length,
+      }));
+      
+      return {
+        success: true,
+        data: {
+          totalEmployees: employees.length,
+          employeesByDepartment,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching HR dashboard:', error);
+      throw error;
+    }
+  },
+};
+
+// Attendance service
+export const attendanceService = {
+  ...createService('attendance'),
+  
+  getAll: async (filters = {}) => {
+    try {
+      let q = query(collection(db, 'attendance'));
+      
+      if (filters.date) {
+        q = query(q, where('date', '==', filters.date));
+      }
+      if (filters.employee_id || filters.employeeId) {
+        q = query(q, where('employee_id', '==', filters.employee_id || filters.employeeId));
+      }
+      
+      q = query(q, orderBy('date', 'desc'));
+      
+      const snapshot = await getDocs(q);
+      return {
+        success: true,
+        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+      };
+    } catch (error) {
+      console.error('Error fetching attendance:', error);
+      throw error;
+    }
+  },
+};
+
+// Payroll service
+export const payrollService = {
+  ...createService('payroll'),
+  
+  getAll: async (filters = {}) => {
+    try {
+      let q = query(collection(db, 'payroll'));
+      
+      if (filters.month) {
+        q = query(q, where('month', '==', parseInt(filters.month)));
+      }
+      if (filters.year) {
+        q = query(q, where('year', '==', parseInt(filters.year)));
+      }
+      if (filters.employee_id || filters.employeeId) {
+        q = query(q, where('employee_id', '==', filters.employee_id || filters.employeeId));
+      }
+      
+      q = query(q, orderBy('year', 'desc'), orderBy('month', 'desc'));
+      
+      const snapshot = await getDocs(q);
+      return {
+        success: true,
+        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+      };
+    } catch (error) {
+      console.error('Error fetching payroll:', error);
+      throw error;
+    }
+  },
+  
+  generate: async (data) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not authenticated');
+      
+      // Generate payroll for an employee for a specific month/year
+      const payrollData = {
+        employee_id: data.employee_id || data.employeeId,
+        month: data.month,
+        year: data.year,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        createdBy: user.uid,
+      };
+      
+      // You may want to calculate base_salary, deductions, bonuses, net_salary here
+      // For now, we'll just create the record
+      const newDocRef = doc(collection(db, 'payroll'));
+      await setDoc(newDocRef, payrollData);
+      
+      return {
+        success: true,
+        message: 'Payroll generated successfully',
+        data: { id: newDocRef.id, ...payrollData },
+      };
+    } catch (error) {
+      console.error('Error generating payroll:', error);
       throw error;
     }
   },

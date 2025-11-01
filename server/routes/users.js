@@ -1,262 +1,166 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
-const { query } = require('../database/config');
-const { isAdmin } = require('../middleware/auth');
-
 const router = express.Router();
+const { db, auth } = require('../config/firebaseAdmin');
+const { verifyToken, checkRole } = require('../middleware/auth');
 
-// Get all users
-router.get('/', isAdmin, async (req, res) => {
+/**
+ * GET /api/users
+ * Get all users (admin only)
+ */
+router.get('/', verifyToken, checkRole('admin', 'super_admin'), async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, role, is_active } = req.query;
-    const offset = (page - 1) * limit;
+    let query = db.collection('users');
 
-    let whereClause = 'WHERE 1=1';
-    const params = [];
-
-    if (role) {
-      whereClause += ' AND role = $' + (params.length + 1);
-      params.push(role);
+    if (req.query.role) {
+      query = query.where('role', '==', req.query.role);
+    }
+    if (req.query.isActive !== undefined) {
+      query = query.where('isActive', '==', req.query.isActive === 'true');
     }
 
-    if (is_active !== undefined) {
-      whereClause += ' AND is_active = $' + (params.length + 1);
-      params.push(is_active === 'true');
-    }
-
-    const result = await query(
-      `SELECT id, username, email, first_name, last_name, role, phone, address, is_active, created_at
-       FROM users
-       ${whereClause}
-       ORDER BY created_at DESC
-       LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
-      [...params, Number(limit), Number(offset)]
-    );
-
-    // Get total count
-    const countResult = await query(
-      `SELECT COUNT(*) as total
-       FROM users
-       ${whereClause}`,
-      params
-    );
-
-    const total = parseInt(countResult.rows[0].total);
+    const snapshot = await query.orderBy('createdAt', 'desc').get();
+    const users = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     res.json({
       success: true,
-      data: result.rows,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
+      data: users,
     });
   } catch (error) {
-    console.error('Users error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching users' 
-    });
+    next(error);
   }
 });
 
-// Get user details
-router.get('/:id', isAdmin, async (req, res) => {
+/**
+ * GET /api/users/:id
+ * Get user by ID
+ */
+router.get('/:id', verifyToken, checkRole('admin', 'super_admin'), async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const doc = await db.collection('users').doc(req.params.id).get();
 
-    const result = await query(
-      'SELECT id, username, email, first_name, last_name, role, phone, address, is_active, created_at FROM users WHERE id = ?',
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+    if (!doc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
       });
     }
 
     res.json({
       success: true,
-      data: result.rows[0]
+      data: {
+        id: doc.id,
+        ...doc.data(),
+      },
     });
   } catch (error) {
-    console.error('User details error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching user details' 
-    });
+    next(error);
   }
 });
 
-// Update user
-router.put('/:id', isAdmin, [
-  body('first_name').optional().notEmpty().withMessage('First name cannot be empty'),
-  body('last_name').optional().notEmpty().withMessage('Last name cannot be empty'),
-  body('email').optional().isEmail().withMessage('Valid email is required'),
-  body('role').optional().isIn(['admin', 'manager', 'staff', 'user']).withMessage('Invalid role'),
-  body('phone').optional(),
-  body('address').optional(),
-  body('is_active').optional().isBoolean().withMessage('is_active must be a boolean')
-], async (req, res) => {
+/**
+ * POST /api/users
+ * Create a new user (admin only)
+ */
+router.post('/', verifyToken, checkRole('admin', 'super_admin'), async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Validation error',
-        errors: errors.array() 
+    const { email, password, username, firstName, lastName, phone, address, role = 'client' } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required',
       });
     }
 
-    const { id } = req.params;
-    const { first_name, last_name, email, role, phone, address, is_active } = req.body;
+    // Create user in Firebase Auth
+    const userRecord = await auth.createUser({
+      email,
+      password,
+      displayName: `${firstName || ''} ${lastName || ''}`.trim(),
+    });
 
-    // Check if email already exists (if being changed)
-    if (email) {
-      const existingUser = await query(
-        'SELECT id FROM users WHERE email = ? AND id != ?',
-        [email, id]
-      );
+    // Create user document in Firestore
+    const userData = {
+      username: username || email.split('@')[0],
+      email,
+      firstName: firstName || '',
+      lastName: lastName || '',
+      phone: phone || '',
+      address: address || '',
+      role,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-      if (existingUser.rows.length > 0) {
-        return res.status(409).json({ 
-          success: false, 
-          message: 'Email already exists' 
-        });
-      }
-    }
+    await db.collection('users').doc(userRecord.uid).set(userData);
 
-    const result = await query(
-      `UPDATE users SET 
-       first_name = COALESCE(?, first_name),
-       last_name = COALESCE(?, last_name),
-       email = COALESCE(?, email),
-       role = COALESCE(?, role),
-       phone = COALESCE(?, phone),
-       address = COALESCE(?, address),
-       is_active = COALESCE(?, is_active),
-       updated_at = CURRENT_TIMESTAMP
-       WHERE id = ?`,
-      [first_name, last_name, email, role, phone, address, is_active, id]
-    );
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      data: {
+        id: userRecord.uid,
+        ...userData,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+/**
+ * PUT /api/users/:id
+ * Update a user
+ */
+router.put('/:id', verifyToken, checkRole('admin', 'super_admin'), async (req, res, next) => {
+  try {
+    const updateData = {
+      ...req.body,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Update Firestore document
+    await db.collection('users').doc(req.params.id).update(updateData);
+
+    // Update Firebase Auth if email is being changed
+    if (req.body.email) {
+      await auth.updateUser(req.params.id, {
+        email: req.body.email,
       });
     }
 
     res.json({
       success: true,
       message: 'User updated successfully',
-      data: result.rows[0]
     });
   } catch (error) {
-    console.error('User update error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error updating user' 
-    });
+    next(error);
   }
 });
 
-// Delete user
-router.delete('/:id', isAdmin, async (req, res) => {
+/**
+ * DELETE /api/users/:id
+ * Delete a user
+ */
+router.delete('/:id', verifyToken, checkRole('super_admin'), async (req, res, next) => {
   try {
-    const { id } = req.params;
+    // Delete from Firestore
+    await db.collection('users').doc(req.params.id).delete();
 
-    // Check if user exists
-    const user = await query(
-      'SELECT id FROM users WHERE id = ?',
-      [id]
-    );
-
-    if (user.rows.length === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
-      });
-    }
-
-    // Check if user has any associated data
-    const hasBookings = await query(
-      'SELECT COUNT(*) as count FROM bookings WHERE created_by = ?',
-      [id]
-    );
-
-    if (parseInt(hasBookings.rows[0].count) > 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Cannot delete user with associated bookings' 
-      });
-    }
-
-    // Soft delete by setting is_active to false
-    await query(
-      'UPDATE users SET is_active = false, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [id]
-    );
+    // Delete from Firebase Auth
+    await auth.deleteUser(req.params.id);
 
     res.json({
       success: true,
-      message: 'User deactivated successfully'
+      message: 'User deleted successfully',
     });
   } catch (error) {
-    console.error('User deletion error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error deleting user' 
-    });
-  }
-});
-
-// Get user statistics
-router.get('/stats/overview', isAdmin, async (req, res) => {
-  try {
-    // Total users
-    const totalUsers = await query('SELECT COUNT(*) as count FROM users');
-    
-    // Active users
-    const activeUsers = await query('SELECT COUNT(*) as count FROM users WHERE is_active = true');
-    
-    // Users by role
-    const usersByRole = await query(`
-      SELECT role, COUNT(*) as count
-      FROM users
-      WHERE is_active = true
-      GROUP BY role
-      ORDER BY count DESC
-    `);
-
-    // Recent registrations
-    const recentUsers = await query(`
-      SELECT id, username, email, first_name, last_name, role, created_at
-      FROM users
-      ORDER BY created_at DESC
-      LIMIT 5
-    `);
-
-    res.json({
-      success: true,
-      data: {
-        totalUsers: parseInt(totalUsers.rows[0].count),
-        activeUsers: parseInt(activeUsers.rows[0].count),
-        usersByRole: usersByRole.rows,
-        recentUsers: recentUsers.rows
-      }
-    });
-  } catch (error) {
-    console.error('User stats error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching user statistics' 
-    });
+    next(error);
   }
 });
 
 module.exports = router;
+
