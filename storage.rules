@@ -1,0 +1,23 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Users can upload files to their own folder
+    match /users/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Public read, admin write for hotel assets
+    match /hotel/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if false; // Disable writes for now, or add admin check via Firestore
+    }
+    
+    // Booking attachments
+    match /bookings/{bookingId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}
+

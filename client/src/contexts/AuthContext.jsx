@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authService } from '../services/api';
+import { auth } from '../config/firebase';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext(undefined);
@@ -20,32 +21,40 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is already logged in on app start
   useEffect(() => {
-    const checkAuth = async () => {
+    const unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
       try {
-        const token = localStorage.getItem('token');
-        const cached = localStorage.getItem('user');
-        if (cached) {
-          try { setUser(JSON.parse(cached)); } catch {}
-        }
-        if (token) {
+        if (firebaseUser) {
+          // User is signed in
           try {
             const userData = await authService.getProfile();
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
           } catch (e) {
-            // ignore and rely on cached
+            console.error('Error fetching user profile:', e);
+            // Still set basic user info from Firebase Auth
+            setUser({
+              id: firebaseUser.uid,
+              email: firebaseUser.email,
+              username: firebaseUser.email?.split('@')[0] || '',
+            });
           }
+        } else {
+          // User is signed out
+          setUser(null);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
         }
       } catch (error) {
-        // Token is invalid, remove it
+        console.error('Auth state change error:', error);
+        setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       } finally {
         setIsLoading(false);
       }
-    };
+    });
 
-    checkAuth();
+    return () => unsubscribe();
   }, []);
 
   const login = async (username, password) => {
@@ -55,8 +64,11 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.login({ username, password });
       console.log('✅ AuthContext: Login service response:', response);
 
-      if (response.token && response.user) {
-        localStorage.setItem('token', response.token);
+      if (response.user) {
+        // Token is automatically handled by Firebase Auth
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+        }
         localStorage.setItem('user', JSON.stringify(response.user));
         setUser(response.user);
         console.log('💾 AuthContext: User data saved to localStorage and state');
@@ -67,7 +79,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('💥 AuthContext: Login error:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+      const errorMessage = error.message || 'Login failed';
       toast.error(errorMessage);
       throw error;
     } finally {
@@ -96,7 +108,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       toast.success('Profile updated successfully');
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Profile update failed';
+      const errorMessage = error.message || 'Profile update failed';
       toast.error(errorMessage);
       throw error;
     }
@@ -104,9 +116,11 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const userData = await authService.getProfile();
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      if (auth.currentUser) {
+        const userData = await authService.getProfile();
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      }
     } catch (error) {
       // If refresh fails, user might be logged out
       setUser(null);

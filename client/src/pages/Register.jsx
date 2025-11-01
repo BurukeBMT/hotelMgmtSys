@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services/api';
 import { UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -16,28 +17,20 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: data.username,
-          email: data.email,
-          password: data.password,
-          first_name: data.firstName,
-          last_name: data.lastName,
-          role: 'client',
-          phone: data.phone || null,
-          address: data.address || null,
-        }),
+      await authService.register({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        role: 'client',
+        phone: data.phone || null,
+        address: data.address || null,
       });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.message || 'Registration failed');
-      }
       toast.success('Registration successful. Please sign in.');
       navigate('/login');
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || 'Registration failed');
     }
   };
 

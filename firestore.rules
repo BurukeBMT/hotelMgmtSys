@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get user role
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             getUserRole() in ['super_admin', 'admin', 'manager'];
+    }
+    
+    // Helper function to check if user is owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Users can update their own profile (except role)
+      allow update: if isAuthenticated() && isOwner(userId) && 
+                     (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isAdmin());
+      // Only admins can create/delete users
+      allow create: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Bookings collection
+    match /bookings/{bookingId} {
+      // Authenticated users can read bookings
+      allow read: if isAuthenticated();
+      // Users can create bookings
+      allow create: if isAuthenticated();
+      // Users can update their own bookings, admins can update any
+      allow update: if isAuthenticated() && 
+                     (resource.data.guestId == request.auth.uid || isAdmin());
+      // Only admins can delete bookings
+      allow delete: if isAdmin();
+    }
+    
+    // Rooms collection
+    match /rooms/{roomId} {
+      // Anyone authenticated can read rooms
+      allow read: if isAuthenticated();
+      // Only admins can create/update/delete rooms
+      allow write: if isAdmin();
+    }
+    
+    // Guests collection
+    match /guests/{guestId} {
+      // Authenticated users can read guests
+      allow read: if isAuthenticated();
+      // Users can create guests, admins can update/delete
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+    
+    // Employees collection
+    match /employees/{employeeId} {
+      // Only HR/admins can access
+      allow read, write: if isAdmin();
+    }
+    
+    // Payments collection
+    match /payments/{paymentId} {
+      // Users can read their own payments
+      allow read: if isAuthenticated() && 
+                   (resource.data.userId == request.auth.uid || isAdmin());
+      // Users can create payments, admins can update/delete
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can read/update their own notifications
+      allow read: if isAuthenticated() && 
+                   (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      // Admins can create notifications
+      allow create: if isAdmin();
+      allow delete: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+    }
+    
+    // Pricing collection
+    match /pricing/{pricingId} {
+      // Anyone authenticated can read
+      allow read: if isAuthenticated();
+      // Only admins can write
+      allow write: if isAdmin();
+    }
+    
+    // Cabins collection
+    match /cabins/{cabinId} {
+      // Anyone authenticated can read
+      allow read: if isAuthenticated();
+      // Only admins can write
+      allow write: if isAdmin();
+    }
+    
+    // Departments collection
+    match /departments/{departmentId} {
+      // Anyone authenticated can read
+      allow read: if isAuthenticated();
+      // Only admins can write
+      allow write: if isAdmin();
+    }
+  }
+}
+

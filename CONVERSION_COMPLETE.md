@@ -44,10 +44,14 @@ npm run server          # Backend on port 5000
 cd client && npm start  # Frontend on port 3000/3001
 ```
 
-### **Access URLs:**
+### **Access URLs (Deprecated - Old Setup):**
 - **🏨 Hotel Management App**: http://localhost:3000 (or 3001)
-- **🔧 Server API**: http://localhost:5000/api/health
-- **🗄️ phpMyAdmin**: http://localhost/phpmyadmin
+- **🔧 Server API**: http://localhost:5000/api/health (⚠️ No longer exists - migrated to Firebase)
+- **🗄️ phpMyAdmin**: http://localhost/phpmyadmin (⚠️ No longer needed - migrated to Firestore)
+
+---
+
+**⚠️ NOTE: This project has been migrated to Firebase. See `FIREBASE_MIGRATION.md` for current setup.**
 
 ### **Login Credentials:**
 - **Email**: `admin@hotel.com`

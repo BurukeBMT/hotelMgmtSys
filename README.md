@@ -1,6 +1,6 @@
-# Hotel & HR Management System MVP
+# Hotel & HR Management System
 
-A complete Hotel Management System integrated with HR Management capabilities built with Node.js, MySQL, and React.js. This MVP provides essential hotel operations including booking management, room management, guest management, payment tracking, employee management, attendance tracking, and payroll generation.
+A complete Hotel Management System integrated with HR Management capabilities built with Firebase and React.js. This full-stack application provides essential hotel operations including booking management, room management, guest management, payment tracking, employee management, attendance tracking, and payroll generation.
 
 ## Features
 
@@ -19,10 +19,10 @@ A complete Hotel Management System integrated with HR Management capabilities bu
 - **Employee Reports**: Performance and statistics
 
 ### 🔐 Security & Authentication
-- **JWT Authentication**: Secure token-based authentication
-- **Role-based Access Control**: Admin, Manager, Staff roles
+- **Firebase Authentication**: Secure email/password authentication
+- **Role-based Access Control**: Admin, Manager, Staff, Client roles
+- **Firestore Security Rules**: Database-level security enforcement
 - **Input Validation**: Comprehensive form validation
-- **Rate Limiting**: API protection against abuse
 
 ### 🎨 Modern UI/UX
 - **Responsive Design**: Works on desktop, tablet, and mobile
@@ -32,20 +32,15 @@ A complete Hotel Management System integrated with HR Management capabilities bu
 
 ## Tech Stack
 
-### Backend
-- **Node.js**: Runtime environment
-- **Express.js**: Web framework
-- **MySQL**: Database (via XAMPP)
-- **JWT**: Authentication
-- **bcryptjs**: Password hashing
-- **express-validator**: Input validation
-- **helmet**: Security headers
-- **cors**: Cross-origin resource sharing
+### Backend Services (Firebase)
+- **Firebase Authentication**: User authentication and session management
+- **Cloud Firestore**: NoSQL database for data storage
+- **Firebase Storage**: File and image storage
 
 ### Frontend
 - **React.js**: UI framework
 - **React Router**: Navigation
-- **Axios**: API communication
+- **Firebase SDK**: Backend integration
 - **React Hot Toast**: Notifications
 - **Tailwind CSS**: Styling
 - **Lucide React**: Icons
@@ -54,8 +49,8 @@ A complete Hotel Management System integrated with HR Management capabilities bu
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- XAMPP (for MySQL database)
 - npm or yarn
+- Firebase account and project
 
 ### Setup Instructions
 
@@ -67,142 +62,96 @@ A complete Hotel Management System integrated with HR Management capabilities bu
 
 2. **Install dependencies**
    ```bash
-   # Install backend dependencies
-   npm install
-   
-   # Install frontend dependencies
    cd client
    npm install
-   cd ..
    ```
 
-3. **Environment Configuration**
-   ```bash
-   # The .env file is already created with default values
-   # Update database credentials, JWT secret, etc. if needed
-   # Default configuration works with XAMPP MySQL
-   ```
-
-4. **Set up the database**
-   ```bash
-   # Start XAMPP MySQL service
-   # Then run database setup
-   setup-mysql.bat  # Windows
-   ./setup-mysql.sh # Linux/Mac
-   ```
-
-5. **Start the development servers**
-   ```bash
-   # Start both backend and frontend
-   npm run dev
+3. **Firebase Configuration**
+   - Firebase is already configured in `client/src/config/firebase.js`
+   - Firebase project ID: `heaven-project-7bb83`
    
-   # Or start them separately:
-   # Backend only
-   npm run server
-   
-   # Frontend only
-   cd client && npm start
-   ```
+4. **Set up Firebase Console**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Select project: `heaven-project-7bb83`
+   - Enable Authentication → Email/Password provider
+   - Create Firestore Database (production mode)
+   - Apply security rules from `firestore.rules`
+   - Apply storage rules from `storage.rules`
 
-## API Endpoints
+5. **Start the development server**
+   ```bash
+   cd client
+   npm start
+   ```
+   
+   The app will open at `http://localhost:3000`
+
+## Firebase Services
+
+All data operations use Firebase SDK directly from the client:
 
 ### Authentication
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-- `GET /api/auth/profile` - Get user profile
+- `authService.login()` - User login
+- `authService.register()` - User registration
+- `authService.getProfile()` - Get user profile
+- `authService.updateProfile()` - Update user profile
 
-### Bookings
-- `GET /api/bookings` - List all bookings
-- `POST /api/bookings` - Create new booking
-- `PUT /api/bookings/:id` - Update booking
-- `GET /api/bookings/dashboard/stats` - Booking statistics
+### Data Collections (Firestore)
+- **users** - System users and authentication
+- **departments** - Hotel departments
+- **employees** - Employee information
+- **rooms** - Individual rooms with room types
+- **guests** - Guest profiles
+- **bookings** - Reservation records
+- **payments** - Payment transactions
+- **notifications** - User notifications
+- **pricing** - Price tracking data
+- **cabins** - Cabin listings (if applicable)
 
-### Rooms
-- `GET /api/rooms` - List all rooms
-- `GET /api/rooms/types` - List room types
-- `POST /api/rooms` - Add new room
-- `GET /api/rooms/availability` - Check room availability
+All services are available in `client/src/services/firebaseService.js`
 
-### Guests
-- `GET /api/guests` - List all guests
-- `POST /api/guests` - Add new guest
-- `PUT /api/guests/:id` - Update guest
-- `GET /api/guests/:id/bookings` - Guest booking history
+### Firestore Document Structure
 
-### HR Management
-- `GET /api/hr/employees` - List employees
-- `GET /api/hr/departments` - List departments
-- `POST /api/hr/employees` - Add employee
-- `GET /api/hr/dashboard` - HR statistics
+Documents use Firebase UID as document IDs where applicable. See `FIREBASE_MIGRATION.md` for detailed schema information.
 
-### Payments
-- `GET /api/payments` - List all payments
-- `POST /api/payments` - Create payment
-- `GET /api/payments/dashboard/stats` - Payment statistics
+## Authentication
 
-### Reports
-- `GET /api/reports/revenue` - Revenue reports
-- `GET /api/reports/occupancy` - Occupancy reports
-- `GET /api/reports/bookings` - Booking reports
-- `GET /api/reports/dashboard-summary` - Dashboard summary
-
-## Database Schema
-
-The system uses MySQL with the following main tables:
-
-- **users**: System users and authentication
-- **departments**: Hotel departments
-- **employees**: Employee information
-- **room_types**: Room categories and pricing
-- **rooms**: Individual rooms
-- **guests**: Guest profiles
-- **bookings**: Reservation records
-- **payments**: Payment transactions
-- **attendance**: Daily attendance records
-- **payroll**: Monthly payroll records
-
-## Default Credentials
-
-After running the database setup, you can log in with:
-
-- **Username**: admin
-- **Password**: admin123
+- Users can register with email/password
+- Login supports both username and email
+- Role-based access control (super_admin, admin, manager, staff, client)
+- Sessions persist automatically via Firebase Auth
 
 ## Development
 
 ### Project Structure
 ```
 hotel-management-system/
-├── server/                 # Backend code
-│   ├── database/          # Database configuration
-│   ├── middleware/        # Express middleware
-│   ├── routes/           # API routes
-│   └── index.js          # Server entry point
-├── client/               # Frontend code
+├── client/                       # Frontend code (React + Firebase)
 │   ├── src/
-│   │   ├── components/   # React components
-│   │   ├── contexts/     # React contexts
-│   │   ├── pages/        # Page components
-│   │   ├── services/     # API services
-│   │   └── App.tsx       # Main app component
-│   └── public/           # Static files
-├── package.json          # Backend dependencies
-└── client/package.json   # Frontend dependencies
+│   │   ├── components/          # React components
+│   │   ├── contexts/            # React contexts (AuthContext)
+│   │   ├── pages/               # Page components
+│   │   ├── services/            # Firebase services
+│   │   │   ├── api.jsx          # Service exports
+│   │   │   └── firebaseService.js # Firebase SDK operations
+│   │   ├── config/              # Firebase configuration
+│   │   │   └── firebase.js      # Firebase init
+│   │   └── App.jsx              # Main app component
+│   ├── public/                  # Static files
+│   └── package.json             # Frontend dependencies
+├── firestore.rules              # Firestore security rules
+├── storage.rules                # Firebase Storage rules
+├── FIREBASE_MIGRATION.md        # Detailed migration guide
+└── MIGRATION_SUMMARY.md         # Quick migration summary
 ```
 
 ### Available Scripts
-
-**Backend:**
-- `npm run server` - Start development server
-- `npm run setup-db` - Initialize database
 
 **Frontend:**
 - `npm start` - Start development server
 - `npm run build` - Build for production
 - `npm test` - Run tests
-
-**Both:**
-- `npm run dev` - Start both servers concurrently
+- `npm run lint` - Run ESLint
 
 ## Contributing
 
@@ -212,6 +161,29 @@ hotel-management-system/
 4. Add tests if applicable
 5. Submit a pull request
 
+## Deployment
+
+### Firebase Hosting (Recommended)
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting
+cd client && npm run build
+firebase deploy
+```
+
+### Alternative Static Hosting
+- Vercel
+- Netlify
+- GitHub Pages
+- Any static hosting service
+
+## Migration from MySQL
+
+This project was migrated from Node.js/Express/MySQL to Firebase. See:
+- `FIREBASE_MIGRATION.md` - Complete migration documentation
+- `MIGRATION_SUMMARY.md` - Quick reference
+
 ## License
 
 This project is licensed under the MIT License.
@@ -219,3 +191,7 @@ This project is licensed under the MIT License.
 ## Support
 
 For support and questions, please open an issue in the repository.
+
+For Firebase documentation:
+- [Firebase Docs](https://firebase.google.com/docs)
+- [Firestore Security Rules](https://firebase.google.com/docs/firestore/security/get-started)

@@ -1,17 +1,30 @@
-# 🎉 Hotel Management System - JavaScript Version Running Successfully!
+# 🎉 Hotel Management System - JavaScript Version
 
-## ✅ **Status: All Systems Operational**
+## ⚠️ **NOTE: This document is outdated**
 
-### 🖥️ **Services Running:**
+**This project has been migrated from Node.js/Express/MySQL to Firebase.**
+
+Current architecture:
+- **Frontend**: React.js with Firebase SDK
+- **Backend**: Firebase (Auth, Firestore, Storage)
+- **Database**: Cloud Firestore (NoSQL)
+
+See `FIREBASE_MIGRATION.md` and `MIGRATION_SUMMARY.md` for current setup instructions.
+
+---
+
+## ✅ **Historical Status (Pre-Migration):**
+
+### 🖥️ **Services Running (Old Setup):**
 - ✅ **Server**: Running on port 5000
 - ✅ **Client**: Running on port 3001 (React app)
-- ✅ **XAMPP**: MySQL and Apache services running
-- ✅ **Database**: Connected and operational
+- ✅ **XAMPP**: MySQL and Apache services running (deprecated)
+- ✅ **Database**: Connected and operational (deprecated)
 
-### 🌐 **Access URLs:**
+### 🌐 **Access URLs (Old Setup):**
 - **🏨 Hotel Management App**: http://localhost:3001
-- **🔧 Server API**: http://localhost:5000/api/health
-- **🗄️ phpMyAdmin**: http://localhost/phpmyadmin
+- **🔧 Server API**: http://localhost:5000/api/health (deprecated)
+- **🗄️ phpMyAdmin**: http://localhost/phpmyadmin (deprecated)
 
 ### 📊 **Default Login Credentials:**
 - **Username**: `admin`
