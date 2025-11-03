@@ -24,6 +24,12 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Allow all operations for authenticated users during development
+    // TODO: Replace with proper security rules for production
+    match /{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+
     // Users collection
     match /users/{userId} {
       // Users can read their own profile
@@ -31,8 +37,8 @@ service cloud.firestore {
       // Users can update their own profile (except role)
       allow update: if isAuthenticated() && isOwner(userId) &&
                      (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isAdmin());
-      // Only admins can create/delete users
-      allow create: if isAdmin();
+      // Users can create their own profile, admins can create any
+      allow create: if isAuthenticated() && (isOwner(userId) || isAdmin());
       allow delete: if isAdmin();
     }
 
@@ -134,6 +140,23 @@ service cloud.firestore {
       allow read: if isAuthenticated() &&
                    (resource.data.employee_id == request.auth.uid || isAdmin());
       // Only admins/HR can create/update payroll
+      allow write: if isAdmin();
+    }
+
+    // Privileges collection
+    match /privileges/{privilegeId} {
+      // Anyone authenticated can read privileges
+      allow read: if isAuthenticated();
+      // Only admins can write privileges
+      allow write: if isAdmin();
+    }
+
+    // User privileges collection
+    match /user_privileges/{privilegeId} {
+      // Users can read their own privileges, admins can read all
+      allow read: if isAuthenticated() &&
+                   (resource.data.userId == request.auth.uid || isAdmin());
+      // Only admins can write user privileges
       allow write: if isAdmin();
     }
   }

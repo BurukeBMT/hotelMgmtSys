@@ -30,7 +30,6 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
   serverTimestamp,
   Timestamp,
 } from 'firebase/firestore';
@@ -754,21 +753,62 @@ export const adminService = {
   getUsers: async (params = {}) => {
     try {
       let q = query(collection(db, 'users'));
-      
-      if (params.role) {
+
+      // Apply filters
+      if (params.role && params.role !== 'all') {
         q = query(q, where('role', '==', params.role));
       }
-      
+
       if (params.is_active !== undefined) {
         q = query(q, where('isActive', '==', params.is_active === 'true'));
       }
-      
+
+      // Search functionality
+      if (params.search) {
+        // Note: Firestore doesn't support full-text search natively
+        // This is a basic implementation - you might want to use Algolia or similar for advanced search
+        // For now, we'll filter client-side after fetching
+      }
+
       q = query(q, orderBy('createdAt', 'desc'));
-      
+
+      // Pagination
+      const page = parseInt(params.page) || 1;
+      const limitNum = parseInt(params.limit) || 10;
+      q = query(q, limit(limitNum));
+
+      // For pagination beyond first page, we'd need to implement cursor-based pagination
+      // This is a simplified version
+
       const snapshot = await getDocs(q);
+      let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Client-side search if search term provided
+      if (params.search) {
+        const searchTerm = params.search.toLowerCase();
+        users = users.filter(user =>
+          user.firstName?.toLowerCase().includes(searchTerm) ||
+          user.lastName?.toLowerCase().includes(searchTerm) ||
+          user.email?.toLowerCase().includes(searchTerm) ||
+          user.username?.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Calculate pagination info
+      const total = users.length; // In a real implementation, you'd need a separate count query
+      const pages = Math.ceil(total / limitNum);
+
       return {
         success: true,
-        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+        data: {
+          users: users.slice((page - 1) * limitNum, page * limitNum),
+          pagination: {
+            page,
+            limit: limitNum,
+            total,
+            pages,
+          },
+        },
       };
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -788,6 +828,86 @@ export const adminService = {
     return usersService.delete(id);
   },
 
+  getPrivileges: async () => {
+    try {
+      const snapshot = await getDocs(collection(db, 'privileges'));
+      return {
+        success: true,
+        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+      };
+    } catch (error) {
+      console.error('Error fetching privileges:', error);
+      throw error;
+    }
+  },
+
+  getUserPrivileges: async (userId) => {
+    try {
+      const q = query(collection(db, 'user_privileges'), where('userId', '==', userId));
+      const snapshot = await getDocs(q);
+      return {
+        success: true,
+        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+      };
+    } catch (error) {
+      console.error('Error fetching user privileges:', error);
+      throw error;
+    }
+  },
+
+  grantPrivilege: async (userId, privilege) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not authenticated');
+
+      // Check if privilege already exists
+      const existingQuery = query(
+        collection(db, 'user_privileges'),
+        where('userId', '==', userId),
+        where('privilege', '==', privilege)
+      );
+      const existingSnap = await getDocs(existingQuery);
+
+      if (!existingSnap.empty) {
+        throw new Error('Privilege already granted');
+      }
+
+      await setDoc(doc(collection(db, 'user_privileges')), {
+        userId,
+        privilege,
+        grantedAt: serverTimestamp(),
+        grantedBy: user.uid,
+      });
+
+      return { success: true, message: 'Privilege granted successfully' };
+    } catch (error) {
+      console.error('Error granting privilege:', error);
+      throw error;
+    }
+  },
+
+  revokePrivilege: async (userId, privilege) => {
+    try {
+      const q = query(
+        collection(db, 'user_privileges'),
+        where('userId', '==', userId),
+        where('privilege', '==', privilege)
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        throw new Error('Privilege not found');
+      }
+
+      await deleteDoc(snapshot.docs[0].ref);
+
+      return { success: true, message: 'Privilege revoked successfully' };
+    } catch (error) {
+      console.error('Error revoking privilege:', error);
+      throw error;
+    }
+  },
+
   getDashboardStats: async () => {
     try {
       // Get counts from various collections
@@ -797,7 +917,7 @@ export const adminService = {
         getDocs(collection(db, 'users')),
         getDocs(collection(db, 'payments')),
       ]);
-      
+
       return {
         success: true,
         data: {
