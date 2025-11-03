@@ -57,11 +57,11 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = async (username, password) => {
+  const login = async (email, password) => {
     try {
       setIsLoading(true);
       console.log('🚀 AuthContext: Starting login process');
-      const response = await authService.login({ username, password });
+      const response = await authService.login({ email, password });
       console.log('✅ AuthContext: Login service response:', response);
 
       if (response.user) {

@@ -1,45 +1,82 @@
-const { initializeApp } = require('firebase/app');
-const { getAuth, createUserWithEmailAndPassword } = require('firebase/auth');
-const { getFirestore, collection, doc, setDoc, serverTimestamp } = require('firebase/firestore');
+/**
+ * Server-side setup script using Firebase Admin SDK.
+ *
+ * This script uses the Admin SDK (service account) so it bypasses Firestore
+ * security rules and can seed users and initial data. To run:
+ *
+ * 1) Create a Firebase service account key JSON in the Firebase Console
+ *    and save it as `serviceAccountKey.json` in the project root OR set
+ *    the environment variable GOOGLE_APPLICATION_CREDENTIALS to its path.
+ *
+ * 2) Install dependencies if not already:
+ *    npm install firebase-admin
+ *
+ * 3) Run:
+ *    node setup-admin.js
+ */
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAsFuX2L8ZgzRyf0ThYnKwkHDahqC9i-yE",
-  authDomain: "heaven-project-7bb83.firebaseapp.com",
-  projectId: "heaven-project-7bb83",
-  storageBucket: "heaven-project-7bb83.firebasestorage.app",
-  messagingSenderId: "958216608835",
-  appId: "1:958216608835:web:844f2244c2197a377d08f6"
-};
+const admin = require('firebase-admin');
+const path = require('path');
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Try to load service account from local file first, otherwise rely on ADC
+let serviceAccount;
+try {
+  serviceAccount = require(path.join(__dirname, 'serviceAccountKey.json'));
+} catch (e) {
+  // If not present, we will attempt to use Application Default Credentials (ADC)
+  serviceAccount = null;
+}
+
+// If no local key and no env var pointing to credentials, give a clear error and exit
+if (!serviceAccount && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  console.error('\n❌ Firebase Admin credentials not found.');
+  console.error('Provide a service account key JSON (recommended) or set Application Default Credentials.');
+  console.error('\nOption A (recommended - Firebase Console):');
+  console.error('  1. Go to Firebase Console → Project Settings → Service accounts → Generate new private key.');
+  console.error('  2. Save the JSON file to your project root as: serviceAccountKey.json');
+  console.error('  3. Run: export GOOGLE_APPLICATION_CREDENTIALS="/c/Users/geber/Documents/hotelMgmtSys/serviceAccountKey.json"');
+  console.error('\nOption B (gcloud ADC):');
+  console.error('  1. Install and authenticate gcloud.');
+  console.error('  2. Run: gcloud auth application-default login');
+  console.error('\nAfter providing credentials, re-run: node setup-admin.js\n');
+  process.exit(1);
+}
+
+const initOptions = serviceAccount
+  ? { credential: admin.credential.cert(serviceAccount) }
+  : { credential: admin.credential.applicationDefault() };
+
+admin.initializeApp(initOptions);
+const auth = admin.auth();
+const db = admin.firestore();
 
 async function setupAdminAndData() {
   try {
     console.log('🚀 Starting admin and data setup...\n');
 
-    // 1. Create Admin User
+    // 1. Create or get Admin User
     console.log('1️⃣ Creating admin user...');
-    let userCredential;
+    let userRecord;
     try {
-      userCredential = await createUserWithEmailAndPassword(auth, 'admin@hotel.com', 'admin123');
-      console.log('✅ Admin user created in Firebase Auth');
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        console.log('⚠️ Admin user already exists, skipping creation');
-        // Try to sign in to get user credential
-        const { signInWithEmailAndPassword } = require('firebase/auth');
-        userCredential = await signInWithEmailAndPassword(auth, 'admin@hotel.com', 'admin123');
+      userRecord = await auth.getUserByEmail('admin@hotel.com');
+      console.log('⚠️ Admin user already exists, skipping creation');
+    } catch (err) {
+      if (err.code === 'auth/user-not-found' || err.message?.includes('no user record')) {
+        userRecord = await auth.createUser({
+          email: 'admin@hotel.com',
+          emailVerified: true,
+          password: 'admin123',
+          displayName: 'Admin User',
+        });
+        console.log('✅ Admin user created in Firebase Auth');
       } else {
-        throw error;
+        throw err;
       }
     }
 
-    const user = userCredential.user;
-    console.log(`👤 User UID: ${user.uid}`);
+    console.log(`👤 User UID: ${userRecord.uid}`);
 
-    // Create user document in Firestore
+    // Create or update user document in Firestore
     const userData = {
       username: 'admin',
       email: 'admin@hotel.com',
@@ -49,12 +86,12 @@ async function setupAdminAndData() {
       address: 'Hotel Admin Office',
       role: 'super_admin',
       isActive: true,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
-    await setDoc(doc(db, 'users', user.uid), userData);
-    console.log('✅ Admin user document created in Firestore\n');
+    await db.doc(`users/${userRecord.uid}`).set(userData, { merge: true });
+    console.log('✅ Admin user document created/updated in Firestore\n');
 
     // 2. Create Privileges
     console.log('2️⃣ Creating privileges...');
@@ -69,9 +106,9 @@ async function setupAdminAndData() {
     ];
 
     for (const privilege of privileges) {
-      await setDoc(doc(collection(db, 'privileges')), {
+      await db.collection('privileges').add({
         ...privilege,
-        createdAt: serverTimestamp()
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
     console.log('✅ Privileges created\n');
@@ -86,10 +123,10 @@ async function setupAdminAndData() {
     ];
 
     for (const room of rooms) {
-      await setDoc(doc(collection(db, 'rooms')), {
+      await db.collection('rooms').add({
         ...room,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
     console.log('✅ Sample rooms created\n');
@@ -104,9 +141,9 @@ async function setupAdminAndData() {
     ];
 
     for (const dept of departments) {
-      await setDoc(doc(collection(db, 'departments')), {
+      await db.collection('departments').add({
         ...dept,
-        createdAt: serverTimestamp()
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
     console.log('✅ Sample departments created\n');
@@ -121,6 +158,7 @@ async function setupAdminAndData() {
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     console.error('Stack:', error.stack);
+    process.exitCode = 1;
   }
 }
 
