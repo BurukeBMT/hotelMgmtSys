@@ -24,12 +24,6 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Allow all operations for authenticated users during development
-    // TODO: Replace with proper security rules for production
-    match /{document=**} {
-      allow read, write: if isAuthenticated();
-    }
-
     // Users collection
     match /users/{userId} {
       // Users can read their own profile
@@ -37,8 +31,8 @@ service cloud.firestore {
       // Users can update their own profile (except role)
       allow update: if isAuthenticated() && isOwner(userId) &&
                      (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isAdmin());
-      // Users can create their own profile, admins can create any
-      allow create: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Only admins can create/delete users
+      allow create: if isAdmin();
       allow delete: if isAdmin();
     }
 
