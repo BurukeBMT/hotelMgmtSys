@@ -139,9 +139,14 @@ service cloud.firestore {
   }
 }
 
-// STORAGE RULES
+// STORAGE RULES - DISABLED (Requires billing for Firebase Storage)
+// To enable storage, uncomment and enable billing in Firebase Console
+/*
 service firebase.storage {
   match /b/{bucket}/o {
+    // Storage disabled to avoid billing requirements
+    // Uncomment below rules if you enable billing and want file storage
+
     // Users can upload files to their own folder
     match /users/{userId}/{allPaths=**} {
       allow read: if request.auth != null;
@@ -161,4 +166,4 @@ service firebase.storage {
     }
   }
 }
-
+*/
