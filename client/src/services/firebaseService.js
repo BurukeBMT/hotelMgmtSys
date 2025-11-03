@@ -16,6 +16,8 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   onAuthStateChanged,
+} from 'firebase/auth';
+import {
   // Firestore
   collection,
   doc,
