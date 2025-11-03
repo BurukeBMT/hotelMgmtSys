@@ -1,39 +1,41 @@
 rules_version = '2';
+
+// FIRESTORE RULES
 service cloud.firestore {
   match /databases/{database}/documents {
     // Helper function to check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     // Helper function to get user role
     function getUserRole() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
     }
-    
+
     // Helper function to check if user is admin
     function isAdmin() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              getUserRole() in ['super_admin', 'admin', 'manager'];
     }
-    
+
     // Helper function to check if user is owner
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
+
     // Users collection
     match /users/{userId} {
       // Users can read their own profile
       allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
       // Users can update their own profile (except role)
-      allow update: if isAuthenticated() && isOwner(userId) && 
+      allow update: if isAuthenticated() && isOwner(userId) &&
                      (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isAdmin());
       // Only admins can create/delete users
       allow create: if isAdmin();
       allow delete: if isAdmin();
     }
-    
+
     // Bookings collection
     match /bookings/{bookingId} {
       // Authenticated users can read bookings
@@ -41,12 +43,12 @@ service cloud.firestore {
       // Users can create bookings
       allow create: if isAuthenticated();
       // Users can update their own bookings, admins can update any
-      allow update: if isAuthenticated() && 
+      allow update: if isAuthenticated() &&
                      (resource.data.guestId == request.auth.uid || isAdmin());
       // Only admins can delete bookings
       allow delete: if isAdmin();
     }
-    
+
     // Rooms collection
     match /rooms/{roomId} {
       // Anyone authenticated can read rooms
@@ -54,7 +56,7 @@ service cloud.firestore {
       // Only admins can create/update/delete rooms
       allow write: if isAdmin();
     }
-    
+
     // Guests collection
     match /guests/{guestId} {
       // Authenticated users can read guests
@@ -63,36 +65,36 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
-    
+
     // Employees collection
     match /employees/{employeeId} {
       // Only HR/admins can access
       allow read, write: if isAdmin();
     }
-    
+
     // Payments collection
     match /payments/{paymentId} {
       // Users can read their own payments
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                    (resource.data.userId == request.auth.uid || isAdmin());
       // Users can create payments, admins can update/delete
       allow create: if isAuthenticated();
       allow update, delete: if isAdmin();
     }
-    
+
     // Notifications collection
     match /notifications/{notificationId} {
       // Users can read/update their own notifications
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                    (resource.data.userId == request.auth.uid || isAdmin());
-      allow update: if isAuthenticated() && 
+      allow update: if isAuthenticated() &&
                      resource.data.userId == request.auth.uid;
       // Admins can create notifications
       allow create: if isAdmin();
-      allow delete: if isAuthenticated() && 
+      allow delete: if isAuthenticated() &&
                      resource.data.userId == request.auth.uid;
     }
-    
+
     // Pricing collection
     match /pricing/{pricingId} {
       // Anyone authenticated can read
@@ -100,7 +102,7 @@ service cloud.firestore {
       // Only admins can write
       allow write: if isAdmin();
     }
-    
+
     // Cabins collection
     match /cabins/{cabinId} {
       // Anyone authenticated can read
@@ -108,7 +110,7 @@ service cloud.firestore {
       // Only admins can write
       allow write: if isAdmin();
     }
-    
+
     // Departments collection
     match /departments/{departmentId} {
       // Anyone authenticated can read
@@ -116,23 +118,46 @@ service cloud.firestore {
       // Only admins can write
       allow write: if isAdmin();
     }
-    
+
     // Attendance collection
     match /attendance/{attendanceId} {
       // Employees can read their own attendance, admins can read all
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                    (resource.data.employee_id == request.auth.uid || isAdmin());
       // Only admins/HR can create/update attendance
       allow write: if isAdmin();
     }
-    
+
     // Payroll collection
     match /payroll/{payrollId} {
       // Employees can read their own payroll, admins can read all
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                    (resource.data.employee_id == request.auth.uid || isAdmin());
       // Only admins/HR can create/update payroll
       allow write: if isAdmin();
+    }
+  }
+}
+
+// STORAGE RULES
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Users can upload files to their own folder
+    match /users/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Public read, admin write for hotel assets
+    match /hotel/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if false; // Disable writes for now, or add admin check via Firestore
+    }
+
+    // Booking attachments
+    match /bookings/{bookingId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
     }
   }
 }
