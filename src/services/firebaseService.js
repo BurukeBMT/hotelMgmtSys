@@ -41,6 +41,7 @@ import {
   deleteObject,
 } from 'firebase/storage';
 import { auth, db, storage } from '../config/firebase';
+import { UserPlus, Calendar, CreditCard } from 'lucide-react';
 
 // Helper to convert Firestore timestamp to JS date
 const convertTimestamp = (timestamp) => {
@@ -198,11 +199,27 @@ export const authService = {
       const user = auth.currentUser;
       if (!user) throw new Error('Not authenticated');
       
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userRef = doc(db, 'users', user.uid);
+      let userDoc = await getDoc(userRef);
+
+      // If user document doesn't exist, create a basic profile from the auth user
       if (!userDoc.exists()) {
-        throw new Error('User not found');
+        const defaultProfile = {
+          username: user.email ? user.email.split('@')[0] : '',
+          email: user.email || '',
+          firstName: user.displayName ? user.displayName.split(' ')[0] : '',
+          lastName: user.displayName ? user.displayName.split(' ').slice(1).join(' ') : '',
+          role: 'client',
+          phone: '',
+          address: '',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+
+        await setDoc(userRef, defaultProfile);
+        userDoc = await getDoc(userRef);
       }
-      
+
       return normalizeUser(userDoc, user);
     } catch (error) {
       console.error('Get profile error:', error);
@@ -315,8 +332,10 @@ const createService = (collectionName) => ({
       if (!user) throw new Error('Not authenticated');
       
       const newDocRef = doc(collection(db, collectionName));
+      // Remove any undefined fields to avoid Firestore rejecting the write
+      const sanitized = Object.fromEntries(Object.entries(data || {}).filter(([_, v]) => v !== undefined));
       const docData = {
-        ...data,
+        ...sanitized,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         createdBy: user.uid,
@@ -383,9 +402,20 @@ export const bookingsService = {
   },
   
   createBooking: async (data) => {
+    // basic validation to avoid creating documents with undefined fields
+    const guestId = data.guest_id || data.guestId;
+    const roomId = data.room_id || data.roomId;
+
+    if (!guestId) {
+      throw new Error('guestId is required to create a booking');
+    }
+    if (!roomId && roomId !== 0) {
+      throw new Error('roomId is required to create a booking');
+    }
+
     return bookingsService.create({
-      guest_id: data.guest_id || data.guestId,
-      room_id: data.room_id || data.roomId,
+      guest_id: guestId,
+      room_id: roomId,
       check_in_date: data.check_in_date || data.checkInDate,
       check_out_date: data.check_out_date || data.checkOutDate,
       adults: data.adults || 1,
@@ -851,6 +881,60 @@ export const adminService = {
       };
     } catch (error) {
       console.error('Error fetching user privileges:', error);
+      throw error;
+    }
+  },
+
+  getRecentActivity: async (limitNum = 8) => {
+    try {
+      // Fetch recent users (signups), bookings, and payments
+      const [usersSnap, bookingsSnap, paymentsSnap] = await Promise.all([
+        getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(limitNum))),
+        getDocs(query(collection(db, 'bookings'), orderBy('createdAt', 'desc'), limit(limitNum))),
+        getDocs(query(collection(db, 'payments'), orderBy('createdAt', 'desc'), limit(limitNum))),
+      ]);
+
+      const activities = [];
+
+      usersSnap.docs.forEach(docSnap => {
+        const d = docSnap.data();
+        activities.push({
+          type: 'user_signup',
+          message: `New user signed up: ${d.firstName || ''} ${d.lastName || ''}`.trim(),
+          time: convertTimestamp(d.createdAt) || new Date().toISOString(),
+          icon: UserPlus,
+          color: 'bg-green-500',
+        });
+      });
+
+      bookingsSnap.docs.forEach(docSnap => {
+        const d = docSnap.data();
+        activities.push({
+          type: 'booking',
+          message: `New booking by ${d.guest_name || d.guest_id || 'Guest'}`,
+          time: convertTimestamp(d.createdAt) || new Date().toISOString(),
+          icon: Calendar,
+          color: 'bg-blue-500',
+        });
+      });
+
+      paymentsSnap.docs.forEach(docSnap => {
+        const d = docSnap.data();
+        activities.push({
+          type: 'payment',
+          message: `Payment received: $${d.amount || '0'}`,
+          time: convertTimestamp(d.createdAt) || new Date().toISOString(),
+          icon: CreditCard,
+          color: 'bg-yellow-500',
+        });
+      });
+
+      // Sort activities by time desc and limit
+      activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+      return { success: true, data: activities.slice(0, limitNum) };
+    } catch (error) {
+      console.error('Error fetching recent activity:', error);
       throw error;
     }
   },

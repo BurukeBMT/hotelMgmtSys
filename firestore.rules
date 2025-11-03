@@ -26,13 +26,18 @@ service cloud.firestore {
 
     // Users collection
     match /users/{userId} {
-      // Users can read their own profile
-      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Allow owners to read their profile (get). Avoid using isAdmin() here
+      // to prevent potential recursive get() evaluations in rules.
+      allow get: if isAuthenticated() && isOwner(userId);
+
       // Users can update their own profile (except role)
       allow update: if isAuthenticated() && isOwner(userId) &&
                      (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isAdmin());
-      // Only admins can create/delete users
-      allow create: if isAdmin();
+
+      // Allow users to create their own profile document (during sign-up)
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+
+      // Only admins can delete users
       allow delete: if isAdmin();
     }
 

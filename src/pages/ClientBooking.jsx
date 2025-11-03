@@ -40,7 +40,8 @@ const ClientBooking = () => {
       // 2) create booking
       const bookingPayload = await bookingsService.createBooking({
         guest_id: guest.id,
-        room_id: parseInt(values.roomId, 10),
+        // keep room id as string (Firestore doc id), do not parseInt
+        room_id: values.roomId,
         check_in_date: values.checkIn,
         check_out_date: values.checkOut,
         adults: parseInt(values.adults, 10),

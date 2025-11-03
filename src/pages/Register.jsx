@@ -27,6 +27,14 @@ const Register = () => {
         phone: data.phone || null,
         address: data.address || null,
       });
+      // Firebase automatically signs in newly created users. For a typical
+      // registration flow we want the user to confirm email / sign in manually,
+      // so sign out the newly-created session and redirect to login.
+      try {
+        await authService.logout();
+      } catch (e) {
+        // ignore logout errors
+      }
       toast.success('Registration successful. Please sign in.');
       navigate('/login');
     } catch (error) {

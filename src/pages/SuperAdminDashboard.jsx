@@ -3,17 +3,14 @@ import {
   Users, 
   Shield, 
   Settings, 
-  BarChart3, 
   UserPlus, 
   Key, 
   Activity,
-  TrendingUp,
-  Building,
   CreditCard,
   Calendar,
   AlertCircle
 } from 'lucide-react';
-import { adminService } from '../services/api';
+import { adminService, usersService, bookingsService, paymentsService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const SuperAdminDashboard = () => {
@@ -27,6 +24,9 @@ const SuperAdminDashboard = () => {
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedView, setSelectedView] = useState(null);
+  const [listData, setListData] = useState([]);
+  const [listLoading, setListLoading] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -50,8 +50,84 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  const resolveList = (res) => {
+    if (!res) return [];
+    // If API returns { success, data }
+    if (res.success && res.data) {
+      // data might be an object like { users, pagination }
+      if (Array.isArray(res.data)) return res.data;
+      if (res.data.users) return res.data.users;
+      return res.data;
+    }
+    // If service returns directly an array
+    if (Array.isArray(res)) return res;
+    // If { data: [...] }
+    if (res.data && Array.isArray(res.data)) return res.data;
+    return [];
+  };
+
+  const formatDate = (value) => {
+    if (!value) return '-';
+    // Firestore Timestamp has toDate()
+    if (value.toDate && typeof value.toDate === 'function') {
+      return value.toDate().toLocaleString();
+    }
+    try {
+      return new Date(value).toLocaleString();
+    } catch (e) {
+      return String(value);
+    }
+  };
+
+  const loadListFor = async (type) => {
+    try {
+      setSelectedView(type);
+      setListLoading(true);
+      setListData([]);
+
+      let res;
+  switch (type) {
+        case 'totalUsers':
+          res = await usersService.getAll();
+          setListData(resolveList(res));
+          break;
+        case 'adminUsers':
+          // list users with role 'admin' (exclude super_admin)
+          res = await usersService.getAll({ role: 'admin' });
+          setListData(resolveList(res));
+          break;
+        case 'totalBookings':
+          res = await bookingsService.getAll();
+          setListData(resolveList(res));
+          break;
+        case 'revenue':
+          res = await paymentsService.getAll();
+          setListData(resolveList(res));
+          break;
+        case 'activeUsers':
+          // get users where isActive == true
+          res = await usersService.getAll({ isActive: true });
+          setListData(resolveList(res));
+          break;
+        case 'pendingBookings':
+          res = await bookingsService.getAll({ status: 'pending' });
+          setListData(resolveList(res));
+          break;
+        default:
+          setListData([]);
+      }
+    } catch (error) {
+      console.error('Error loading list:', error);
+      toast.error('Failed to load list');
+      setListData([]);
+    } finally {
+      setListLoading(false);
+    }
+  };
+
   const statCards = [
     {
+      key: 'totalUsers',
       title: 'Total Users',
       value: stats.totalUsers,
       icon: Users,
@@ -60,6 +136,7 @@ const SuperAdminDashboard = () => {
       changeType: 'positive'
     },
     {
+      key: 'adminUsers',
       title: 'Admin Users',
       value: stats.totalAdmins,
       icon: Shield,
@@ -68,6 +145,7 @@ const SuperAdminDashboard = () => {
       changeType: 'positive'
     },
     {
+      key: 'totalBookings',
       title: 'Total Bookings',
       value: stats.totalBookings,
       icon: Calendar,
@@ -76,14 +154,16 @@ const SuperAdminDashboard = () => {
       changeType: 'positive'
     },
     {
+      key: 'revenue',
       title: 'Revenue',
-      value: `$${stats.totalRevenue.toLocaleString()}`,
+      value: `$${Number(stats.totalRevenue || 0).toLocaleString()}`,
       icon: CreditCard,
       color: 'bg-yellow-500',
       change: '+15%',
       changeType: 'positive'
     },
     {
+      key: 'activeUsers',
       title: 'Active Users',
       value: stats.activeUsers,
       icon: Activity,
@@ -92,6 +172,7 @@ const SuperAdminDashboard = () => {
       changeType: 'positive'
     },
     {
+      key: 'pendingBookings',
       title: 'Pending Bookings',
       value: stats.pendingBookings,
       icon: AlertCircle,
@@ -134,7 +215,7 @@ const SuperAdminDashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {statCards.map((stat, index) => (
-          <div key={index} className="bg-white overflow-hidden shadow rounded-lg">
+          <div key={index} className="bg-white overflow-hidden shadow rounded-lg cursor-pointer" onClick={() => loadListFor(stat.key)}>
             <div className="p-5">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -164,6 +245,74 @@ const SuperAdminDashboard = () => {
           </div>
         ))}
       </div>
+
+      {/* List panel when a stat is selected */}
+      {selectedView && (
+        <div className="bg-white shadow rounded-lg mt-6">
+          <div className="px-4 py-5 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                {selectedView === 'totalUsers' && 'All Users'}
+                {selectedView === 'adminUsers' && 'Admin Users'}
+                {selectedView === 'totalBookings' && 'Bookings'}
+                {selectedView === 'revenue' && 'Payments'}
+                {selectedView === 'activeUsers' && 'Active Users'}
+                {selectedView === 'pendingBookings' && 'Pending Bookings'}
+              </h3>
+              <button className="text-sm text-blue-600" onClick={() => { setSelectedView(null); setListData([]); }}>Close</button>
+            </div>
+
+            {listLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {listData && listData.length > 0 ? listData.map((item, idx) => (
+                      <tr key={item.id || idx}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{idx + 1}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {selectedView.includes('Users') || selectedView === 'totalUsers' || selectedView === 'adminUsers' || selectedView === 'activeUsers'
+                            ? `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email || item.username
+                            : selectedView === 'totalBookings' || selectedView === 'pendingBookings'
+                              ? `Booking: ${item.room_id || item.roomNumber || item.id}`
+                              : selectedView === 'revenue'
+                                ? `Payment: $${item.amount || '0'}`
+                                : ''}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {selectedView.includes('Users') || selectedView === 'totalUsers' || selectedView === 'adminUsers' || selectedView === 'activeUsers'
+                            ? item.email || item.username || ''
+                            : selectedView === 'totalBookings' || selectedView === 'pendingBookings'
+                              ? `Guest: ${item.guest_name || item.guest_id || item.guestId || 'N/A'}`
+                              : selectedView === 'revenue'
+                                ? `User: ${item.userId || item.email || 'N/A'}`
+                                : ''}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(item.createdAt || item.time)}</td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">No records found</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="bg-white shadow rounded-lg">
