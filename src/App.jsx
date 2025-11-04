@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Landing from './pages/Landing';
-import Register from './pages/Register';
+
 import ClientHome from './pages/ClientHome';
 import ClientBooking from './pages/ClientBooking';
 import ClientProfile from './pages/ClientProfile';
@@ -21,6 +21,7 @@ import HR from './pages/HR';
 import Payments from './pages/Payments';
 import Reports from './pages/Reports';
 import Users from './pages/Users';
+import Register from './pages/Admin/Register';
 
 const SuperAdminRoute = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -50,19 +51,8 @@ const AdminRoute = ({ children }) => {
   return isAdmin ? <>{children}</> : <Navigate to="/client" />;
 };
 
-const ClientRoute = ({ children }) => {
-  const { user, isAuthenticated, isLoading } = useAuth();
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
-  const isClient = !['super_admin', 'admin', 'manager', 'staff'].includes(user?.role);
-  return isClient ? <>{children}</> : <Navigate to="/admin" />;
-};
+// Client pages are public — no auth guard required. If you want to reintroduce
+// auth for clients later, implement a redirect based on `useAuth()` here.
 
 const App = () => {
   return (
@@ -71,7 +61,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* Registration page removed from client-facing routes. */}
 
           <Route
             path="/super-admin"
@@ -93,6 +83,7 @@ const App = () => {
             <Route path="payment-gateway" element={<Payments />} />
             <Route path="reports" element={<Reports />} />
             <Route path="users" element={<Users />} />
+            <Route path="register" element={<Register />} />
           </Route>
 
           <Route
@@ -116,38 +107,10 @@ const App = () => {
             <Route path="users" element={<Users />} />
           </Route>
 
-          <Route
-            path="/client"
-            element={
-              <ClientRoute>
-                <ClientHome />
-              </ClientRoute>
-            }
-          />
-          <Route
-            path="/client/book"
-            element={
-              <ClientRoute>
-                <ClientBooking />
-              </ClientRoute>
-            }
-          />
-          <Route
-            path="/client/profile"
-            element={
-              <ClientRoute>
-                <ClientProfile />
-              </ClientRoute>
-            }
-          />
-          <Route
-            path="/client/bookings"
-            element={
-              <ClientRoute>
-                <ClientBookings />
-              </ClientRoute>
-            }
-          />
+          <Route path="/client" element={<ClientHome />} />
+          <Route path="/client/book" element={<ClientBooking />} />
+          <Route path="/client/profile" element={<ClientProfile />} />
+          <Route path="/client/bookings" element={<ClientBookings />} />
         </Routes>
         <Toaster
           position="top-right"

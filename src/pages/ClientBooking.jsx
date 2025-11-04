@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { roomsService, guestsService, bookingsService } from '../services/api';
 import toast from 'react-hot-toast';
@@ -7,6 +8,7 @@ const ClientBooking = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [rooms, setRooms] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const loadRooms = async () => {
@@ -54,6 +56,15 @@ const ClientBooking = () => {
       }
 
       toast.success('Booking created successfully');
+
+      // redirect to payment page with booking id and amount (if room has price)
+      const bookingId = bookingPayload?.data?.id || bookingPayload?.id || null;
+      const selectedRoom = rooms.find(r => r.id === values.roomId) || {};
+      const amount = parseFloat(selectedRoom.price || selectedRoom.base_price || selectedRoom.basePrice || selectedRoom.rate || 10.00);
+
+      if (bookingId) {
+        navigate('/payments', { state: { bookingId, amount } });
+      }
     } catch (e) {
       toast.error(e.message || 'Failed to create booking');
     } finally {

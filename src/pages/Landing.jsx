@@ -1,13 +1,18 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Building2, LogIn, UserPlus, ArrowRight } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Building2, LogIn, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Landing = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   React.useEffect(() => {
+    // Don't redirect if already on landing page
+    if (location.pathname === '/' && isAuthenticated) {
+      return;
+    }
     if (isAuthenticated) {
       if (['admin', 'manager', 'staff'].includes(user?.role)) {
         navigate('/admin', { replace: true });
@@ -15,7 +20,7 @@ const Landing = () => {
         navigate('/client', { replace: true });
       }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, location.pathname]);
 
   const handleAdmin = () => {
     if (isAuthenticated) {
@@ -30,11 +35,8 @@ const Landing = () => {
   };
 
   const handleClient = () => {
-    if (isAuthenticated && !['admin', 'manager', 'staff'].includes(user?.role)) {
-      navigate('/client');
-      return;
-    }
-    navigate('/register');
+    // Navigate to client page when client portal button is clicked
+    navigate('/client');
   };
 
   return (
@@ -75,8 +77,9 @@ const Landing = () => {
                 <Link to="/login" className="inline-flex items-center hover:text-gray-800">
                   <LogIn className="mr-2 h-4 w-4" /> Sign in
                 </Link>
-                <Link to="/register" className="inline-flex items-center hover:text-gray-800">
-                  <UserPlus className="mr-2 h-4 w-4" /> Create account
+                {/* Direct registration removed — users should sign in instead */}
+                <Link to="/login" className="inline-flex items-center hover:text-gray-800">
+                  <LogIn className="mr-2 h-4 w-4" /> Sign in
                 </Link>
               </div>
             </div>

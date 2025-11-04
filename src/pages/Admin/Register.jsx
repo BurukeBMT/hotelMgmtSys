@@ -1,8 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { authService } from '../services/api';
+import { useAuth } from '../../contexts/AuthContext';
+import { authService } from '../../services/api';
 import { UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -23,20 +23,13 @@ const Register = () => {
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: 'client',
+        role: data.role || 'client',
         phone: data.phone || null,
         address: data.address || null,
       });
-      // Firebase automatically signs in newly created users. For a typical
-      // registration flow we want the user to confirm email / sign in manually,
-      // so sign out the newly-created session and redirect to login.
-      try {
-        await authService.logout();
-      } catch (e) {
-        // ignore logout errors
-      }
-      toast.success('Registration successful. Please sign in.');
-      navigate('/login');
+      // After admin creates a user, show success and stay on admin pages
+      toast.success('User created successfully.');
+      navigate('/super-admin', { replace: true });
     } catch (error) {
       toast.error(error.message || 'Registration failed');
     }
@@ -49,8 +42,8 @@ const Register = () => {
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
             <UserPlus className="h-6 w-6 text-blue-600" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
-          <p className="mt-2 text-center text-sm text-gray-600">Book rooms and manage your reservations</p>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create a user account</h2>
+          <p className="mt-2 text-center text-sm text-gray-600">Create accounts for clients or staff from the admin panel.</p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -127,6 +120,16 @@ const Register = () => {
             </div>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Role</label>
+            <select {...register('role')} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
+              <option value="client">Client</option>
+              <option value="staff">Staff</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
@@ -134,9 +137,6 @@ const Register = () => {
           >
             Create account
           </button>
-          <p className="text-center text-sm text-gray-600">
-            Already have an account? <button type="button" className="text-blue-600 hover:underline" onClick={() => navigate('/login')}>Sign in</button>
-          </p>
         </form>
       </div>
     </div>
@@ -144,5 +144,3 @@ const Register = () => {
 };
 
 export default Register;
-
-

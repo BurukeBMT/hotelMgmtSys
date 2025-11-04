@@ -1,11 +1,15 @@
-# TODO: Integrate Firebase Authentication Throughout Project
+# TODO List
 
-## Tasks
+## Completed Tasks
 
-- [x] Update src/routes/auth.js to use Firebase Auth for registration, login, and profile management, storing user data in Firestore
-- [x] Update src/middleware/rbac.js to use Firestore for role hierarchy and privilege checks instead of SQL
-- [x] Verify index.js and middlewares are consistent with Firebase integration
-- [x] Remove or adapt SQL dependencies for auth-related operations in routes/auth.js
-- [x] Test authentication flow with Firebase
-- [ ] Verify role-based access control works with Firestore
-- [ ] Update any other routes that depend on SQL user data to use Firestore
+- [x] Remove the Register.jsx file entirely
+- [x] Place registration behind an admin-only route (already done via /super-admin/register)
+- [x] Fix the lint errors (started with bookings.js) - ran lint:fix, fixed some warnings
+- [x] Remove localhost/register page for client directly give the landing page when client portal button is touched
+- [x] Fixed client portal button to navigate to client page (/client)
+
+## Remaining Tasks
+
+- [ ] Fix remaining lint warnings in various files (54 warnings total, mostly unused variables and missing dependencies)
+- [ ] Test the application to ensure client portal button navigates to landing page
+- [ ] Verify admin registration is working properly

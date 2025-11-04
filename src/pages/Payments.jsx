@@ -1,11 +1,53 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import StripeCheckout from '../components/Payments/StripeCheckout';
+import { bookingsService, roomsService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const Payments = () => {
-  const handleSuccess = (paymentIntent) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { bookingId: stateBookingId, amount: stateAmount } = location.state || {};
+
+  const handleSuccess = async (paymentIntent) => {
     console.log('Payment succeeded:', paymentIntent);
-    // You can call backend to record success or update UI
+
+    try {
+      const bookingId = stateBookingId || paymentIntent?.bookingId;
+      if (!bookingId) {
+        toast.success('Payment recorded');
+        return;
+      }
+
+      // Fetch booking to get room id
+      let bookingDoc = null;
+      try {
+        const res = await bookingsService.getById(bookingId);
+        bookingDoc = res?.data || null;
+      } catch (e) {
+        console.warn('Could not fetch booking after payment:', e.message || e);
+      }
+
+      // Mark booking as confirmed and paymentStatus paid
+      await bookingsService.update(bookingId, { status: 'confirmed', paymentStatus: 'paid' });
+
+      // If booking has a room, mark it as occupied (reduce availability)
+      const roomId = bookingDoc?.room_id || bookingDoc?.roomId || bookingDoc?.room_id;
+      if (roomId) {
+        try {
+          await roomsService.update(roomId, { status: 'occupied' });
+        } catch (e) {
+          console.warn('Failed to update room status:', e.message || e);
+        }
+      }
+
+      toast.success('Payment successful and booking confirmed');
+      // Redirect client to their bookings page
+      navigate('/client/bookings');
+    } catch (err) {
+      console.error('Error post-payment:', err);
+      toast.error('Payment recorded but post-processing failed');
+    }
   };
 
   const handleCheckout = async () => {
@@ -38,13 +80,16 @@ const Payments = () => {
     */
   };
 
+  const bookingId = stateBookingId || null;
+  const amount = stateAmount || 10.00;
+
   return (
     <div>
       <h1 className="text-2xl font-semibold text-gray-900">Payments</h1>
       <p className="mt-1 text-sm text-gray-500">Make a payment for a booking</p>
       <div className="mt-6 bg-white shadow rounded-lg p-6">
         <div className="space-y-4">
-          <StripeCheckout bookingId={1} amount={10.00} currency="USD" onSuccess={handleSuccess} />
+          <StripeCheckout bookingId={bookingId} amount={amount} currency="USD" onSuccess={handleSuccess} />
           <div className="mt-4">
             <button onClick={handleCheckout} className="px-4 py-2 bg-green-600 text-white rounded">Pay with Stripe Checkout</button>
           </div>

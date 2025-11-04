@@ -438,7 +438,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [result] = await db.query(`
+    const result = await query(`
       SELECT b.*, g.first_name, g.last_name, g.email, g.phone, g.address,
              r.room_number, r.floor, rt.name as room_type, rt.base_price, rt.amenities,
              u.first_name as created_by_name, u.last_name as created_by_last_name
@@ -449,8 +449,7 @@ router.get('/:id', async (req, res) => {
       LEFT JOIN users u ON b.created_by = u.id
       WHERE b.id = ?
     `, [id]);
-
-    if (result.length === 0) {
+    if (result[0].length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Booking not found'
@@ -459,7 +458,7 @@ router.get('/:id', async (req, res) => {
 
     res.json({
       success: true,
-      data: result[0]
+      data: result[0][0]
     });
   } catch (error) {
     console.error('Booking details error:', error);
@@ -474,21 +473,21 @@ router.get('/:id', async (req, res) => {
 router.get('/dashboard/stats', async (req, res) => {
   try {
     // Total bookings today
-    const todayBookingsRes = await db.query(`
+    const todayBookingsRes = await query(`
       SELECT COUNT(*) as count
       FROM bookings
       WHERE DATE(created_at) = CURDATE()
     `);
 
     // Total bookings this month
-    const monthBookingsRes = await db.query(`
+    const monthBookingsRes = await query(`
       SELECT COUNT(*) as count
       FROM bookings
       WHERE MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())
     `);
 
     // Revenue this month
-    const monthRevenueRes = await db.query(`
+    const monthRevenueRes = await query(`
       SELECT COALESCE(SUM(total_amount), 0) as total
       FROM bookings
       WHERE MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())
@@ -496,7 +495,7 @@ router.get('/dashboard/stats', async (req, res) => {
     `);
 
     // Occupancy rate
-    const occupancyRateRes = await db.query(`
+    const occupancyRateRes = await query(`
       SELECT 
         ROUND(
           (COUNT(CASE WHEN status IN ('confirmed', 'checked_in') THEN 1 END) * 100.0 / 
@@ -508,7 +507,7 @@ router.get('/dashboard/stats', async (req, res) => {
     `);
 
     // Upcoming check-ins (next 7 days)
-    const upcomingCheckinsRes = await db.query(`
+    const upcomingCheckinsRes = await query(`
       SELECT b.*, g.first_name, g.last_name, r.room_number
       FROM bookings b
       LEFT JOIN guests g ON b.guest_id = g.id
@@ -520,7 +519,7 @@ router.get('/dashboard/stats', async (req, res) => {
     `);
 
     // Recent bookings
-    const recentBookingsRes = await db.query(`
+    const recentBookingsRes = await query(`
       SELECT b.*, g.first_name, g.last_name, r.room_number
       FROM bookings b
       LEFT JOIN guests g ON b.guest_id = g.id
@@ -528,16 +527,15 @@ router.get('/dashboard/stats', async (req, res) => {
       ORDER BY b.created_at DESC
       LIMIT 5
     `);
-
     res.json({
       success: true,
       data: {
-        todayBookings: parseInt(todayBookingsRes.rows[0].count),
-        monthBookings: parseInt(monthBookingsRes.rows[0].count),
-        monthRevenue: parseFloat(monthRevenueRes.rows[0].total),
-        occupancyRate: parseFloat(occupancyRateRes.rows[0].rate || 0),
-        upcomingCheckins: upcomingCheckinsRes.rows,
-        recentBookings: recentBookingsRes.rows
+        todayBookings: parseInt(todayBookingsRes[0][0].count || 0),
+        monthBookings: parseInt(monthBookingsRes[0][0].count || 0),
+        monthRevenue: parseFloat(monthRevenueRes[0][0].total || 0),
+        occupancyRate: parseFloat(occupancyRateRes[0][0].rate || 0),
+        upcomingCheckins: upcomingCheckinsRes[0],
+        recentBookings: recentBookingsRes[0]
       }
     });
   } catch (error) {
