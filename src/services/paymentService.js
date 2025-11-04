@@ -3,7 +3,7 @@ import axios from 'axios';
 // Payment service for handling Stripe payments without Firebase Functions
 // This creates a simple payment API that can be hosted on any backend
 
-const API_BASE_URL = process.env.REACT_APP_PAYMENT_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.REACT_APP_PAYMENT_API_URL || 'https://payment-api-f7uu.onrender.com/api';
 
 class PaymentService {
   constructor() {
