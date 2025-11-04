@@ -82,8 +82,8 @@ service cloud.firestore {
       // Users can read their own payments
       allow read: if isAuthenticated() &&
                    (resource.data.userId == request.auth.uid || isAdmin());
-      // Users can create payments, admins can update/delete
-      allow create: if isAuthenticated();
+      // Allow public creation for payment processing (booking flow)
+      allow create: if true;
       allow update, delete: if isAdmin();
     }
 

@@ -84,20 +84,21 @@ const Payments = () => {
     }
   };
 
+// ===== Stripe Checkout (Disabled) Code Commented Out =====
+/*
   const handleCheckout = async () => {
     // NOTE: Stripe checkout sessions require a backend server for security
     // The secret key cannot be exposed in client-side code.
     // To implement Stripe payments in a Firebase-only app, you have two options:
     // 1. Use Firebase Functions (Cloud Functions) to create checkout sessions
     // 2. Use Stripe Checkout redirect mode with Firebase Functions as webhook handler
-    // 
+    //
     // Example Firebase Function endpoint would be:
     // https://your-region-your-project.cloudfunctions.net/createCheckoutSession
     toast.error('Payment processing requires Firebase Functions. Please set up a Cloud Function for Stripe integration.');
     console.warn('Stripe integration requires backend - implement via Firebase Functions');
-    
+
     // Uncomment and modify when Firebase Function is set up:
-    /*
     try {
       const res = await fetch('https://your-region-your-project.cloudfunctions.net/createCheckoutSession', {
         method: 'POST',
@@ -111,8 +112,8 @@ const Payments = () => {
     } catch (e) {
       console.error('Error creating checkout session', e);
     }
-    */
   };
+*/
 
   const bookingId = stateBookingId || null;
   const amount = stateAmount || 10.00;
@@ -124,9 +125,12 @@ const Payments = () => {
       <div className="mt-6 bg-white shadow rounded-lg p-6">
         <div className="space-y-4">
           <StripeCheckout bookingId={bookingId} amount={amount} currency="USD" onSuccess={handleSuccess} />
+          {/* ===== Stripe Checkout (Disabled) Button Commented Out ===== */}
+          {/*
           <div className="mt-4">
             <button onClick={handleCheckout} className="px-4 py-2 bg-green-600 text-white rounded">Pay with Stripe Checkout</button>
           </div>
+          */}
         </div>
       </div>
     </div>

@@ -39,27 +39,35 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
       }
 
       if (paymentIntent.status === 'succeeded') {
-        // Record the payment in Firestore
-        const paymentRef = doc(db, 'payments', paymentIntent.id);
-        await setDoc(paymentRef, {
-          id: paymentIntent.id,
-          bookingId,
-          amount: amount,
-          currency: currency,
-          status: 'completed',
-          paymentMethod: 'card',
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
+        try {
+          // Record the payment in Firestore (with error handling)
+          const paymentRef = doc(db, 'payments', paymentIntent.id);
+          await setDoc(paymentRef, {
+            id: paymentIntent.id,
+            bookingId,
+            amount: amount,
+            currency: currency,
+            status: 'completed',
+            paymentMethod: 'card',
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
 
-        // Update booking status to paid
-        const bookingRef = doc(db, 'bookings', bookingId);
-        await setDoc(bookingRef, {
-          paymentStatus: 'paid',
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
+          // Update booking status to paid (only if bookingId exists)
+          if (bookingId) {
+            const bookingRef = doc(db, 'bookings', bookingId);
+            await setDoc(bookingRef, {
+              paymentStatus: 'paid',
+              updatedAt: serverTimestamp(),
+            }, { merge: true });
+          }
 
-        onSuccess && onSuccess(paymentIntent);
+          onSuccess && onSuccess(paymentIntent);
+        } catch (firestoreError) {
+          console.warn('Firestore update failed, but payment succeeded:', firestoreError);
+          // Still call onSuccess since the payment went through
+          onSuccess && onSuccess(paymentIntent);
+        }
       } else {
         throw new Error('Payment was not successful');
       }
