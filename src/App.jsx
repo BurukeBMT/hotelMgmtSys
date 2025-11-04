@@ -108,7 +108,9 @@ const App = () => {
           </Route>
 
           <Route path="/client" element={<ClientHome />} />
-          <Route path="/client/book" element={<ClientBooking />} />
+          <Route path="/book/:roomId" element={<ClientBooking />} />
+          <Route path="/payments" element={<Payments />} />
+          <Route path="/dashboard" element={<ClientBookings />} />
           <Route path="/client/profile" element={<ClientProfile />} />
           <Route path="/client/bookings" element={<ClientBookings />} />
         </Routes>

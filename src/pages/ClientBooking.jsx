@@ -1,12 +1,14 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { roomsService, guestsService, bookingsService } from '../services/api';
 import toast from 'react-hot-toast';
 
 const ClientBooking = () => {
+  const { roomId } = useParams();
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [rooms, setRooms] = React.useState([]);
+
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
 
@@ -16,12 +18,15 @@ const ClientBooking = () => {
         const data = await roomsService.getRooms();
         const list = data?.data || data; // normalize
         setRooms(list || []);
+
+        // If roomId is provided in URL, pre-select that room
+        // Note: Room selection is handled by defaultValue in the select element
       } catch (e) {
         toast.error('Failed to load rooms');
       }
     };
     loadRooms();
-  }, []);
+  }, [roomId]);
 
   const onSubmit = async (values) => {
     try {
@@ -104,7 +109,7 @@ const ClientBooking = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
             <label className="block text-sm font-medium text-gray-700">Room</label>
-            <select {...register('roomId', { required: 'Required' })} className={`mt-1 block w-full rounded-md border ${errors.roomId ? 'border-red-300' : 'border-gray-300'} px-3 py-2`}>
+            <select {...register('roomId', { required: 'Required' })} defaultValue={roomId || ''} className={`mt-1 block w-full rounded-md border ${errors.roomId ? 'border-red-300' : 'border-gray-300'} px-3 py-2`}>
               <option value="">Select room</option>
               {rooms.map((r) => (
                 <option key={r.id} value={r.id}>

@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  Shield, 
-  Settings, 
-  UserPlus, 
-  Key, 
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Users,
+  Shield,
+  Settings,
+  UserPlus,
+  Key,
   Activity,
   CreditCard,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Home,
+  Plus,
+  Edit,
+  Trash2,
+  Upload,
+  X
 } from 'lucide-react';
-import { adminService, usersService, bookingsService, paymentsService } from '../services/api';
+import { adminService, usersService, bookingsService, paymentsService, roomsService, authService } from '../services/api';
+import { storageService } from '../services/storage';
 import toast from 'react-hot-toast';
 
 const SuperAdminDashboard = () => {
@@ -20,7 +27,8 @@ const SuperAdminDashboard = () => {
     totalBookings: 0,
     totalRevenue: 0,
     activeUsers: 0,
-    pendingBookings: 0
+    pendingBookings: 0,
+    totalRooms: 0
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,18 +43,109 @@ const SuperAdminDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      // Load dashboard statistics
-      const statsResponse = await adminService.getDashboardStats();
-      setStats(statsResponse.data);
+      // Load dashboard statistics and compute missing fields
+      const [statsResponse, usersResponse, bookingsResponse, paymentsResponse, roomsResponse, activityResponse] = await Promise.all([
+        adminService.getDashboardStats(),
+        usersService.getAll(),
+        bookingsService.getAll(),
+        paymentsService.getAll(),
+        roomsService.getAll(),
+        adminService.getRecentActivity(),
+      ]);
+
+      const rawStats = statsResponse?.data || {};
+      const users = Array.isArray(usersResponse?.data) ? usersResponse.data : (usersResponse?.data?.users || []);
+      const bookings = Array.isArray(bookingsResponse?.data) ? bookingsResponse.data : (bookingsResponse?.data || []);
+      const payments = Array.isArray(paymentsResponse?.data) ? paymentsResponse.data : (paymentsResponse?.data || []);
+      const rooms = Array.isArray(roomsResponse?.data) ? roomsResponse.data : (roomsResponse?.data?.rooms || []);
+
+      const totalUsers = users.length;
+      const totalAdmins = users.filter(u => (u.role || '').toLowerCase() === 'admin' || (u.role || '').toLowerCase() === 'super_admin').length;
+      const activeUsers = users.filter(u => u.isActive === undefined ? true : !!u.isActive).length;
+      const pendingBookings = bookings.filter(b => (b.status || '').toLowerCase() === 'pending').length;
+
+      setStats({
+        totalUsers: totalUsers || rawStats.totalUsers || rawStats.total_users || 0,
+        totalAdmins: totalAdmins || rawStats.totalAdmins || 0,
+        totalBookings: rawStats.totalBookings || bookings.length || 0,
+        totalRevenue: rawStats.totalRevenue || (payments.reduce((s, p) => s + (parseFloat(p.amount || p.total || 0)), 0)),
+        activeUsers: activeUsers || rawStats.activeUsers || 0,
+        pendingBookings: pendingBookings || rawStats.pendingBookings || 0,
+        totalRooms: rawStats.totalRooms || rooms.length || 0,
+      });
 
       // Load recent activity
-      const activityResponse = await adminService.getRecentActivity();
-      setRecentActivity(activityResponse.data);
+      setRecentActivity(activityResponse?.data || []);
     } catch (error) {
       toast.error('Failed to load dashboard data');
       console.error('Dashboard error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+
+
+  // Add Admin modal state
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({ email: '', password: '', firstName: '', lastName: '' });
+  const [privilegesModal, setPrivilegesModal] = useState({ open: false, user: null, availablePrivileges: [], userPrivileges: [] });
+
+  const handleAddAdmin = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        email: newAdmin.email,
+        password: newAdmin.password,
+        username: newAdmin.email ? newAdmin.email.split('@')[0] : '',
+        firstName: newAdmin.firstName,
+        lastName: newAdmin.lastName,
+        role: 'admin'
+      };
+      await authService.register(payload);
+      toast.success('Admin user created');
+      setShowAddAdmin(false);
+      setNewAdmin({ email: '', password: '', firstName: '', lastName: '' });
+      loadDashboardData();
+    } catch (err) {
+      console.error('Create admin error:', err);
+      toast.error(err.message || 'Failed to create admin');
+    }
+  };
+
+  const openPrivilegesFor = async (user) => {
+    try {
+      setPrivilegesModal(prev => ({ ...prev, open: true, user }));
+      const [allPrivsResp, userPrivsResp] = await Promise.all([adminService.getPrivileges(), adminService.getUserPrivileges(user.id)]);
+      setPrivilegesModal({ open: true, user, availablePrivileges: allPrivsResp.data || [], userPrivileges: userPrivsResp.data || [] });
+    } catch (err) {
+      console.error('Open privileges error:', err);
+      toast.error('Failed to load privileges');
+    }
+  };
+
+  const grantPrivilege = async (priv) => {
+    try {
+      await adminService.grantPrivilege(privilegesModal.user.id, priv);
+      toast.success('Privilege granted');
+      // refresh
+      const userPrivsResp = await adminService.getUserPrivileges(privilegesModal.user.id);
+      setPrivilegesModal(prev => ({ ...prev, userPrivileges: userPrivsResp.data || [] }));
+    } catch (err) {
+      console.error('Grant error:', err);
+      toast.error(err.message || 'Failed to grant');
+    }
+  };
+
+  const revokePrivilege = async (priv) => {
+    try {
+      await adminService.revokePrivilege(privilegesModal.user.id, priv);
+      toast.success('Privilege revoked');
+      const userPrivsResp = await adminService.getUserPrivileges(privilegesModal.user.id);
+      setPrivilegesModal(prev => ({ ...prev, userPrivileges: userPrivsResp.data || [] }));
+    } catch (err) {
+      console.error('Revoke error:', err);
+      toast.error(err.message || 'Failed to revoke');
     }
   };
 
@@ -111,6 +210,10 @@ const SuperAdminDashboard = () => {
           break;
         case 'pendingBookings':
           res = await bookingsService.getAll({ status: 'pending' });
+          setListData(resolveList(res));
+          break;
+        case 'totalRooms':
+          res = await roomsService.getAll();
           setListData(resolveList(res));
           break;
         default:
@@ -179,6 +282,15 @@ const SuperAdminDashboard = () => {
       color: 'bg-red-500',
       change: '-2',
       changeType: 'negative'
+    },
+    {
+      key: 'totalRooms',
+      title: 'Total Rooms',
+      value: stats.totalRooms,
+      icon: Home,
+      color: 'bg-orange-500',
+      change: '+1',
+      changeType: 'positive'
     }
   ];
 
@@ -200,11 +312,26 @@ const SuperAdminDashboard = () => {
             <p className="mt-2 text-gray-600">Manage your hotel management system</p>
           </div>
           <div className="flex space-x-3">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
+            <button onClick={() => setShowAddAdmin(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center">
               <UserPlus className="h-4 w-4 mr-2" />
               Add Admin
             </button>
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center">
+            <button onClick={async () => {
+              // open a simple selection list to pick a user to manage privileges
+              try {
+                const usersResp = await usersService.getAll({ role: 'admin' });
+                const usersList = usersResp?.data?.users || usersResp?.data || [];
+                if (usersList.length === 0) {
+                  toast('No admin users found');
+                  return;
+                }
+                // default to first admin user for quick access
+                openPrivilegesFor(usersList[0]);
+              } catch (err) {
+                console.error('Open manage privileges error:', err);
+                toast.error('Failed to open privileges');
+              }
+            }} className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 flex items-center">
               <Key className="h-4 w-4 mr-2" />
               Manage Privileges
             </button>
@@ -258,6 +385,7 @@ const SuperAdminDashboard = () => {
                 {selectedView === 'revenue' && 'Payments'}
                 {selectedView === 'activeUsers' && 'Active Users'}
                 {selectedView === 'pendingBookings' && 'Pending Bookings'}
+                {selectedView === 'totalRooms' && 'Rooms'}
               </h3>
               <button className="text-sm text-blue-600" onClick={() => { setSelectedView(null); setListData([]); }}>Close</button>
             </div>
@@ -430,6 +558,62 @@ const SuperAdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Admin Modal */}
+      {showAddAdmin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium mb-4">Add Admin</h3>
+            <form onSubmit={handleAddAdmin} className="space-y-3">
+              <input required placeholder="First name" value={newAdmin.firstName} onChange={e => setNewAdmin(prev => ({ ...prev, firstName: e.target.value }))} className="w-full border px-3 py-2 rounded" />
+              <input required placeholder="Last name" value={newAdmin.lastName} onChange={e => setNewAdmin(prev => ({ ...prev, lastName: e.target.value }))} className="w-full border px-3 py-2 rounded" />
+              <input required type="email" placeholder="Email" value={newAdmin.email} onChange={e => setNewAdmin(prev => ({ ...prev, email: e.target.value }))} className="w-full border px-3 py-2 rounded" />
+              <input required type="password" placeholder="Password" value={newAdmin.password} onChange={e => setNewAdmin(prev => ({ ...prev, password: e.target.value }))} className="w-full border px-3 py-2 rounded" />
+              <div className="flex justify-end space-x-2">
+                <button type="button" onClick={() => setShowAddAdmin(false)} className="px-3 py-2 bg-gray-100 rounded">Cancel</button>
+                <button type="submit" className="px-3 py-2 bg-blue-600 text-white rounded">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Privileges Modal */}
+      {privilegesModal.open && privilegesModal.user && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium">Manage Privileges — {privilegesModal.user.firstName || privilegesModal.user.email}</h3>
+              <button onClick={() => setPrivilegesModal({ open: false, user: null, availablePrivileges: [], userPrivileges: [] })} className="text-sm text-gray-500">Close</button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-medium mb-2">Available Privileges</h4>
+                <ul className="space-y-2">
+                  {privilegesModal.availablePrivileges.map(p => (
+                    <li key={p.id || p.name} className="flex items-center justify-between border px-3 py-2 rounded">
+                      <span>{p.name || p.privilege || p.title}</span>
+                      <button onClick={() => grantPrivilege(p.privilege || p.name)} className="text-sm text-green-600">Grant</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Granted Privileges</h4>
+                <ul className="space-y-2">
+                  {privilegesModal.userPrivileges.map(up => (
+                    <li key={up.id || up.privilege} className="flex items-center justify-between border px-3 py-2 rounded">
+                      <span>{up.privilege}</span>
+                      <button onClick={() => revokePrivilege(up.privilege)} className="text-sm text-red-600">Revoke</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

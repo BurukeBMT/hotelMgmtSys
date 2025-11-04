@@ -7,6 +7,7 @@
 - [x] Fix the lint errors (started with bookings.js) - ran lint:fix, fixed some warnings
 - [x] Remove localhost/register page for client directly give the landing page when client portal button is touched
 - [x] Fixed client portal button to navigate to client page (/client)
+- [x] Updated ClientHome.jsx to show landing page style when not authenticated
 
 ## Remaining Tasks
 

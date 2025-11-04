@@ -29,9 +29,9 @@ const ClientBookings = () => {
   };
 
   const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = booking.booking_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         booking.guest?.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         booking.guest?.last_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (booking.booking_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (booking.guest?.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (booking.guest?.last_name || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
     return matchesSearch && matchesStatus;
   });

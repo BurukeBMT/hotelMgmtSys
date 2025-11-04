@@ -1,12 +1,14 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import StripeCheckout from '../components/Payments/StripeCheckout';
-import { bookingsService, roomsService } from '../services/api';
+import { bookingsService, roomsService, authService } from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const Payments = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { bookingId: stateBookingId, amount: stateAmount } = location.state || {};
 
   const handleSuccess = async (paymentIntent) => {
@@ -17,6 +19,37 @@ const Payments = () => {
       if (!bookingId) {
         toast.success('Payment recorded');
         return;
+      }
+
+      // If user is not authenticated, create a Firebase Auth user using booking form data
+      if (!isAuthenticated) {
+        try {
+          // Fetch booking to get guest data
+          const bookingRes = await bookingsService.getById(bookingId);
+          const booking = bookingRes?.data;
+          if (booking) {
+            // Find guest data from booking
+            const guestRes = await bookingsService.getAll({ id: booking.guest_id });
+            const guest = guestRes?.data?.find(g => g.id === booking.guest_id);
+
+            if (guest) {
+              // Create Firebase Auth user
+              await authService.register({
+                email: guest.email,
+                password: 'TempPass123!', // Temporary password - user should change later
+                firstName: guest.first_name,
+                lastName: guest.last_name,
+                phone: guest.phone,
+                address: guest.address,
+                role: 'client'
+              });
+              toast.success('Account created! Please check your email for login details.');
+            }
+          }
+        } catch (authError) {
+          console.warn('Could not create user account:', authError.message);
+          // Continue with payment processing even if account creation fails
+        }
       }
 
       // Fetch booking to get room id
@@ -42,8 +75,8 @@ const Payments = () => {
       }
 
       toast.success('Payment successful and booking confirmed');
-      // Redirect client to their bookings page
-      navigate('/client/bookings');
+      // Redirect client to their dashboard
+      navigate('/dashboard');
     } catch (err) {
       console.error('Error post-payment:', err);
       toast.error('Payment recorded but post-processing failed');

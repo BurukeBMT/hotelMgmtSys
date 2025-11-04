@@ -45,19 +45,19 @@ service cloud.firestore {
     match /bookings/{bookingId} {
       // Authenticated users can read bookings
       allow read: if isAuthenticated();
-      // Users can create bookings
-      allow create: if isAuthenticated();
+      // Users can create bookings (even if not authenticated, but we create auth user in payment)
+      allow create: if true; // Allow public creation for booking flow
       // Users can update their own bookings, admins can update any
       allow update: if isAuthenticated() &&
-                     (resource.data.guestId == request.auth.uid || isAdmin());
+                     (resource.data.guest_id == request.auth.uid || isAdmin());
       // Only admins can delete bookings
       allow delete: if isAdmin();
     }
 
     // Rooms collection
     match /rooms/{roomId} {
-      // Anyone authenticated can read rooms
-      allow read: if isAuthenticated();
+      // Anyone can read rooms (public access for booking flow)
+      allow read: if true;
       // Only admins can create/update/delete rooms
       allow write: if isAdmin();
     }
@@ -66,8 +66,8 @@ service cloud.firestore {
     match /guests/{guestId} {
       // Authenticated users can read guests
       allow read: if isAuthenticated();
-      // Users can create guests, admins can update/delete
-      allow create: if isAuthenticated();
+      // Users can create guests (even if not authenticated, but we create auth user in payment)
+      allow create: if true; // Allow public creation for booking flow
       allow update, delete: if isAdmin();
     }
 
