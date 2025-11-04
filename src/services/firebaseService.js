@@ -329,8 +329,12 @@ const createService = (collectionName) => ({
   create: async (data) => {
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error('Not authenticated');
-      
+
+      // Allow anonymous creation for guests and bookings (clients can book without authentication)
+      if (collectionName !== 'guests' && collectionName !== 'bookings') {
+        if (!user) throw new Error('Not authenticated');
+      }
+
       const newDocRef = doc(collection(db, collectionName));
       // Remove any undefined fields to avoid Firestore rejecting the write
       const sanitized = Object.fromEntries(Object.entries(data || {}).filter(([_, v]) => v !== undefined));
@@ -338,11 +342,11 @@ const createService = (collectionName) => ({
         ...sanitized,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        createdBy: user.uid,
+        createdBy: user ? user.uid : null,
       };
-      
+
       await setDoc(newDocRef, docData);
-      
+
       return {
         success: true,
         message: `${collectionName} created successfully`,

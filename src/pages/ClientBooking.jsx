@@ -1,13 +1,15 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { roomsService, guestsService, bookingsService } from '../services/api';
+import { roomsService, guestsService, bookingsService } from '../services/firebaseService';
+import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 const ClientBooking = () => {
   const { roomId } = useParams();
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [rooms, setRooms] = React.useState([]);
+  const { isAuthenticated, user } = useAuth();
 
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
@@ -31,22 +33,44 @@ const ClientBooking = () => {
   const onSubmit = async (values) => {
     try {
       setLoading(true);
-      // 1) create guest
-      const guestPayload = await guestsService.createGuest({
-        first_name: values.firstName,
-        last_name: values.lastName,
-        email: values.email,
-        phone: values.phone,
-        address: values.address || null,
-      });
-      const guest = guestPayload?.data || guestPayload;
-      if (!guest?.id) {
-        throw new Error('Could not create guest');
+
+      let guestId;
+
+      if (isAuthenticated && user) {
+        // If authenticated, use current user as guest or create guest record
+        // For simplicity, we'll create a guest record even for authenticated users
+        // You could modify this to link to user profile instead
+        const guestPayload = await guestsService.createGuest({
+          first_name: values.firstName,
+          last_name: values.lastName,
+          email: values.email,
+          phone: values.phone,
+          address: values.address || null,
+        });
+        const guest = guestPayload?.data || guestPayload;
+        if (!guest?.id) {
+          throw new Error('Could not create guest');
+        }
+        guestId = guest.id;
+      } else {
+        // If not authenticated, create guest (this should work now with the auth bypass)
+        const guestPayload = await guestsService.createGuest({
+          first_name: values.firstName,
+          last_name: values.lastName,
+          email: values.email,
+          phone: values.phone,
+          address: values.address || null,
+        });
+        const guest = guestPayload?.data || guestPayload;
+        if (!guest?.id) {
+          throw new Error('Could not create guest');
+        }
+        guestId = guest.id;
       }
 
       // 2) create booking
       const bookingPayload = await bookingsService.createBooking({
-        guest_id: guest.id,
+        guest_id: guestId,
         // keep room id as string (Firestore doc id), do not parseInt
         room_id: values.roomId,
         check_in_date: values.checkIn,

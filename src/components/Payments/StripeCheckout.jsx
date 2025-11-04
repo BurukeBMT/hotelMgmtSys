@@ -3,8 +3,9 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
+import { paymentService } from '../../services/paymentService';
 
-const stripePromise = loadStripe('pk_test_51PxexampleStripePublishableKeyHere123456789');
+const stripePromise = loadStripe('pk_test_51SOGGbQKEpTq8ihWbeAVv4wMbODXZh9I7euPQlJ923gN5MPlyvbuQB4j8QsysHZZgRt9v8lT5cBJwFKwpoKNJjXz00xdPmpw0X');
 
 function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
   const stripe = useStripe();
@@ -19,44 +20,50 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
     setLoading(true);
 
     try {
-      // For client-side only payments, we'll simulate a successful payment
-      // In production, you'd want to use Stripe's Payment Links or hosted checkout
-      // This is a simplified implementation for demo purposes
-
-      // Simulate payment processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Create a mock payment intent result
-      const mockPaymentIntent = {
-        id: `pi_mock_${Date.now()}`,
-        status: 'succeeded',
-        amount: amount * 100, // Convert to cents
-        currency: currency.toLowerCase(),
-        client_secret: 'mock_secret',
-        created: Date.now() / 1000,
-      };
-
-      // Record the payment in Firestore
-      const paymentRef = doc(db, 'payments', mockPaymentIntent.id);
-      await setDoc(paymentRef, {
-        id: mockPaymentIntent.id,
+      // Create payment intent using our payment service
+      const paymentIntentData = await paymentService.createPaymentIntent(amount, currency.toLowerCase(), {
         bookingId,
-        amount: amount,
-        currency: currency,
-        status: 'completed',
-        paymentMethod: 'card',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
       });
 
-      // Update booking status to paid
-      const bookingRef = doc(db, 'bookings', bookingId);
-      await setDoc(bookingRef, {
-        paymentStatus: 'paid',
-        updatedAt: serverTimestamp(),
-      }, { merge: true });
+      const clientSecret = paymentIntentData.client_secret;
 
-      onSuccess && onSuccess(mockPaymentIntent);
+      // Confirm the payment with Stripe
+      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+        },
+      });
+
+      if (stripeError) {
+        throw new Error(stripeError.message);
+      }
+
+      if (paymentIntent.status === 'succeeded') {
+        // Record the payment in Firestore
+        const paymentRef = doc(db, 'payments', paymentIntent.id);
+        await setDoc(paymentRef, {
+          id: paymentIntent.id,
+          bookingId,
+          amount: amount,
+          currency: currency,
+          status: 'completed',
+          paymentMethod: 'card',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+
+        // Update booking status to paid
+        const bookingRef = doc(db, 'bookings', bookingId);
+        await setDoc(bookingRef, {
+          paymentStatus: 'paid',
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+
+        onSuccess && onSuccess(paymentIntent);
+      } else {
+        throw new Error('Payment was not successful');
+      }
+
       setLoading(false);
     } catch (err) {
       setError(err.message || 'Payment failed');

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users,
   Shield,
@@ -10,14 +10,8 @@ import {
   Calendar,
   AlertCircle,
   Home,
-  Plus,
-  Edit,
-  Trash2,
-  Upload,
-  X
 } from 'lucide-react';
 import { adminService, usersService, bookingsService, paymentsService, roomsService, authService } from '../services/api';
-import { storageService } from '../services/storage';
 import toast from 'react-hot-toast';
 
 const SuperAdminDashboard = () => {
