@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Use environment variable for Stripe secret key
+exports.STRIPE = stripe;
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({origin: true}));
 app.use(express.json());
 
 // Create payment intent
