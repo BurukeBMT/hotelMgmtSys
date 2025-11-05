@@ -25,15 +25,18 @@ const Payments = () => {
       // If user is not authenticated, create a Firebase Auth user using booking form data
       if (!isAuthenticated) {
         try {
+          console.log('User not authenticated, attempting to create account...');
           // Fetch booking to get guest data
           const bookingRes = await bookingsService.getById(bookingId);
           const booking = bookingRes?.data;
           if (booking) {
+            console.log('Booking found:', booking);
             // Find guest data from booking
             const guestRes = await bookingsService.getAll({ id: booking.guest_id });
             const guest = guestRes?.data?.find(g => g.id === booking.guest_id);
 
             if (guest) {
+              console.log('Guest found:', guest);
               // Create Firebase Auth user
               await authService.register({
                 email: guest.email,
@@ -45,7 +48,11 @@ const Payments = () => {
                 role: 'client'
               });
               toast.success('Account created! Please check your email for login details.');
+            } else {
+              console.warn('Guest not found for booking:', bookingId);
             }
+          } else {
+            console.warn('Booking not found for bookingId:', bookingId);
           }
         } catch (authError) {
           console.warn('Could not create user account:', authError.message);
@@ -56,23 +63,31 @@ const Payments = () => {
       // Fetch booking to get room id
       let bookingDoc = null;
       try {
+        console.log('Fetching booking details for room update...');
         const res = await bookingsService.getById(bookingId);
         bookingDoc = res?.data || null;
+        console.log('Booking doc retrieved:', bookingDoc);
       } catch (e) {
         console.warn('Could not fetch booking after payment:', e.message || e);
       }
 
       // Mark booking as confirmed and paymentStatus paid
+      console.log('Updating booking status to confirmed and paid...');
       await bookingsService.update(bookingId, { status: 'confirmed', paymentStatus: 'paid' });
+      console.log('Booking status updated successfully');
 
       // If booking has a room, mark it as occupied (reduce availability)
       const roomId = bookingDoc?.room_id || bookingDoc?.roomId || bookingDoc?.room_id;
       if (roomId) {
         try {
+          console.log('Updating room status to occupied for roomId:', roomId);
           await roomsService.update(roomId, { status: 'occupied' });
+          console.log('Room status updated successfully');
         } catch (e) {
           console.warn('Failed to update room status:', e.message || e);
         }
+      } else {
+        console.warn('No roomId found in booking, skipping room status update');
       }
 
       toast.success('Payment successful and booking confirmed');
@@ -80,6 +95,11 @@ const Payments = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error('Error post-payment:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        bookingId: stateBookingId || paymentIntent?.bookingId
+      });
       toast.error('Payment recorded but post-processing failed');
     }
   };

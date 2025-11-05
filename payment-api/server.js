@@ -13,6 +13,17 @@ const PORT = 5000;
 app.use(cors({origin: true}));
 app.use(express.json());
 
+// Additional CORS headers for preflight requests
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+});
+
 // Create payment intent
 app.post('/api/payments/create-intent', async (req, res) => {
   try {

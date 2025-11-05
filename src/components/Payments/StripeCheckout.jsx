@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { paymentService } from '../../services/paymentService';
 
@@ -56,10 +56,11 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
           // Update booking status to paid (only if bookingId exists)
           if (bookingId) {
             const bookingRef = doc(db, 'bookings', bookingId);
-            await setDoc(bookingRef, {
+            await updateDoc(bookingRef, {
               paymentStatus: 'paid',
+              status: 'confirmed',
               updatedAt: serverTimestamp(),
-            }, { merge: true });
+            });
           }
 
           onSuccess && onSuccess(paymentIntent);

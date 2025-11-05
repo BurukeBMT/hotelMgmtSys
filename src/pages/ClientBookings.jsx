@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Users, DollarSign, Search, Filter, Eye, Download, X } from 'lucide-react';
-import { bookingsService } from '../services/api';
+import { bookingsService } from '../services/firebaseService';
 import toast from 'react-hot-toast';
 
 const ClientBookings = () => {

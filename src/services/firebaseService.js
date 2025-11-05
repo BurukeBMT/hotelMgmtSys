@@ -402,7 +402,44 @@ export const bookingsService = {
   ...createService('bookings'),
   
   getBookings: async (filters = {}) => {
-    return bookingsService.getAll(filters);
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('Not authenticated');
+
+      // Find the guest document for the current user by email
+      const guestQuery = query(
+        collection(db, 'guests'),
+        where('email', '==', user.email)
+      );
+      const guestSnapshot = await getDocs(guestQuery);
+
+      if (guestSnapshot.empty) {
+        // No guest found, return empty bookings
+        return {
+          success: true,
+          data: [],
+        };
+      }
+
+      // Assuming one guest per email, take the first
+      const guestId = guestSnapshot.docs[0].id;
+
+      // Get bookings where guest_id matches the found guest ID
+      const q = query(
+        collection(db, 'bookings'),
+        where('guest_id', '==', guestId),
+        orderBy('createdAt', 'desc')
+      );
+
+      const snapshot = await getDocs(q);
+      return {
+        success: true,
+        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+      };
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      throw error;
+    }
   },
   
   createBooking: async (data) => {
