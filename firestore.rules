@@ -45,18 +45,58 @@ service cloud.firestore {
 
     // Bookings collection
     match /bookings/{bookingId} {
-      // Users can read their own bookings, admins can read all
+      // Helper function to check if booking belongs to user by userId
+      function isBookingOwnerByUserId() {
+        return resource.data.userId == request.auth.uid;
+      }
+      
+      // Helper function to check if booking belongs to user via guest
+      // Note: This uses get() which can be expensive for queries, but necessary for backward compatibility
+      function isBookingOwnerByGuest() {
+        // Check if the booking's guest has userId matching the current user
+        // This allows reading bookings that were created before userId was added
+        // Only check if guest_id exists to avoid errors
+        return resource.data.guest_id != null && 
+               exists(/databases/$(database)/documents/guests/$(resource.data.guest_id)) &&
+               get(/databases/$(database)/documents/guests/$(resource.data.guest_id)).data.userId == request.auth.uid;
+      }
+      
+      // Simplified check: allow reading if booking has userId OR if we can verify via guest
+      // For queries, Firestore will evaluate this on each document
+      function canReadBooking() {
+        // First check: booking has userId matching current user
+        return resource.data.userId == request.auth.uid ||
+               // Second check: booking's guest has userId matching current user
+               // This is for backward compatibility with bookings created before userId was added
+               isBookingOwnerByGuest();
+      }
+      
+      // Users can read their own bookings (by userId or via guest), admins can read all
+      // Allow reading if:
+      // 1. Booking has userId matching current user, OR
+      // 2. Booking's guest has userId matching current user (for backward compatibility), OR
+      // 3. User is admin
+      // Note: For queries, Firestore evaluates this rule on each document
       allow read: if isAuthenticated() &&
-                   (resource.data.guest_id == request.auth.uid || isAdmin());
+                   (canReadBooking() || isAdmin());
+      
       // Users can create bookings (even if not authenticated, but we create auth user in payment)
       allow create: if true; // Allow public creation for booking flow
-      // Users can update their own bookings, admins can update any, allow payment status updates
+      
+      // Users can update their own bookings (by userId), admins can update any
+      // Also allow updates that add userId (linking booking to user after payment)
+      // And allow payment status updates for payment processing
       allow update: if isAuthenticated() &&
-                     (resource.data.guest_id == request.auth.uid || isAdmin()) ||
-                     // Allow payment status updates (for Stripe webhook/payment processing)
-                     (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paymentStatus', 'updatedAt', 'status'])) ||
-                     // Allow updates during payment processing (even without auth for now)
-                     true;
+                     (isBookingOwnerByUserId() || 
+                      isAdmin() ||
+                      // Allow adding userId to link booking to user (first time linking)
+                      // User can add their own userId to a booking that doesn't have one yet
+                      (request.resource.data.userId == request.auth.uid && 
+                       !('userId' in resource.data)) ||
+                      // Allow payment status updates (for payment processing flow)
+                      // This allows updating paymentStatus, status, paymentIntentId, and userId together
+                      (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paymentStatus', 'updatedAt', 'status', 'paymentIntentId', 'userId'])));
+      
       // Only admins can delete bookings
       allow delete: if isAdmin();
     }

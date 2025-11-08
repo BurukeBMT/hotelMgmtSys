@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../config/firebase';
 import { paymentService } from '../../services/paymentService';
 
 const stripePromise = loadStripe('pk_test_51SOGGbQKEpTq8ihWbeAVv4wMbODXZh9I7euPQlJ923gN5MPlyvbuQB4j8QsysHZZgRt9v8lT5cBJwFKwpoKNJjXz00xdPmpw0X');
@@ -39,36 +37,12 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
       }
 
       if (paymentIntent.status === 'succeeded') {
-        try {
-          // Record the payment in Firestore (with error handling)
-          const paymentRef = doc(db, 'payments', paymentIntent.id);
-          await setDoc(paymentRef, {
-            id: paymentIntent.id,
-            bookingId,
-            amount: amount,
-            currency: currency,
-            status: 'completed',
-            paymentMethod: 'card',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-
-          // Update booking status to paid (only if bookingId exists)
-          if (bookingId) {
-            const bookingRef = doc(db, 'bookings', bookingId);
-            await updateDoc(bookingRef, {
-              paymentStatus: 'paid',
-              status: 'confirmed',
-              updatedAt: serverTimestamp(),
-            });
-          }
-
-          onSuccess && onSuccess(paymentIntent);
-        } catch (firestoreError) {
-          console.warn('Firestore update failed, but payment succeeded:', firestoreError);
-          // Still call onSuccess since the payment went through
-          onSuccess && onSuccess(paymentIntent);
-        }
+        console.log('✅ Stripe payment succeeded, calling onSuccess handler...');
+        // Payment succeeded - let the onSuccess handler in Payments.jsx
+        // handle all Firestore updates after ensuring authentication
+        // This avoids permission errors from trying to update Firestore
+        // before the user is authenticated
+        onSuccess && onSuccess(paymentIntent);
       } else {
         throw new Error('Payment was not successful');
       }

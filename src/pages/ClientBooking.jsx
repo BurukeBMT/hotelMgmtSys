@@ -86,13 +86,29 @@ const ClientBooking = () => {
 
       toast.success('Booking created successfully');
 
-      // redirect to payment page with booking id and amount (if room has price)
+      // redirect to payment page with booking id, amount, and guest data (for account creation if needed)
       const bookingId = bookingPayload?.data?.id || bookingPayload?.id || null;
       const selectedRoom = rooms.find(r => r.id === values.roomId) || {};
       const amount = parseFloat(selectedRoom.price || selectedRoom.base_price || selectedRoom.basePrice || selectedRoom.rate || 10.00);
 
       if (bookingId) {
-        navigate('/payments', { state: { bookingId, amount } });
+        // Pass guest data to Payments page for account creation if user is not authenticated
+        navigate('/payments', { 
+          state: { 
+            bookingId, 
+            amount,
+            guestData: {
+              email: values.email,
+              firstName: values.firstName,
+              lastName: values.lastName,
+              phone: values.phone,
+              address: values.address || '',
+              // Generate a temporary password (user should change it later)
+              password: `Temp${Date.now()}!`
+            },
+            roomId: values.roomId
+          } 
+        });
       }
     } catch (e) {
       toast.error(e.message || 'Failed to create booking');

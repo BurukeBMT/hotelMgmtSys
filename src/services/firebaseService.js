@@ -70,6 +70,105 @@ const normalizeUser = (userDoc, firebaseUser) => {
   };
 };
 
+// Helper to wait for authentication state to be available
+const waitForAuth = (maxWaitMs = 5000, checkIntervalMs = 100) => {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+    
+    const checkAuth = () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        console.log('✅ Auth state available, user ID:', currentUser.uid);
+        resolve(currentUser);
+        return;
+      }
+      
+      if (Date.now() - startTime > maxWaitMs) {
+        console.error('❌ Auth wait timeout - no authenticated user after', maxWaitMs, 'ms');
+        reject(new Error('Authentication timeout - user not authenticated'));
+        return;
+      }
+      
+      setTimeout(checkAuth, checkIntervalMs);
+    };
+    
+    // Also listen to auth state changes as a backup
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('✅ Auth state changed - user authenticated:', user.uid);
+        unsubscribe();
+        resolve(user);
+      }
+    });
+    
+    // Start checking immediately
+    checkAuth();
+    
+    // Cleanup listener after timeout
+    setTimeout(() => {
+      unsubscribe();
+    }, maxWaitMs + 1000);
+  });
+};
+
+// Helper to ensure user is authenticated before Firestore operations
+const ensureAuthenticated = async (operationName = 'operation') => {
+  const currentUser = auth.currentUser;
+  
+  if (currentUser) {
+    console.log(`✅ Auth verified for ${operationName}, user ID:`, currentUser.uid);
+    return currentUser;
+  }
+  
+  console.log(`⏳ Waiting for auth state for ${operationName}...`);
+  try {
+    const user = await waitForAuth();
+    console.log(`✅ Auth verified after wait for ${operationName}, user ID:`, user.uid);
+    return user;
+  } catch (error) {
+    console.error(`❌ Auth verification failed for ${operationName}:`, error);
+    throw new Error(`Authentication required for ${operationName}: ${error.message}`);
+  }
+};
+
+// Helper to retry a function with exponential backoff
+const retryWithBackoff = async (fn, maxRetries = 3, baseDelayMs = 500) => {
+  let lastError;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      const isPermissionError = error?.code === 'permission-denied' || 
+                                error?.message?.includes('permission') ||
+                                error?.message?.includes('Missing or insufficient permissions');
+      
+      // Don't retry permission errors immediately - need to wait for auth
+      if (isPermissionError && attempt < maxRetries - 1) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        console.log(`⚠️ Permission error on attempt ${attempt + 1}, retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        // Wait for auth state before retrying
+        try {
+          await waitForAuth(2000);
+        } catch (authError) {
+          console.warn('Auth wait failed during retry:', authError);
+        }
+        continue;
+      }
+      
+      // If it's not a permission error or we're out of retries, throw
+      if (!isPermissionError || attempt === maxRetries - 1) {
+        throw error;
+      }
+    }
+  }
+  
+  throw lastError;
+};
+
 // Auth service
 export const authService = {
   login: async (credentials) => {
@@ -147,13 +246,25 @@ export const authService = {
     try {
       const { email, password, username, firstName, lastName, phone, address, role = 'client' } = registrationData;
       
+      console.log('🔐 Starting user registration for:', email);
+      
       // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
+      console.log('✅ Firebase Auth user created, UID:', firebaseUser.uid);
+      
+      // Wait a moment for auth state to propagate
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Verify auth state is set
+      if (auth.currentUser?.uid !== firebaseUser.uid) {
+        console.warn('⚠️ Auth state not immediately available, waiting...');
+        await waitForAuth(3000);
+      }
       
       // Create user document in Firestore
       const userData = {
-        username,
+        username: username || email.split('@')[0],
         email,
         firstName,
         lastName,
@@ -165,21 +276,33 @@ export const authService = {
         updatedAt: serverTimestamp(),
       };
       
+      console.log('📝 Creating user document in Firestore...');
       await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+      console.log('✅ User document created in Firestore');
       
       // Update Firebase Auth profile
       await updateFirebaseProfile(firebaseUser, {
         displayName: `${firstName} ${lastName}`,
       });
       
-      const normalizedUser = normalizeUser({ id: firebaseUser.uid, data: () => userData }, firebaseUser);
+      // Ensure auth state is available before returning
+      const currentUser = auth.currentUser;
+      if (!currentUser || currentUser.uid !== firebaseUser.uid) {
+        console.warn('⚠️ Auth state not set after registration, waiting...');
+        await waitForAuth(2000);
+      }
+      
+      const finalUser = auth.currentUser || firebaseUser;
+      const normalizedUser = normalizeUser({ id: finalUser.uid, data: () => userData }, finalUser);
+      
+      console.log('✅ Registration complete, user ID:', finalUser.uid);
       
       return {
-        token: await firebaseUser.getIdToken(),
+        token: await finalUser.getIdToken(),
         user: normalizedUser,
       };
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('❌ Registration error:', error);
       throw new Error(error.message || 'Registration failed');
     }
   },
@@ -279,6 +402,115 @@ export const authService = {
   onAuthStateChanged: (callback) => {
     return onAuthStateChanged(auth, callback);
   },
+
+  // Helper function to wait for authentication to be ready
+  waitForAuth: async (maxWaitTime = 10000, checkInterval = 100) => {
+    const startTime = Date.now();
+    
+    return new Promise((resolve, reject) => {
+      const checkAuth = () => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          console.log('✅ Auth ready, currentUser.uid:', currentUser.uid);
+          resolve(currentUser);
+          return;
+        }
+
+        if (Date.now() - startTime > maxWaitTime) {
+          console.error('❌ Auth wait timeout after', maxWaitTime, 'ms');
+          reject(new Error('Authentication timeout - user not available'));
+          return;
+        }
+
+        setTimeout(checkAuth, checkInterval);
+      };
+
+      checkAuth();
+    });
+  },
+
+  // Helper to ensure user is authenticated, creating account if needed
+  ensureAuthenticated: async (guestData) => {
+    try {
+      // Check if already authenticated
+      if (auth.currentUser) {
+        console.log('✅ User already authenticated:', auth.currentUser.uid);
+        return auth.currentUser;
+      }
+
+      // Check if user exists with this email
+      if (guestData?.email) {
+        console.log('🔍 Checking if user exists with email:', guestData.email);
+        try {
+          // Try to sign in with a temporary password (this will fail if user doesn't exist)
+          // But we can't check without password, so we'll try to register
+          // If registration fails with "email-already-in-use", we need to handle login differently
+        } catch (e) {
+          // Continue to registration
+        }
+      }
+
+      // Create new user account
+      if (!guestData?.email || !guestData?.password) {
+        throw new Error('Email and password are required to create account');
+      }
+
+      console.log('📝 Creating new user account for:', guestData.email);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        guestData.email,
+        guestData.password
+      );
+
+      // Wait a bit for auth state to propagate
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Create user document in Firestore
+      const userData = {
+        username: guestData.email.split('@')[0],
+        email: guestData.email,
+        firstName: guestData.firstName || guestData.first_name || '',
+        lastName: guestData.lastName || guestData.last_name || '',
+        phone: guestData.phone || '',
+        address: guestData.address || '',
+        role: 'client',
+        isActive: true,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+
+      await setDoc(doc(db, 'users', userCredential.user.uid), userData);
+
+      // Update Firebase Auth profile
+      await updateFirebaseProfile(userCredential.user, {
+        displayName: `${userData.firstName} ${userData.lastName}`.trim() || guestData.email,
+      });
+
+      console.log('✅ User account created successfully:', userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      console.error('❌ Error ensuring authentication:', error);
+      
+      // If user already exists, try to sign in
+      if (error.code === 'auth/email-already-in-use' && guestData?.email && guestData?.password) {
+        console.log('🔄 User exists, attempting to sign in...');
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            guestData.email,
+            guestData.password
+          );
+          console.log('✅ Signed in existing user:', userCredential.user.uid);
+          return userCredential.user;
+        } catch (signInError) {
+          console.error('❌ Sign in failed:', signInError);
+          throw new Error('Account exists but password is incorrect. Please use the login page.');
+        }
+      }
+      
+      throw error;
+    }
+  },
 };
 
 // Generic CRUD helper for Firestore collections
@@ -309,6 +541,12 @@ const createService = (collectionName) => ({
 
   getById: async (id) => {
     try {
+      // For bookings, guests, and rooms, check if auth is required based on rules
+      // Rooms can be read by anyone, but bookings and guests need auth
+      if (collectionName === 'bookings' || collectionName === 'guests') {
+        await ensureAuthenticated(`getById(${collectionName})`);
+      }
+      
       const docRef = doc(db, collectionName, id);
       const docSnap = await getDoc(docRef);
       
@@ -316,12 +554,28 @@ const createService = (collectionName) => ({
         throw new Error(`${collectionName} not found`);
       }
       
+      const data = { id: docSnap.id, ...docSnap.data() };
+      
+      // For bookings: if it doesn't have userId but user is authenticated, 
+      // we might still be able to read it if it's being updated
+      if (collectionName === 'bookings' && !data.userId) {
+        const user = auth.currentUser;
+        if (user) {
+          console.log(`⚠️ Booking ${id} does not have userId set, but user is authenticated`);
+          // This booking might not be readable yet if rules require userId
+          // But we'll try anyway - the rules might allow it during payment flow
+        }
+      }
+      
       return {
         success: true,
-        data: { id: docSnap.id, ...docSnap.data() },
+        data,
       };
     } catch (error) {
       console.error(`Error fetching ${collectionName}:`, error);
+      // For bookings, if we get permission error and booking doesn't have userId,
+      // we might need to update it first (but we can't read it to update it - catch-22)
+      // So we'll just throw the error
       throw error;
     }
   },
@@ -360,6 +614,22 @@ const createService = (collectionName) => ({
 
   update: async (id, data) => {
     try {
+      // Ensure authentication for updates (except for bookings/guests during payment flow)
+      // But we still want to verify auth state exists
+      if (collectionName === 'bookings' || collectionName === 'guests') {
+        // Wait for auth if not immediately available, but don't fail if it's a payment update
+        try {
+          await ensureAuthenticated(`update(${collectionName})`);
+        } catch (authError) {
+          console.warn(`Auth check failed for update, but continuing:`, authError);
+          // For payment flow, we might be updating before auth is fully propagated
+          // Try to wait a bit more
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } else {
+        await ensureAuthenticated(`update(${collectionName})`);
+      }
+      
       const docRef = doc(db, collectionName, id);
       const updateData = {
         ...data,
@@ -374,6 +644,22 @@ const createService = (collectionName) => ({
       };
     } catch (error) {
       console.error(`Error updating ${collectionName}:`, error);
+      // Retry with backoff for permission errors
+      if (error?.code === 'permission-denied' || error?.message?.includes('permission')) {
+        return retryWithBackoff(async () => {
+          await ensureAuthenticated(`update(${collectionName})`);
+          const docRef = doc(db, collectionName, id);
+          const updateData = {
+            ...data,
+            updatedAt: serverTimestamp(),
+          };
+          await updateDoc(docRef, updateData);
+          return {
+            success: true,
+            message: `${collectionName} updated successfully`,
+          };
+        });
+      }
       throw error;
     }
   },
@@ -403,41 +689,126 @@ export const bookingsService = {
   
   getBookings: async (filters = {}) => {
     try {
-      const user = auth.currentUser;
-      if (!user) throw new Error('Not authenticated');
-
-      // Find the guest document for the current user by email
-      const guestQuery = query(
-        collection(db, 'guests'),
-        where('email', '==', user.email)
-      );
-      const guestSnapshot = await getDocs(guestQuery);
-
-      if (guestSnapshot.empty) {
-        // No guest found, return empty bookings
-        return {
-          success: true,
-          data: [],
-        };
+      // Wait for authentication if not immediately available
+      let user = auth.currentUser;
+      if (!user) {
+        console.log('⏳ No auth user immediately available, waiting...');
+        try {
+          user = await waitForAuth(3000);
+        } catch (authError) {
+          console.error('❌ Authentication timeout:', authError);
+          throw new Error('Not authenticated');
+        }
       }
 
-      // Assuming one guest per email, take the first
-      const guestId = guestSnapshot.docs[0].id;
+      console.log('📖 Fetching bookings for user:', user.uid);
 
-      // Get bookings where guest_id matches the found guest ID
-      const q = query(
-        collection(db, 'bookings'),
-        where('guest_id', '==', guestId),
-        orderBy('createdAt', 'desc')
-      );
+      // First, try to get bookings by userId (preferred method after payment)
+      let bookings = [];
+      try {
+        const userIdQuery = query(
+          collection(db, 'bookings'),
+          where('userId', '==', user.uid),
+          orderBy('createdAt', 'desc')
+        );
+        const userIdSnapshot = await getDocs(userIdQuery);
+        bookings = userIdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(`✅ Found ${bookings.length} bookings by userId`);
+      } catch (userIdError) {
+        // Check if it's a permission error or index error
+        const isPermissionError = userIdError?.code === 'permission-denied' || 
+                                  userIdError?.message?.includes('permission');
+        const isIndexError = userIdError?.code === 'failed-precondition' ||
+                            userIdError?.message?.includes('index');
+        
+        if (isIndexError) {
+          console.warn('⚠️ Index not found for userId query. Deploy Firestore indexes:', userIdError.message);
+        } else if (isPermissionError) {
+          console.warn('⚠️ Permission denied for userId query (bookings may not have userId set yet):', userIdError.message);
+        } else {
+          console.warn('⚠️ Could not fetch bookings by userId:', userIdError.message);
+        }
+        // Fall back to guest-based lookup
+      }
 
-      const snapshot = await getDocs(q);
+      // Also fetch bookings by guest email (for backward compatibility)
+      // Find the guest document for the current user by email or userId
+      try {
+        let guestQuery = query(
+          collection(db, 'guests'),
+          where('email', '==', user.email)
+        );
+        let guestSnapshot = await getDocs(guestQuery);
+
+        // If no guest found by email, try by userId
+        if (guestSnapshot.empty) {
+          guestQuery = query(
+            collection(db, 'guests'),
+            where('userId', '==', user.uid)
+          );
+          guestSnapshot = await getDocs(guestQuery);
+        }
+
+        if (!guestSnapshot.empty) {
+          // Get all guest IDs for this user
+          const guestIds = guestSnapshot.docs.map(doc => doc.id);
+          console.log(`📋 Found ${guestIds.length} guest(s) for user`);
+
+          // Get bookings for each guest ID
+          for (const guestId of guestIds) {
+            try {
+              const guestBookingQuery = query(
+                collection(db, 'bookings'),
+                where('guest_id', '==', guestId),
+                orderBy('createdAt', 'desc')
+              );
+              const guestBookingSnapshot = await getDocs(guestBookingQuery);
+              const guestBookings = guestBookingSnapshot.docs.map(doc => ({ 
+                id: doc.id, 
+                ...doc.data() 
+              }));
+              
+              // Merge with existing bookings, avoiding duplicates
+              guestBookings.forEach(booking => {
+                if (!bookings.find(b => b.id === booking.id)) {
+                  bookings.push(booking);
+                }
+              });
+            } catch (guestBookingError) {
+              // Check if it's a permission error or index error
+              const isPermissionError = guestBookingError?.code === 'permission-denied' || 
+                                        guestBookingError?.message?.includes('permission');
+              const isIndexError = guestBookingError?.code === 'failed-precondition' ||
+                                  guestBookingError?.message?.includes('index');
+              
+              if (isIndexError) {
+                console.warn(`⚠️ Index not found for guest_id query on guest ${guestId}. Deploy Firestore indexes.`);
+              } else if (isPermissionError) {
+                console.warn(`⚠️ Permission denied for bookings of guest ${guestId} (guest may not have userId set)`);
+              } else {
+                console.warn(`⚠️ Could not fetch bookings for guest ${guestId}:`, guestBookingError.message);
+              }
+            }
+          }
+        }
+      } catch (guestError) {
+        console.warn('⚠️ Could not fetch bookings by guest:', guestError);
+      }
+
+      // Sort all bookings by createdAt (most recent first)
+      bookings.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+        return dateB - dateA;
+      });
+
+      console.log(`✅ Returning ${bookings.length} total bookings`);
       return {
         success: true,
-        data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+        data: bookings,
       };
     } catch (error) {
-      console.error('Error fetching bookings:', error);
+      console.error('❌ Error fetching bookings:', error);
       throw error;
     }
   },

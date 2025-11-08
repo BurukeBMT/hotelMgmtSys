@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, Users, DollarSign, Search, Filter, Eye, Download, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { bookingsService } from '../services/firebaseService';
+import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 const ClientBookings = () => {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,22 +15,43 @@ const ClientBookings = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
-  useEffect(() => {
-    loadBookings();
-  }, []);
-
-  const loadBookings = async () => {
+  const loadBookings = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('📖 Loading bookings for authenticated user...');
       const response = await bookingsService.getBookings();
       setBookings(response.data || []);
+      console.log(`✅ Loaded ${response.data?.length || 0} bookings`);
     } catch (error) {
+      // Don't show error toast if user is not authenticated - we'll redirect
+      if (error.message === 'Not authenticated') {
+        console.log('User not authenticated, will redirect');
+        navigate('/client');
+        return;
+      }
       toast.error('Failed to load bookings');
       console.error('Load bookings error:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    // Wait for auth to finish loading
+    if (authLoading) {
+      return;
+    }
+
+    // If not authenticated, redirect to login or client home
+    if (!isAuthenticated) {
+      console.log('User not authenticated, redirecting...');
+      navigate('/client');
+      return;
+    }
+
+    // User is authenticated, load bookings
+    loadBookings();
+  }, [isAuthenticated, authLoading, user, navigate, loadBookings]);
 
   const filteredBookings = bookings.filter(booking => {
     const matchesSearch = (booking.booking_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -85,12 +110,23 @@ const ClientBookings = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  if (loading) {
+  // Show loading while auth is being checked or bookings are loading
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">
+            {authLoading ? 'Checking authentication...' : 'Loading bookings...'}
+          </p>
+        </div>
       </div>
     );
+  }
+
+  // If not authenticated, show nothing (redirect will happen)
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (
