@@ -1,7 +1,7 @@
   import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import StripeCheckout from '../components/Payments/StripeCheckout';
-import { bookingsService, roomsService, authService } from '../services/firebaseService';
+import { bookingsService, authService } from '../services/firebaseService';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 

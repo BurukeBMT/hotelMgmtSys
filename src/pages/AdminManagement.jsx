@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Plus,
   Search,
@@ -40,12 +40,7 @@ const AdminManagement = () => {
   const [privileges, setPrivileges] = useState([]);
   const [availablePrivileges, setAvailablePrivileges] = useState([]);
 
-  useEffect(() => {
-    loadAdmins();
-    loadAvailablePrivileges();
-  }, [pagination.page, searchTerm, roleFilter]);
-
-  const loadAdmins = async () => {
+  const loadAdmins = useCallback(async () => {
     try {
       setLoading(true);
       const response = await adminService.getUsers({
@@ -67,17 +62,21 @@ const AdminManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, roleFilter, searchTerm]);
 
-  const loadAvailablePrivileges = async () => {
+  const loadAvailablePrivileges = useCallback(async () => {
     try {
       const response = await adminService.getPrivileges();
       setAvailablePrivileges(response.data);
     } catch (error) {
       console.error('Load privileges error:', error);
     }
-  };
+  }, []);
 
+  useEffect(() => {
+    loadAdmins();
+    loadAvailablePrivileges();
+  }, [loadAdmins, loadAvailablePrivileges]);
   const loadAdminPrivileges = async (adminId) => {
     try {
       const response = await adminService.getUserPrivileges(adminId);

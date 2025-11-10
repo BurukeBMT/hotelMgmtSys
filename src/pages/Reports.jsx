@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -6,10 +6,7 @@ import {
   Calendar, 
   DollarSign, 
   Download,
-  Filter,
-  RefreshCw,
-  Eye,
-  FileText
+  RefreshCw
 } from 'lucide-react';
 import { reportsService, adminService } from '../services/api';
 import toast from 'react-hot-toast';
@@ -23,11 +20,7 @@ const Reports = () => {
   const [revenueStats, setRevenueStats] = useState({});
   const [occupancyStats, setOccupancyStats] = useState({});
 
-  useEffect(() => {
-    loadReportData();
-  }, [selectedPeriod, reportType]);
-
-  const loadReportData = async () => {
+  const loadReportData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -52,7 +45,11 @@ const Reports = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod]);
+
+  useEffect(() => {
+    loadReportData();
+  }, [loadReportData]);
 
   const exportReport = (type) => {
     // Simple CSV export functionality
@@ -371,7 +368,7 @@ const Reports = () => {
             onClick={() => exportReport('overview')}
             className="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg text-left transition-colors"
           >
-            <FileText className="h-8 w-8 text-blue-600 mb-2" />
+            <BarChart3 className="h-8 w-8 text-blue-600 mb-2" />
             <h4 className="font-medium text-gray-900">Export Overview</h4>
             <p className="text-sm text-gray-500">Download comprehensive overview report</p>
           </button>

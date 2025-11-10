@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   TrendingUp, 
   TrendingDown, 
-  DollarSign, 
-  Calendar, 
-  BarChart3, 
   Plus, 
   Edit, 
   Trash2, 
-  Filter,
-  Download,
   RefreshCw
 } from 'lucide-react';
 import { pricingService } from '../services/api';
@@ -38,12 +33,7 @@ const PriceTracking = () => {
     effective_date: new Date().toISOString().split('T')[0]
   });
 
-  useEffect(() => {
-    loadPriceData();
-    loadRoomTypes();
-  }, [filters]);
-
-  const loadPriceData = async () => {
+  const loadPriceData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await pricingService.getPriceTracking(filters);
@@ -58,9 +48,9 @@ const PriceTracking = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
-  const loadRoomTypes = async () => {
+  const loadRoomTypes = useCallback(async () => {
     try {
       const response = await pricingService.getRoomTypes();
       const payload = response?.data ?? response ?? [];
@@ -68,7 +58,12 @@ const PriceTracking = () => {
     } catch (error) {
       console.error('Load room types error:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadPriceData();
+    loadRoomTypes();
+  }, [loadPriceData, loadRoomTypes]);
 
   const handleAddPrice = async (e) => {
     e.preventDefault();

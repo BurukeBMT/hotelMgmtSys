@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { User, Mail, Phone, MapPin, Edit, Save, X, Key, Bell } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Edit, Save, X, Key } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/api';
 import toast from 'react-hot-toast';
@@ -16,7 +16,7 @@ const ClientProfile = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    watch
+    
   } = useForm({
     defaultValues: {
       first_name: user?.firstName || '',

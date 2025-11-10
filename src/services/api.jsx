@@ -1,12 +1,19 @@
 /**
  * API Service Module
  *
- * This module now uses Firebase SDK for all data operations.
- * It exports all services from firebaseService.js for backward compatibility.
+ * Re-exports all named services from `firebaseService.js` and provides
+ * a default export object for any legacy consumers that import the
+ * default export from `src/services/api`.
  */
 
-// Re-export all services from Firebase service
+// Re-export all named exports from the Firebase service module
+// Import the firebase service module first (ESLint import/first)
+import * as firebaseService from './firebaseService';
+
+// Re-export all named exports from the Firebase service module
 export * from './firebaseService';
 
-// Default export for backward compatibility (no longer needed with Firebase)
-export default null;
+// Also provide a default export object (non-anonymous) to satisfy
+// import/no-anonymous-default-export ESLint rule and keep backward
+// compatibility for modules doing `import api from './services/api'`.
+export default firebaseService;
