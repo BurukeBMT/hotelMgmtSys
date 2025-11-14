@@ -20,7 +20,7 @@
     },
     {
       "collectionGroup": "bookings",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" },
@@ -29,7 +29,7 @@
     },
     {
       "collectionGroup": "bookings",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "userId", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" },
@@ -38,7 +38,7 @@
     },
     {
       "collectionGroup": "bookings",
-      "queryScope": "COLLECTION_GROUP",
+      "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "guest_id", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" },
