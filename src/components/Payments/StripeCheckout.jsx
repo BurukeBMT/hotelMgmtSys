@@ -49,7 +49,8 @@ function CheckoutForm({ bookingId, amount, currency = 'USD', onSuccess }) {
 
       setLoading(false);
     } catch (err) {
-      setError(err.message || 'Payment failed');
+      const backendMsg = err?.response?.data?.error || err?.response?.data?.message;
+      setError(backendMsg || err?.message || 'Payment failed');
       setLoading(false);
     }
   };

@@ -23,7 +23,7 @@ const Payments = () => {
       const bookingId = stateBookingId || paymentIntent?.bookingId || paymentIntent?.metadata?.bookingId;
       const guestData = location.state?.guestData;
       const roomId = location.state?.roomId;
-      const amount = stateAmount || paymentIntent?.amount ? (paymentIntent.amount / 100) : 0;
+      const amount = stateAmount ?? (paymentIntent?.amount != null ? (paymentIntent.amount / 100) : 0);
       
       console.log('📦 Booking ID:', bookingId);
       console.log('👤 Guest Data available:', !!guestData);

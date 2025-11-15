@@ -708,8 +708,7 @@ export const bookingsService = {
       try {
         const userIdQuery = query(
           collection(db, 'bookings'),
-          where('userId', '==', user.uid),
-          orderBy('createdAt', 'desc')
+          where('userId', '==', user.uid)
         );
         const userIdSnapshot = await getDocs(userIdQuery);
         bookings = userIdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -750,6 +749,23 @@ export const bookingsService = {
         }
 
         if (!guestSnapshot.empty) {
+          // Ensure guest documents are linked to current userId for read permissions
+          try {
+            const linkUpdates = guestSnapshot.docs.map(d => {
+              const data = d.data();
+              if (data.userId !== user.uid) {
+                return updateDoc(d.ref, { userId: user.uid, updatedAt: serverTimestamp() });
+              }
+              return null;
+            }).filter(Boolean);
+            if (linkUpdates.length > 0) {
+              await Promise.all(linkUpdates);
+              console.log(`✅ Linked ${linkUpdates.length} guest(s) to user ${user.uid}`);
+            }
+          } catch (linkErr) {
+            console.warn('⚠️ Could not link guest(s) to user:', linkErr);
+          }
+
           // Get all guest IDs for this user
           const guestIds = guestSnapshot.docs.map(doc => doc.id);
           console.log(`📋 Found ${guestIds.length} guest(s) for user`);
@@ -759,8 +775,7 @@ export const bookingsService = {
             try {
               const guestBookingQuery = query(
                 collection(db, 'bookings'),
-                where('guest_id', '==', guestId),
-                orderBy('createdAt', 'desc')
+                where('guest_id', '==', guestId)
               );
               const guestBookingSnapshot = await getDocs(guestBookingQuery);
               const guestBookings = guestBookingSnapshot.docs.map(doc => ({ 
@@ -827,6 +842,8 @@ export const bookingsService = {
 
     return bookingsService.create({
       guest_id: guestId,
+      // If authenticated, link booking to user to pass Firestore canReadBooking
+      userId: auth.currentUser ? auth.currentUser.uid : (data.userId || undefined),
       room_id: roomId,
       check_in_date: data.check_in_date || data.checkInDate,
       check_out_date: data.check_out_date || data.checkOutDate,
@@ -841,8 +858,7 @@ export const bookingsService = {
     try {
       const q = query(
         collection(db, 'bookings'),
-        where('guestId', '==', guestId),
-        orderBy('createdAt', 'desc')
+        where('guest_id', '==', guestId)
       );
       const snapshot = await getDocs(q);
       return {
@@ -1025,6 +1041,8 @@ export const guestsService = {
       email: data.email,
       phone: data.phone,
       address: data.address || '',
+      // Link guest to authenticated user to satisfy Firestore read rules for bookings
+      userId: auth.currentUser ? auth.currentUser.uid : (data.userId || undefined),
     });
   },
 };

@@ -19,7 +19,7 @@ class PaymentService {
   async createPaymentIntent(amount, currency = 'usd', metadata = {}) {
     try {
       const response = await this.client.post('/payments/create-intent', {
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Number(amount), // Send dollars; server converts to cents
         currency,
         metadata,
       });

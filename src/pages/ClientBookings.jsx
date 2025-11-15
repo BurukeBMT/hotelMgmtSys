@@ -5,6 +5,15 @@ import { bookingsService } from '../services/firebaseService';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
+const toJsDate = (val) => {
+  if (!val) return null;
+  try {
+    return typeof val?.toDate === 'function' ? val.toDate() : new Date(val);
+  } catch {
+    return null;
+  }
+};
+
 const ClientBookings = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -227,19 +236,19 @@ const ClientBookings = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            #{booking.booking_number}
+                            #{booking.booking_number || booking.id}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Room {booking.room?.room_number}
+                            Room {booking.room?.room_number || booking.room_number || booking.roomId || booking.room_id || 'N/A'}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {new Date(booking.check_in_date).toLocaleDateString()}
+                          {(() => { const d = toJsDate(booking.check_in_date || booking.checkInDate); return d ? d.toLocaleDateString() : '-'; })()}
                         </div>
                         <div className="text-sm text-gray-500">
-                          to {new Date(booking.check_out_date).toLocaleDateString()}
+                          to {(() => { const d = toJsDate(booking.check_out_date || booking.checkOutDate); return d ? d.toLocaleDateString() : '-'; })()}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -296,19 +305,19 @@ const ClientBookings = () => {
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">Check-in Date</h4>
                       <p className="text-sm text-gray-900">
-                        {new Date(selectedBooking.check_in_date).toLocaleDateString()}
+                        {(() => { const d = toJsDate(selectedBooking.check_in_date || selectedBooking.checkInDate); return d ? d.toLocaleDateString() : '-'; })()}
                       </p>
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">Check-out Date</h4>
                       <p className="text-sm text-gray-900">
-                        {new Date(selectedBooking.check_out_date).toLocaleDateString()}
+                        {(() => { const d = toJsDate(selectedBooking.check_out_date || selectedBooking.checkOutDate); return d ? d.toLocaleDateString() : '-'; })()}
                       </p>
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-gray-700 mb-2">Room Number</h4>
                       <p className="text-sm text-gray-900">
-                        {selectedBooking.room?.room_number || 'N/A'}
+                        {selectedBooking.room?.room_number || selectedBooking.room_number || selectedBooking.roomId || selectedBooking.room_id || 'N/A'}
                       </p>
                     </div>
                     <div>
@@ -358,7 +367,7 @@ const ClientBookings = () => {
                   <div>
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Booking Date</h4>
                     <p className="text-sm text-gray-900">
-                      {new Date(selectedBooking.created_at).toLocaleString()}
+                      {(() => { const d = toJsDate(selectedBooking.created_at || selectedBooking.createdAt); return d ? d.toLocaleString() : '-'; })()}
                     </p>
                   </div>
                 </div>
