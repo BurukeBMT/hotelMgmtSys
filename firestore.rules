@@ -26,21 +26,20 @@ service cloud.firestore {
 
     // Users collection
     match /users/{userId} {
-      // Allow owners to read their profile (get). Avoid using isAdmin() here
-      // to prevent potential recursive get() evaluations in rules.
-      allow get: if isAuthenticated() && isOwner(userId);
+      // Allow owners to read their profile, admins can read all users
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
 
-      // Users can update their own profile (except role)
-      allow update: if isAuthenticated() && isOwner(userId) &&
-                     (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isAdmin());
+      // Users can update their own profile (except role), admins can update any
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin()) &&
+                     (!('role' in request.resource.data.diff(resource.data).affectedKeys()) || isSuperAdmin());
 
       // Allow users to create their own profile document (during sign-up)
       allow create: if isAuthenticated() && request.auth.uid == userId ||
                      // Allow creation during payment processing
                      true;
 
-      // Only admins can delete users
-      allow delete: if isAdmin();
+      // Only super admins can delete users
+      allow delete: if isSuperAdmin();
     }
 
     // Bookings collection
